@@ -16,7 +16,8 @@
         "lint-staged": "lint-staged",
         "db:generate": "npx prisma generate",
         "db:migrate": "npx prisma migrate dev",
-        "db:push": "npx prisma db push"
+        "db:push": "npx prisma db push",
+        "seed": "ts-node ./src/db/seed.ts"
     },
     "lint-staged": {
         "src/**/*.ts": [
