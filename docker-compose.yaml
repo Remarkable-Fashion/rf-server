@@ -43,8 +43,8 @@ services:
         command: npm run start
         ports:
             - 3000:${PORT}
-        # depends_on:
-        #     - mysql
+        depends_on:
+            - mysql
         env_file:
             - .env
         volumes:
