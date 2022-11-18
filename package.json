@@ -15,7 +15,7 @@
         "prettier:fix": "prettier --write src/**/*.ts --fix",
         "lint-staged": "lint-staged",
         "db:generate": "npx prisma generate",
-        "db:migrate": "prisma migrate dev",
+        "db:migrate": "npx prisma migrate dev",
         "db:push": "npx prisma db push"
     },
     "lint-staged": {
