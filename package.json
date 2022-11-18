@@ -15,8 +15,9 @@
         "prettier:fix": "prettier --write src/**/*.ts --fix",
         "lint-staged": "lint-staged",
         "db:generate": "npx prisma generate",
-        "db:migrate": "prisma migrate dev",
-        "db:push": "npx prisma db push"
+        "db:migrate": "npx prisma migrate dev",
+        "db:push": "npx prisma db push",
+        "seed": "ts-node ./src/db/seed.ts"
     },
     "lint-staged": {
         "src/**/*.ts": [
@@ -48,6 +49,7 @@
         "husky": "^8.0.1",
         "lint-staged": "^13.0.3",
         "prettier": "^2.7.1",
+        "prisma": "^4.6.1",
         "typescript": "^4.8.4"
     },
     "dependencies": {
