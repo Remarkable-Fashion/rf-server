@@ -1,10 +1,25 @@
 import express from "express";
+import cors from "cors";
+import session from "express-session";
+import passport from "passport";
+import passportConfig from "./passports";
 import { dbErrorMiddleware, errorMiddleware } from "./middleware/error";
 import { requestLoggerMiddleware } from "./middleware/log";
 import { router } from "./routes";
+import { conf } from "./config";
 
 export const startApp = () => {
     const app = express();
+
+    app.use(cors(conf().CORS_CONFIG));
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
+
+    passportConfig();
+    app.use(session({ ...conf().SESSION_OPTION }));
+
+    app.use(passport.initialize());
+    app.use(passport.session());
 
     app.use(requestLoggerMiddleware);
 

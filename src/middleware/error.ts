@@ -7,11 +7,17 @@ export const dbErrorMiddleware = (err: unknown, req: Request, res: Response, nex
         logger.error({ req, res });
         res.status(400).json({ msg: err.message });
     } else {
-        next();
+        next(err);
     }
 };
 
-export const errorMiddleware = (_err: unknown, req: Request, res: Response, _next: NextFunction) => {
+export const errorMiddleware = (err: unknown, req: Request, res: Response, _next: NextFunction) => {
     logger.error({ req, res });
-    res.status(500).json({ msg: "error test" });
+    console.log("error :", err);
+    res.status(500);
+    if (err instanceof Error) {
+        res.json({ msg: err.message });
+    } else {
+        res.json({ msg: "error" });
+    }
 };
