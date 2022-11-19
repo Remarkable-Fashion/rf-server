@@ -6,12 +6,13 @@ import { getRedis } from "../db/redis";
 import { refreshJwt } from "../domains/auth/controller/refresh-jwt";
 import { controllerHandler } from "../lib/controller-handler";
 import { refresh, sign } from "../lib/jwt";
+import { BadReqError, UnauthorizedError } from "../lib/http-error";
 
 const REFRESH_TOKEN_EXPIRES = 60 * 60 * 24 * 14; // 2주
 function setCookieAndRedirect() {
     return (req: Request, res: Response) => {
         if (!req.user) {
-            throw new Error("No Authority");
+            throw new UnauthorizedError("No User");
         }
 
         const accessToken = sign(req.user);
@@ -87,7 +88,7 @@ authRouter.get(
         }
         req.logOut((error) => {
             if (error) {
-                throw new Error(error);
+                throw new BadReqError(error);
             }
         });
         res.redirect(conf().CLIENT_DOMAIN);

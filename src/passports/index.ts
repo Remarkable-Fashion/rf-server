@@ -1,5 +1,6 @@
 import { Users } from "@prisma/client";
 import passport from "passport";
+import { NotFoundError } from "../lib/http-error";
 import kakao from "./kakao-strategy";
 
 export default () => {
@@ -8,7 +9,7 @@ export default () => {
     });
     passport.deserializeUser(async (user: Users, done) => {
         if (!user) {
-            return done(new Error());
+            return done(new NotFoundError("No User"));
         }
         return done(null, user);
     });
