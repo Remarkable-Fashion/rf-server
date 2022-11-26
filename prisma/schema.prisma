@@ -9,9 +9,58 @@ datasource db {
 }
 
 model Users {
-  id    Int     @id @default(autoincrement())
+  id    Int     @id @db.UnsignedInt @default(autoincrement())
   email String  @unique
   name  String?
 
+  posts Posts[]
+
   @@map("users")
+}
+
+model Posts {
+  id    Int     @id @db.UnsignedInt @default(autoincrement())
+  title String @db.VarChar(50)
+  description String @db.VarChar(200)
+
+  user Users @relation(fields: [userId], references: [id])
+  userId Int @db.UnsignedInt @map("user_id")
+
+  images Images[]
+  clothes Clothes[]
+
+  @@map("posts")
+}
+model Images {
+  id    Int     @id @db.UnsignedInt @default(autoincrement())
+  url String @db.VarChar(200)
+  post Posts @relation(fields: [postId], references: [id])
+  postId Int @db.UnsignedInt @map("post_id")
+
+  @@map("images")
+}
+
+model Clothes {
+  id    Int     @id @db.UnsignedInt @default(autoincrement())
+  category ClothesCategory
+  name String @db.VarChar(50) 
+  price Int? @db.UnsignedInt
+  color String? @db.VarChar(50) 
+  size String? @db.VarChar(10) 
+
+  imageUrl String? @db.VarChar(200) @map("image_url")
+  siteUrl String? @db.VarChar(200) @map("site_url")
+
+  post Posts @relation(fields: [postId], references: [id])
+  postId Int @db.UnsignedInt @map("post_id")
+
+  @@map("clothes")
+}
+
+enum ClothesCategory {
+  Outer
+  Top
+  Bottom
+  Acc
+  Shoe
 }

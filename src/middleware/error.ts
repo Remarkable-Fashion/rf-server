@@ -16,8 +16,13 @@ export const errorMiddleware = (err: unknown, req: Request, res: Response, _next
     logger.error({ req, res });
     // console.log("error :", err);
     res.status(500);
-    if (err instanceof HttpError) {
-        res.status(err.status).json({ msg: err.message });
+
+    if (err instanceof Error) {
+        res.json({ msg: err.message });
+        if (err instanceof HttpError) {
+            res.status(err.status);
+            // res.status(err.status).json({ msg: err.message });
+        }
     } else {
         res.json({ msg: "error" });
     }
