@@ -21,8 +21,7 @@ export const createPost = async (req: Request<unknown, unknown, ReqBody>, res: R
         throw new Error("imgUrls required");
     }
 
-    // @TOOD auth jwt req.id 값을 string -> number
-    const data = { userId: Number(req.id), ...req.body };
+    const data = { userId: req.id, ...req.body };
     const post = await createPostService(data, Prisma);
 
     res.json(post);
