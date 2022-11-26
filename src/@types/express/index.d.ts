@@ -8,7 +8,7 @@ declare global {
         // eslint-disable-next-line @typescript-eslint/no-empty-interface
         interface AuthInfo {}
         export interface Request {
-            id: string;
+            id: number;
         }
         export interface User extends Users {
             accessToken?: string;

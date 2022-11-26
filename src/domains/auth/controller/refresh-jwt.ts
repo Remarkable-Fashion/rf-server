@@ -27,7 +27,7 @@ export const refreshJwt = async (req: Request, res: Response) => {
         throw new BadReqError("Access token is not expired!");
     }
 
-    const refreshResult = await verifyRefresh(refreshToken, decoded.id);
+    const refreshResult = await verifyRefresh(refreshToken, String(decoded.id));
 
     // 1. access token이 만료되고, refresh token도 만료 된 경우 => 새로 로그인해야합니다.
     if (!refreshResult.ok) {
