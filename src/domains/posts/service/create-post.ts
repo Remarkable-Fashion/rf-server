@@ -8,6 +8,7 @@ export const createPost = (
     const isClosthes = clothes && clothes.length > 0;
     return prisma.posts.create({
         select: {
+            id: true,
             userId: true,
             title: true,
             description: true,
