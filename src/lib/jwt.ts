@@ -10,10 +10,10 @@ const JWT_ALGORITHM = "HS256";
 const ACCESS_TOKEN_EXPIRES = "1h";
 const REFRESH_TOKEN_EXPIRES = "14d";
 
-export type JwtPayload = { id: string };
+export type JwtPayload = { id: number };
 
 export const sign = (user: Users) => {
-    const payload: JwtPayload = { id: String(user.id) };
+    const payload: JwtPayload = { id: user.id };
 
     return jwt.sign(payload, conf().JWT_SECRET, {
         algorithm: JWT_ALGORITHM,

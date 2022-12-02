@@ -3,6 +3,7 @@ import type { Request, Response } from "express";
 import Prisma from "../../../db/prisma";
 import { createPost as createPostService } from "../service/create-post";
 import { Clothes } from "../types";
+import { BadReqError } from "../../../lib/http-error";
 
 type ReqBody = {
     title: string;
@@ -14,16 +15,15 @@ type ReqBody = {
 export const createPost = async (req: Request<unknown, unknown, ReqBody>, res: Response) => {
     const { success, errors } = TSON.validate<ReqBody>(req.body);
     if (!success) {
-        throw new Error(TSON.stringify(errors));
+        throw new BadReqError(TSON.stringify(errors));
     }
 
     if (!(req.body.imgUrls.length > 0)) {
-        throw new Error("imgUrls required");
+        throw new BadReqError("imgUrls required");
     }
 
-    // @TOOD auth jwt req.id 값을 string -> number
-    const data = { userId: Number(req.id), ...req.body };
+    const data = { userId: req.id, ...req.body };
     const post = await createPostService(data, Prisma);
 
-    res.json(post);
+    res.status(200).json(post);
 };
