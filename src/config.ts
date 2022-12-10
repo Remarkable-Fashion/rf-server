@@ -28,6 +28,9 @@ export const conf = () => {
         clientSecret: "",
         callbackURL: process.env.KAKAO_CALLBACK_URL || "http://localhost:3000/kakao/callback"
     };
+    const SEARCH_PRE_FIX = "recent:user";
+
+    const RECENT_SEARCH_COUNT = 10;
 
     return {
         PORT,
@@ -36,6 +39,8 @@ export const conf = () => {
         JWT_SECRET,
         REDIS_URL,
         CLIENT_DOMAIN,
-        KAKAO_CONFIG
+        KAKAO_CONFIG,
+        SEARCH_PRE_FIX,
+        RECENT_SEARCH_COUNT
     };
 };

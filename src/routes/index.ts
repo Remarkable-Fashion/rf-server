@@ -4,6 +4,7 @@ import prisma from "../db/prisma";
 import { authRouter } from "./auth";
 import { postRouter } from "./post";
 import { scrapRouter } from "./scrap";
+import { searchRouter } from "./search";
 
 const router = Router();
 
@@ -19,5 +20,6 @@ router.get(
 router.use("/auth", authRouter);
 router.use("/post", postRouter);
 router.use("/scrap", scrapRouter);
+router.use("/search", searchRouter);
 
 export { router };

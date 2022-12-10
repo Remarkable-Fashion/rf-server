@@ -2,7 +2,7 @@ import { Router, type Request, type Response } from "express";
 import passport from "passport";
 import axios from "axios";
 import { conf } from "../config";
-import { getRedis } from "../db/redis";
+import { redis } from "../db/redis";
 import { refreshJwt } from "../domains/auth/controller/refresh-jwt";
 import { controllerHandler } from "../lib/controller-handler";
 import { refresh, sign } from "../lib/jwt";
@@ -17,7 +17,7 @@ function setCookieAndRedirect() {
 
         const accessToken = sign(req.user);
         const refreshToken = refresh();
-        getRedis().SET(String(req.user.id), refreshToken, { EX: REFRESH_TOKEN_EXPIRES });
+        redis.SET(String(req.user.id), refreshToken, { EX: REFRESH_TOKEN_EXPIRES });
 
         res.setHeader("x-auth-cookie", accessToken);
         res.setHeader("x-auth-cookie-refresh", refreshToken);
@@ -41,7 +41,7 @@ authRouter.get(
 
         const accessToken = sign(req.user);
         const refreshToken = refresh();
-        getRedis().SET(String(req.user.id), refreshToken, { EX: REFRESH_TOKEN_EXPIRES });
+        redis.SET(String(req.user.id), refreshToken, { EX: REFRESH_TOKEN_EXPIRES });
 
         res.setHeader("x-auth-cookie", accessToken);
         res.setHeader("x-auth-cookie-refresh", refreshToken);
