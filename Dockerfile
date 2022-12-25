@@ -16,6 +16,9 @@ RUN npm run db:generate
 RUN npm run build
 # RUN npx prisma generate
 
+RUN chmod 777 /app/node_modules/.prisma/client/index.js
+RUN chown -R node:node /app/node_modules/.prisma
+
 RUN mkdir logs
 RUN chmod -R 777 /app/logs
 # RUN npx prisma push
