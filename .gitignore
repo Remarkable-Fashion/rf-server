@@ -8,3 +8,5 @@ dbdata
 *.pem
 *.crt
 *.key
+
+images
