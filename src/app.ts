@@ -7,6 +7,7 @@ import { dbErrorMiddleware, errorMiddleware } from "./middleware/error";
 import { requestLoggerMiddleware } from "./middleware/log";
 import { router } from "./routes";
 import { conf } from "./config";
+import { apiLimiter } from "./middleware/api-rate-limit";
 
 export const startApp = () => {
     const app = express();
@@ -20,6 +21,8 @@ export const startApp = () => {
 
     app.use(passport.initialize());
     app.use(passport.session());
+
+    app.use('/rf', apiLimiter)
 
     app.use(requestLoggerMiddleware);
 
