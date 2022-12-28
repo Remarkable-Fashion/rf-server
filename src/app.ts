@@ -32,7 +32,9 @@ export const startApp = () => {
         res.send("pong");
     });
 
-    app.use("/api/v1", router);
+    app.use("/rf", express.static(conf().IMAGES_DIR_PATH));
+
+    app.use("/rf/api/v1", router);
 
     app.use("*", (req, res) => {
         res.status(404).json({ msg: "404" });

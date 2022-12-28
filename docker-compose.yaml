@@ -47,7 +47,7 @@ services:
         restart: always
         command: npm run start:dev
         ports:
-            - 3000:${PORT}
+            - ${PORT}:${PORT}
         depends_on:
             mysql:
                 condition: service_healthy
@@ -57,23 +57,24 @@ services:
             - .env
         volumes:
             - ./logs:/app/logs
-    caddy:
-        container_name: rf-caddy
-        build:
-            context: ./caddy
-        restart: always
-        ports:
-            - "80:80"
-            - "443:443"
-        volumes:
-            # - ./site:/srv
-            # - ./caddy:/etc/caddy/Caddyfile
-            # - $PWD/site:/srv
-            # - $PWD/caddy:/etc/caddy/Caddyfile
-            - caddy_data:/data
-            - caddy_config:/config
+            - ./images:/app/images
+#     caddy:
+#         container_name: rf-caddy
+#         build:
+#             context: ./caddy
+#         restart: always
+#         ports:
+#             - "80:80"
+#             - "443:443"
+#         volumes:
+#             # - ./site:/srv
+#             # - ./caddy:/etc/caddy/Caddyfile
+#             # - $PWD/site:/srv
+#             # - $PWD/caddy:/etc/caddy/Caddyfile
+#             - caddy_data:/data
+#             - caddy_config:/config
 
-volumes:
-    caddy_data:
-        # external: true
-    caddy_config:
+# volumes:
+#     caddy_data:
+#         # external: true
+#     caddy_config:
