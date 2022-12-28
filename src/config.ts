@@ -29,6 +29,9 @@ export const conf = () => {
         callbackURL: process.env.KAKAO_CALLBACK_URL || "http://localhost:3000/kakao/callback"
     };
 
+    const RATELIMIT_WINDOW = Number(process.env.RATELIMIT_WINDOW) || 15 * 60 * 1000; // 15분
+    const RATELIMIT_MAX = Number(process.env.RATELIMIT_MAX) || 100;
+
     return {
         PORT,
         SESSION_OPTION,
@@ -36,6 +39,8 @@ export const conf = () => {
         JWT_SECRET,
         REDIS_URL,
         CLIENT_DOMAIN,
-        KAKAO_CONFIG
+        KAKAO_CONFIG,
+        RATELIMIT_WINDOW,
+        RATELIMIT_MAX
     };
 };
