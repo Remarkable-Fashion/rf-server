@@ -1,3 +1,5 @@
+import path from "path";
+
 export const conf = () => {
     const PORT = process.env.PORT || 3000;
 
@@ -14,6 +16,11 @@ export const conf = () => {
         }
     };
 
+    // /app/images
+    const IMAGES_DIR_PATH = path.join(process.cwd(), "images");
+    const MAX_FILE_SIZE = process.env.MAX_FILE_SIZE || 600 * 1000; // 600kb
+    const MAX_FILES = process.env.MAX_FILES || 10;
+
     const CORS_CONFIG = {
         origin: "*"
     };
@@ -21,7 +28,7 @@ export const conf = () => {
     const JWT_SECRET = process.env.JWT_SECRET || "wjwjs";
     const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
 
-    const CLIENT_DOMAIN = "http://localhost:3000";
+    const CLIENT_DOMAIN = process.env.CLIENT_DOMAIN || "http://localhost:3000";
 
     const KAKAO_CONFIG = {
         clientID: process.env.KAKAO_CLIENT_ID || "",
@@ -41,6 +48,9 @@ export const conf = () => {
         CLIENT_DOMAIN,
         KAKAO_CONFIG,
         RATELIMIT_WINDOW,
-        RATELIMIT_MAX
+        RATELIMIT_MAX,
+        IMAGES_DIR_PATH,
+        MAX_FILE_SIZE,
+        MAX_FILES
     };
 };
