@@ -20,10 +20,12 @@ export default () => {
 
             if (!user) {
                 const createdUser = await createUser({ email }, prisma);
+                const data = { id: createdUser.id, email: createdUser.email, name: createdUser.name, role: createdUser.meta!.role };
 
-                return cb(null, { ...createdUser, accessToken });
+                return cb(null, { ...data, accessToken });
             }
-            return cb(null, { ...user, accessToken });
+            const data = { id: user.id, email: user.email, name: user.name, role: user.meta!.role };
+            return cb(null, { ...data, accessToken });
         })
     );
 };

@@ -7,6 +7,7 @@ import { refreshJwt } from "../domains/auth/controller/refresh-jwt";
 import { controllerHandler } from "../lib/controller-handler";
 import { refresh, sign } from "../lib/jwt";
 import { BadReqError, UnauthorizedError } from "../lib/http-error";
+import { authRole } from "../middleware/auth";
 
 const REFRESH_TOKEN_EXPIRES = 60 * 60 * 24 * 14; // 2주
 function setCookieAndRedirect() {
@@ -34,10 +35,31 @@ authRouter.get("/test", (req, res) => {
     res.json({ msg: "auth test" });
 });
 
+authRouter.get("/test-role-1", authRole("User"), (req, res) => {
+    res.json({ msg: "auth test" });
+});
+
+authRouter.get(
+    "/test-role-2",
+    (req, res, next) => {
+        req.user = {
+            id: 1,
+            email: "asdf",
+            name: "adsf",
+            role: "User"
+        };
+        next();
+    },
+    authRole("User"),
+    (req, res) => {
+        res.json({ msg: `My Role Is ${req.user?.role}` });
+    }
+);
+
 authRouter.get(
     "/sign-test",
     (req, res) => {
-        req.user = { id: 1, name: "test", email: "test@gmail.com" };
+        req.user = { id: 1, name: "test", email: "test@gmail.com", role: "Admin" };
 
         const accessToken = sign(req.user);
         const refreshToken = refresh();

@@ -1,13 +1,14 @@
 import { Users } from "@prisma/client";
 import passport from "passport";
+import { UserWithRole } from "../@types/express";
 import { NotFoundError } from "../lib/http-error";
 import kakao from "./kakao-strategy";
 
 export default () => {
-    passport.serializeUser((user: Users, done) => {
+    passport.serializeUser((user: UserWithRole, done) => {
         return done(null, user);
     });
-    passport.deserializeUser(async (user: Users, done) => {
+    passport.deserializeUser(async (user: UserWithRole, done) => {
         if (!user) {
             return done(new NotFoundError("No User"));
         }

@@ -18,8 +18,8 @@ export const conf = () => {
 
     // /app/images
     const IMAGES_DIR_PATH = path.join(process.cwd(), "images");
-    const MAX_FILE_SIZE = process.env.MAX_FILE_SIZE || 600 * 1000; // 600kb
-    const MAX_FILES = process.env.MAX_FILES || 10;
+    const MAX_FILE_SIZE = Number(process.env.MAX_FILE_SIZE) || 600 * 1000; // 600kb
+    const MAX_FILES = Number(process.env.MAX_FILES) || 10;
 
     const CORS_CONFIG = {
         origin: "*"
