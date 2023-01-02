@@ -17,8 +17,19 @@ model Users {
   favorites Favorites[]
   scraps    Scraps[]
   posts     Posts[]
+  meta      UserMetas?
 
   @@map("users")
+}
+
+model UserMetas {
+  id   Int  @id @default(autoincrement()) @db.UnsignedInt
+  role Role @default(User)
+
+  user    Users @relation(fields: [usersId], references: [id])
+  usersId Int   @unique @map("user_id") @db.UnsignedInt
+
+  @@map("user_metas")
 }
 
 model Posts {
@@ -100,4 +111,11 @@ enum ClothesCategory {
   Bottom
   Acc
   Shoe
+}
+
+enum Role {
+  SuperAdmin
+  Admin
+  User
+  Etc
 }
