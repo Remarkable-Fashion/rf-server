@@ -15,22 +15,27 @@ postRouter.get("/test", (req, res) => {
     res.json({ msg: "post test" });
 });
 
-postRouter.post("/upload-test", (req, res, next) => {
-    req.user = {
-        id: 10,
-        name: "Asdf",
-        email: "asdf"
-    };
-    req.id = 10;
-    next();
-}, upload.fields([{name: "test"}]), (req, res) => {
-    const files = (req.files as { [fieldName: string]: Express.Multer.File[]}).test
-    const filesName = files.map( f=> conf().CLIENT_DOMAIN + "/" + f.filename )
+postRouter.post(
+    "/upload-test",
+    (req, res, next) => {
+        req.user = {
+            id: 10,
+            name: "Asdf",
+            email: "asdf",
+            role: "User"
+        };
+        req.id = 10;
+        next();
+    },
+    upload.fields([{ name: "test" }]),
+    (req, res) => {
+        const files = (req.files as { [fieldName: string]: Express.Multer.File[] }).test;
+        const filesName = files.map((f) => conf().CLIENT_DOMAIN + "/" + f.filename);
 
-    res.json({ msg: "post test", filesName, body: req.body.name });
-});
-
-postRouter.post("/", authJWT, upload.fields([{name: "images"}]), controllerHandler(createPost));
+        res.json({ msg: "post test", filesName, body: req.body.name });
+    }
+);
+postRouter.post("/", authJWT, upload.fields([{ name: "images" }]), controllerHandler(createPost));
 postRouter.post("/:id/favorite", authJWT, controllerHandler(createFavorite));
 postRouter.delete("/:id/favorite/:favoriteId", authJWT, controllerHandler(deleteFavorite));
 
