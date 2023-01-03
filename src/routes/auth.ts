@@ -46,7 +46,8 @@ authRouter.get(
             id: 1,
             email: "asdf",
             name: "adsf",
-            role: "User"
+            role: "User",
+            type: "Kakao"
         };
         next();
     },
@@ -59,7 +60,7 @@ authRouter.get(
 authRouter.get(
     "/sign-test",
     (req, res) => {
-        req.user = { id: 1, name: "test", email: "test@gmail.com", role: "Admin" };
+        req.user = { id: 1, name: "test", email: "test@gmail.com", role: "Admin", type: "Kakao" };
 
         const accessToken = sign(req.user);
         const refreshToken = refresh();

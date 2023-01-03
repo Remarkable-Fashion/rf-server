@@ -1,4 +1,4 @@
-import { Users } from "@prisma/client";
+// import { Users } from "@prisma/client";
 import passport from "passport";
 import { UserWithRole } from "../@types/express";
 import { NotFoundError } from "../lib/http-error";
