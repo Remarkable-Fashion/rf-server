@@ -22,7 +22,8 @@ postRouter.post(
             id: 10,
             name: "Asdf",
             email: "asdf",
-            role: "User"
+            role: "User",
+            type: "Kakao"
         };
         req.id = 10;
         next();
@@ -30,7 +31,7 @@ postRouter.post(
     upload.fields([{ name: "test" }]),
     (req, res) => {
         const files = (req.files as { [fieldName: string]: Express.Multer.File[] }).test;
-        const filesName = files.map((f) => conf().CLIENT_DOMAIN + "/" + f.filename);
+        const filesName = files.map((f) => `${conf().CLIENT_DOMAIN}/${f.filename}`);
 
         res.json({ msg: "post test", filesName, body: req.body.name });
     }
