@@ -22,9 +22,9 @@ export const startApp = () => {
     app.use(passport.initialize());
     app.use(passport.session());
 
-    app.set("trust proxy", 1)
+    app.set("trust proxy", 1);
 
-    app.use('/rf', apiLimiter)
+    app.use("/rf", apiLimiter);
 
     app.use(requestLoggerMiddleware);
 

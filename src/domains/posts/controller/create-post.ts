@@ -25,13 +25,12 @@ export const createPost = async (req: Request<unknown, unknown, ReqBody>, res: R
 
     // @Check this issue : https://stackoverflow.com/questions/57631753/how-to-properly-handle-req-files-in-node-post-request-using-multer-and-typescrip#answer-70799312
     // const files = (req.files as { [fieldName: string]: Express.Multer.File[]}).images
-    const imgUrls = (req.files as { [fieldName: string]: Express.Multer.File[]}).images
-        .map(f=> conf().CLIENT_DOMAIN + f.filename)
+    const imgUrls = (req.files as { [fieldName: string]: Express.Multer.File[] }).images.map((f) => conf().CLIENT_DOMAIN + f.filename);
 
-    if(!imgUrls || imgUrls.length < 1){
+    if (!imgUrls || imgUrls.length < 1) {
         throw new BadReqError("There must be at least one image");
     }
-    
+
     const data = { userId: req.id, ...req.body, imgUrls };
     const post = await createPostService(data, Prisma);
 

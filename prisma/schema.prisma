@@ -18,8 +18,24 @@ model Users {
   scraps    Scraps[]
   posts     Posts[]
   meta      UserMetas?
+  profile   Profile?
+  socials   Socials[]
 
   @@map("users")
+}
+
+model Profile {
+  id Int @id @default(autoincrement()) @db.UnsignedInt
+
+  sex          String?
+  height       Int?
+  weight       Int?
+  introduction String?
+
+  user   Users @relation(fields: [userId], references: [id])
+  userId Int   @unique @map("user_id") @db.UnsignedInt
+
+  @@map("profiles")
 }
 
 model UserMetas {
@@ -30,6 +46,18 @@ model UserMetas {
   usersId Int   @unique @map("user_id") @db.UnsignedInt
 
   @@map("user_metas")
+}
+
+model Socials {
+  id       Int        @id @default(autoincrement()) @db.UnsignedInt
+  type     SocialType
+  socialId String     @map("social_id")
+
+  user   Users @relation(fields: [userId], references: [id])
+  userId Int   @unique @map("user_id") @db.UnsignedInt
+
+  @@unique([type, socialId])
+  @@map("socials")
 }
 
 model Posts {
@@ -117,5 +145,11 @@ enum Role {
   SuperAdmin
   Admin
   User
+  Etc
+}
+
+enum SocialType {
+  Google
+  Kakao
   Etc
 }
