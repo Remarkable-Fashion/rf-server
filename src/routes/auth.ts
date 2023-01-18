@@ -8,6 +8,7 @@ import { controllerHandler } from "../lib/controller-handler";
 import { refresh, sign } from "../lib/jwt";
 import { BadReqError, UnauthorizedError } from "../lib/http-error";
 import { authRole } from "../middleware/auth";
+import { UserWithRole } from "../@types/express";
 
 const REFRESH_TOKEN_EXPIRES = 60 * 60 * 24 * 14; // 2주
 function setCookieAndRedirect() {
@@ -48,7 +49,7 @@ authRouter.get(
             name: "adsf",
             role: "User",
             type: "Kakao"
-        };
+        } as UserWithRole;
         next();
     },
     authRole("User"),
@@ -60,7 +61,7 @@ authRouter.get(
 authRouter.get(
     "/sign-test",
     (req, res) => {
-        req.user = { id: 1, name: "test", email: "test@gmail.com", role: "Admin", type: "Kakao" };
+        req.user = { id: 1, name: "test", email: "test@gmail.com", role: "Admin", type: "Kakao" } as UserWithRole;
 
         const accessToken = sign(req.user);
         const refreshToken = refresh();

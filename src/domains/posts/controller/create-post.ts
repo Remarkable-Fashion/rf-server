@@ -3,15 +3,24 @@ import type { Request, Response } from "express";
 import Prisma from "../../../db/prisma";
 import { createPost as createPostService } from "../service/create-post";
 import { Clothes } from "../types";
-import { BadReqError } from "../../../lib/http-error";
+import { BadReqError, UnauthorizedError } from "../../../lib/http-error";
 import { conf } from "../../../config";
+import { Season, Style, Tpo } from "@prisma/client";
 
-type ReqBody = {
+export type ReqBody = {
     title: string;
     description: string;
     // imgUrls: string[];
     clothes?: Clothes[];
+    tpo?: Tpo
+    season?: Season
+    style?: Style
+    isPublic?: boolean
+    sex?: string
+    // sex?: "woman" | "man"
 };
+
+
 
 export const createPost = async (req: Request<unknown, unknown, ReqBody>, res: Response) => {
     const { success, errors } = TSON.validate<ReqBody>(req.body);
@@ -31,7 +40,16 @@ export const createPost = async (req: Request<unknown, unknown, ReqBody>, res: R
         throw new BadReqError("There must be at least one image");
     }
 
-    const data = { userId: req.id, ...req.body, imgUrls };
+    if(!req.user){
+        throw new UnauthorizedError("Check your user")
+    }
+
+    const sex = req.body.sex || req.user.profile.sex
+    if(!sex){
+        throw new BadReqError("Check your user profile field, sex");
+    }
+
+    const data = { userId: req.id, ...req.body, imgUrls, sex };
     const post = await createPostService(data, Prisma);
 
     res.status(200).json(post);

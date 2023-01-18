@@ -1,8 +1,9 @@
 import { type PrismaClient } from "@prisma/client";
-import { Clothes } from "../types";
+import { ReqBody } from "../controller/create-post";
 
+type CreatePost = ReqBody & { imgUrls: string[], userId: number }
 export const createPost = (
-    { userId, title, description, imgUrls, clothes }: { userId: number; title: string; description: string; imgUrls: string[]; clothes?: Clothes[] },
+    { userId, title, description, imgUrls, clothes, tpo, season, style, isPublic, sex }: CreatePost,
     prisma: PrismaClient
 ) => {
     const isClosthes = clothes && clothes.length > 0;
@@ -13,13 +14,23 @@ export const createPost = (
             title: true,
             description: true,
             images: true,
-            clothes: true
+            clothes: true,
+            tpo: true,
+            season: true,
+            style: true,
+            isPublic: true,
+            sex: true
             // ...(isClosthes && { clothes: true })
         },
         data: {
             userId,
             title,
             description,
+            ...(tpo && { tpo }),
+            ...(season && { season }),
+            ...(style && { style }),
+            ...(isPublic && { isPublic }),
+            ...(sex && { sex }),
             images: {
                 create: imgUrls.map((url) => ({ url }))
             },

@@ -8,6 +8,7 @@ import { controllerHandler } from "../lib/controller-handler";
 import { authJWT } from "../middleware/auth";
 import { conf } from "../config";
 import { upload } from "../middleware/upload";
+import { UserWithRole } from "../@types/express";
 
 const postRouter = Router();
 
@@ -23,8 +24,8 @@ postRouter.post(
             name: "Asdf",
             email: "asdf",
             role: "User",
-            type: "Kakao"
-        };
+            type: "Kakao",
+        } as UserWithRole;
         req.id = 10;
         next();
     },

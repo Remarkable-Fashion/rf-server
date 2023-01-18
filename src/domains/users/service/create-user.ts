@@ -9,6 +9,9 @@ export const createUser = (data: { user: {name?: string; email: string}, social:
             },
             meta: {
                 create: { role: data.meta.role }
+            },
+            profile: {
+                create: {}
             }
         },
         select: {
@@ -19,7 +22,8 @@ export const createUser = (data: { user: {name?: string; email: string}, social:
                 select: {
                     role: true
                 }
-            }
+            },
+            profile: true
         }
     });
 };
