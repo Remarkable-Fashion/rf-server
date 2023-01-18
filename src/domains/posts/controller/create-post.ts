@@ -5,12 +5,16 @@ import { createPost as createPostService } from "../service/create-post";
 import { Clothes } from "../types";
 import { BadReqError } from "../../../lib/http-error";
 import { conf } from "../../../config";
+import { Season, Style, Tpo } from "@prisma/client";
 
 type ReqBody = {
     title: string;
     description: string;
     // imgUrls: string[];
     clothes?: Clothes[];
+    tpo?: Tpo
+    season?: Season
+    style?: Style
 };
 
 export const createPost = async (req: Request<unknown, unknown, ReqBody>, res: Response) => {
