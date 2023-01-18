@@ -29,12 +29,12 @@ export default () => {
 
             if (!user) {
                 const createdUser = await createUser({ user: {email}, meta: { role: Role.User }, social: {type: SocialType.Kakao, socialId} }, prisma);
-                const data = { id: createdUser.id, email: createdUser.email, name: createdUser.name, role: createdUser.meta!.role, type: SocialType.Kakao };
+                const data = { id: createdUser.id, email: createdUser.email, name: createdUser.name, role: createdUser.meta!.role, type: SocialType.Kakao, profile: createdUser.profile! };
 
                 return cb(null, { ...data, accessToken });
             }
 
-            const data = { id: user.id, email: user.email, name: user.name, role: user.meta!.role, type: user.socials[0].type };
+            const data = { id: user.id, email: user.email, name: user.name, role: user.meta!.role, type: user.socials[0].type, profile: user.profile! };
             return cb(null, { ...data, accessToken });
         })
     );

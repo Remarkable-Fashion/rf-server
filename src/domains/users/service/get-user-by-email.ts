@@ -21,7 +21,8 @@ export const getUserByEmail = ({ email, type, socialId }: { email: string, type:
                     type: true,
                     socialId: true,
                 }
-            }
+            },
+            profile: true
         }, 
         where: { email } 
     });

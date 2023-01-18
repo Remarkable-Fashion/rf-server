@@ -65,6 +65,13 @@ model Posts {
   title       String @db.VarChar(50)
   description String @db.VarChar(200)
 
+  tpo    Tpo    @default(Etc)
+  season Season @default(Etc)
+  style  Style  @default(Etc)
+
+  sex      String? @db.VarChar(10)
+  isPublic Boolean @default(true) @map("is_public")
+
   user   Users @relation(fields: [userId], references: [id])
   userId Int   @map("user_id") @db.UnsignedInt
 
@@ -151,5 +158,32 @@ enum Role {
 enum SocialType {
   Google
   Kakao
+  Etc
+}
+
+enum Tpo {
+  Occean
+  Travel
+  Date
+  Wedding
+  Campus
+  Work
+  Daily
+  Etc
+}
+
+enum Season {
+  Spring
+  Summer
+  Fall
+  Winter
+  Etc
+}
+
+enum Style {
+  Classic
+  Dandy
+  Street
+  Retro
   Etc
 }

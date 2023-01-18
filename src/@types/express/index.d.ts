@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
-import { Roles, SocialType, Users } from "@prisma/client";
+import { Profile, Roles, SocialType, Users } from "@prisma/client";
 
 export {};
 
 // export type UserWithRole = Users & {role: Pick<Roles, "role">};
-export type UserWithRole = Users & Pick<Roles, "role"> & { type: SocialType };
+export type UserWithRole = Users & Pick<Roles, "role"> & { type: SocialType; profile: Profile };
 
 declare global {
     namespace Express {
