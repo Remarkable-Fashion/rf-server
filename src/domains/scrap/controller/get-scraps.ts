@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import TSON from "typescript-json";
+import TSON from "typia";
 import Prisma from "../../../db/prisma";
 import { BadReqError } from "../../../lib/http-error";
 import { getScraps as getScrapsService } from "../service/get-scraps";
