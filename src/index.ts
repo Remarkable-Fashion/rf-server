@@ -5,6 +5,6 @@ if (require.main === module) {
     const app = startApp();
 
     app.listen(conf().PORT, () => {
-        console.log("Omakase Server has opened!");
+        console.log("rf Server has opened!");
     });
 }
