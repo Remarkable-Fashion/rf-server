@@ -1,4 +1,4 @@
-import TSON from "typescript-json";
+import TSON from "typia";
 import type { Request, Response } from "express";
 import Prisma from "../../../db/prisma";
 import { createPost as createPostService } from "../service/create-post";

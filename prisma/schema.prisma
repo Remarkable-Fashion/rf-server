@@ -27,7 +27,7 @@ model Users {
 model Profile {
   id Int @id @default(autoincrement()) @db.UnsignedInt
 
-  sex          String?
+  sex          Sex?
   height       Int?
   weight       Int?
   introduction String?
@@ -186,4 +186,9 @@ enum Style {
   Street
   Retro
   Etc
+}
+
+enum Sex {
+  Male
+  Female
 }
