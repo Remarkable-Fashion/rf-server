@@ -1,7 +1,17 @@
-import { type PrismaClient } from "@prisma/client";
-import { ReqBody } from "../controller/create-post";
+import { Clothes, Season, Sex, Style, Tpo, type PrismaClient } from "@prisma/client";
+// import { ReqBody } from "../controller/create-post";
 
-type CreatePost = ReqBody & { imgUrls: string[], userId: number }
+export type CreatePostBody = {
+    title: string;
+    description: string;
+    clothes?: Clothes[];
+    tpo?: Tpo
+    season?: Season
+    style?: Style
+    isPublic?: boolean
+    sex?: Sex
+};
+export type CreatePost = CreatePostBody & { imgUrls: string[], userId: number }
 export const createPost = (
     { userId, title, description, imgUrls, clothes, tpo, season, style, isPublic, sex }: CreatePost,
     prisma: PrismaClient
