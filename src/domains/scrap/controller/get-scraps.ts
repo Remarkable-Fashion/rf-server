@@ -8,14 +8,23 @@ type ReqQuerys = {
     take?: string;
     cursorId?: string;
 };
+
+const DEFAULT_TAKE = 12;
+const DEFAULT_CURSUR = 1;
+
 export const getScraps = async (req: Request<unknown, unknown, unknown, ReqQuerys>, res: Response) => {
-    const { success, errors } = TSON.validate<{ take: number; cursorId: number }>(req.params);
-    if (!success) {
-        throw new BadReqError(TSON.stringify(errors));
+    const result = TSON.validate<ReqQuerys>(req.params);
+    // const { success, errors } = TSON.validate<{ take: number; cursorId: number }>(req.params);
+    if (!result.success) {
+        throw new BadReqError(TSON.stringify(result.errors));
     }
 
-    const take = req.query.take ? Number(req.query.take) : 12;
-    const cursorId = req.query.cursorId ? Number(req.query.cursorId) : 1;
+    
+
+    // const take = req.query.take ? Number(req.query.take) : DEFAULT_TAKE;
+    const take = result.data.take ? Number(result.data.take) : DEFAULT_TAKE;
+    // const cursorId = req.query.cursorId ? Number(req.query.cursorId) : DEFAULT_CURSUR;
+    const cursorId = result.data.cursorId ? Number(result.data.cursorId) : DEFAULT_CURSUR;
 
     const scraps = await getScrapsService({ cursorId, take, userId: Number(req.id) }, Prisma);
 
