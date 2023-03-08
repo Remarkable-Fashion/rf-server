@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
-import TSON from "typia";
-import { BadReqError, UnauthorizedError } from "../../../lib/http-error";
+import { UnauthorizedError } from "../../../lib/http-error";
 import Prisma from "../../../db/prisma";
 import {UpdateProfile, updateUser as updateUserService} from "../service/update-user"
+import TSON from "typia"
+import { validateBody } from "../../../lib/validate-body";
 
 export const updateUser = async (req: Request<{id: string}, unknown, unknown>, res: Response) => {
 
@@ -10,11 +11,8 @@ export const updateUser = async (req: Request<{id: string}, unknown, unknown>, r
         throw new UnauthorizedError()
     }
 
-    const rv = TSON.validateEquals<UpdateProfile>(req.body);
-    if (!rv.success) {
-        throw new BadReqError(TSON.stringify(rv.errors));
-    }
-    
-    const user = await updateUserService(req.user.id, rv.data, Prisma);
+    const rv = validateBody(TSON.createValidateEquals<UpdateProfile>())(req.body)
+
+    const user = await updateUserService(req.user.id, rv, Prisma);
     res.json(user);
 }
