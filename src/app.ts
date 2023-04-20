@@ -8,6 +8,7 @@ import { requestLoggerMiddleware } from "./middleware/log";
 import { router } from "./routes";
 import { conf } from "./config";
 import { apiLimiter } from "./middleware/api-rate-limit";
+import flash from "connect-flash"
 
 export const startApp = () => {
     const app = express();
@@ -18,6 +19,7 @@ export const startApp = () => {
 
     passportConfig();
     app.use(session({ ...conf().SESSION_OPTION }));
+    app.use(flash())
 
     app.use(passport.initialize());
     app.use(passport.session());
@@ -37,7 +39,7 @@ export const startApp = () => {
     app.use("/rf/api/v1", router);
 
     app.use("*", (req, res) => {
-        res.status(404).json({ msg: "404" });
+        res.status(404).json({ msg: "Not Found Page" });
     });
 
     app.use(dbErrorMiddleware);

@@ -29,6 +29,7 @@ export const conf = () => {
     const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
 
     const CLIENT_DOMAIN = process.env.CLIENT_DOMAIN || "http://localhost:3000";
+    const SERVER_DOMAIN = process.env.SERVER_DOMAIN || "http://localhost:3000";
 
     const KAKAO_CONFIG = {
         clientID: process.env.KAKAO_CLIENT_ID || "",
@@ -46,6 +47,7 @@ export const conf = () => {
         JWT_SECRET,
         REDIS_URL,
         CLIENT_DOMAIN,
+        SERVER_DOMAIN,
         KAKAO_CONFIG,
         RATELIMIT_WINDOW,
         RATELIMIT_MAX,
