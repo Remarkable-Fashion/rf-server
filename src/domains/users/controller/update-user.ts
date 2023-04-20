@@ -5,7 +5,7 @@ import {UpdateProfile, updateUser as updateUserService} from "../service/update-
 import TSON from "typia"
 import { validateBody } from "../../../lib/validate-body";
 
-export const updateUser = async (req: Request<{id: string}, unknown, unknown>, res: Response) => {
+export const updateUser = async (req: Request<{id?: string}, unknown, unknown>, res: Response) => {
 
     if(req.user?.id !== Number(req.params.id)){
         throw new UnauthorizedError()
