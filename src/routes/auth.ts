@@ -9,6 +9,7 @@ import { refresh, sign } from "../lib/jwt";
 import { BadReqError, UnauthorizedError } from "../lib/http-error";
 import { authRole } from "../middleware/auth";
 import { UserWithRole } from "../@types/express";
+import { KakaoStrategyError } from "../passports/kakao-strategy";
 
 const REFRESH_TOKEN_EXPIRES = 60 * 60 * 24 * 14; // 2주
 function setCookieAndRedirect() {
@@ -26,7 +27,8 @@ function setCookieAndRedirect() {
         // res.cookie("x-auth-cookie", accessToken);
         // res.cookie("x-auth-cookie-refresh", refreshToken);
 
-        res.redirect(conf().CLIENT_DOMAIN);
+        // res.redirect(conf().CLIENT_DOMAIN);
+        res.json({success: true})
     };
 }
 
@@ -80,7 +82,9 @@ authRouter.get("/refresh", controllerHandler(refreshJwt));
 
 authRouter.get(
     "/kakao",
-    passport.authenticate("kakao")
+    passport.authenticate("kakao", {
+        failureRedirect: `${conf().SERVER_DOMAIN}/api/v1/auth/logout`
+    })
     // passport.authenticate("kakao", {
     //   scope: []
     // })
@@ -89,7 +93,9 @@ authRouter.get(
 authRouter.get(
     "/kakao/callback",
     passport.authenticate("kakao", {
-        failureRedirect: `${conf().CLIENT_DOMAIN}/login`
+        // failureRedirect: "http://localhost/logout",
+        failureFlash: true,
+        failureRedirect: `${conf().SERVER_DOMAIN}/api/v1/auth/logout`
     }),
     setCookieAndRedirect()
     // (_, res) => {
@@ -100,7 +106,7 @@ authRouter.get(
 authRouter.get(
     "/logout",
     controllerHandler(async (req: Request, res: Response) => {
-        const KAKAO_ACCESS_TOKEN = req.user?.accessToken;
+        const KAKAO_ACCESS_TOKEN = req.user?.accessToken || req.flash(KakaoStrategyError)[0];
         if (KAKAO_ACCESS_TOKEN) {
             await axios({
                 method: "POST",
