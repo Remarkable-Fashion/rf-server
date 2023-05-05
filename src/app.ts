@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import session from "express-session";
+import flash from "connect-flash";
 import passport from "passport";
 import passportConfig from "./passports";
 import { dbErrorMiddleware, errorMiddleware } from "./middleware/error";
@@ -8,7 +9,6 @@ import { requestLoggerMiddleware } from "./middleware/log";
 import { router } from "./routes";
 import { conf } from "./config";
 import { apiLimiter } from "./middleware/api-rate-limit";
-import flash from "connect-flash"
 
 export const startApp = () => {
     const app = express();
@@ -19,7 +19,7 @@ export const startApp = () => {
 
     passportConfig();
     app.use(session({ ...conf().SESSION_OPTION }));
-    app.use(flash())
+    app.use(flash());
 
     app.use(passport.initialize());
     app.use(passport.session());
