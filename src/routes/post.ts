@@ -9,6 +9,7 @@ import { authJWT } from "../middleware/auth";
 import { conf } from "../config";
 import { upload } from "../middleware/upload";
 import { UserWithRole } from "../@types/express";
+import { getRandomPosts } from "../domains/posts/controller/get-random-posts";
 
 const postRouter = Router();
 
@@ -24,7 +25,7 @@ postRouter.post(
             name: "Asdf",
             email: "asdf",
             role: "User",
-            type: "Kakao",
+            type: "Kakao"
         } as UserWithRole;
         req.id = 10;
         next();
@@ -37,6 +38,9 @@ postRouter.post(
         res.json({ msg: "post test", filesName, body: req.body.name });
     }
 );
+
+postRouter.get("/", authJWT, controllerHandler(getRandomPosts));
+
 postRouter.post("/", authJWT, upload.fields([{ name: "images" }]), controllerHandler(createPost));
 postRouter.post("/:id/favorite", authJWT, controllerHandler(createFavorite));
 postRouter.delete("/:id/favorite/:favoriteId", authJWT, controllerHandler(deleteFavorite));

@@ -9,3 +9,5 @@ export type Clothes = {
     imageUrl?: string | null;
     siteUrl?: string | null;
 };
+
+export const PRE_FIX = "post";

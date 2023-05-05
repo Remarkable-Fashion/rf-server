@@ -5,17 +5,14 @@ export type CreatePostBody = {
     title: string;
     description: string;
     clothes?: Clothes[];
-    tpo?: Tpo
-    season?: Season
-    style?: Style
-    isPublic?: boolean
-    sex?: Sex
+    tpo?: Tpo;
+    season?: Season;
+    style?: Style;
+    isPublic?: boolean;
+    sex?: Sex;
 };
-export type CreatePost = CreatePostBody & { imgUrls: string[], userId: number }
-export const createPost = (
-    { userId, title, description, imgUrls, clothes, tpo, season, style, isPublic, sex }: CreatePost,
-    prisma: PrismaClient
-) => {
+export type CreatePost = CreatePostBody & { imgUrls: string[]; userId: number };
+export const createPost = ({ userId, title, description, imgUrls, clothes, tpo, season, style, isPublic, sex }: CreatePost, prisma: PrismaClient) => {
     const isClosthes = clothes && clothes.length > 0;
     return prisma.posts.create({
         select: {
