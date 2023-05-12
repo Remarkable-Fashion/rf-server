@@ -8,7 +8,9 @@ import { validateBody } from "../../../lib/validate-body";
 import { mongo } from "../../../db/mongodb";
 import { createPostMongo as createPostMongoService } from "../service/create-post-mongo";
 import { createYearMonthString } from "../../../lib/create-date";
-import { PRE_FIX } from "../types";
+import { POST_PRE_FIX } from "../types";
+import { createCollectionName } from "../create-collection-name";
+
 
 export const createPost = async (req: Request<unknown, unknown, CreatePostBody>, res: Response) => {
     if (!req.user) {
@@ -42,7 +44,7 @@ export const createPost = async (req: Request<unknown, unknown, CreatePostBody>,
      * collection 이름을 동적 생성.
      * 배치잡을 통해 6개월이 지난 collection 일괄 삭제.
      */
-    const collectionName = `${PRE_FIX}-${createYearMonthString()}`;
+    const collectionName = createCollectionName(createYearMonthString(), POST_PRE_FIX);
     await createPostMongoService({ mysqlId, ..._post }, mongo.Db, collectionName);
 
     res.status(200).json(post);

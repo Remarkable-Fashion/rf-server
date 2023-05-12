@@ -1,15 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import { MongoClient, Db } from "mongodb";
 import { conf } from "../config";
-
-function createDate() {
-    const date = new Date();
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const result = `${year}-${month}`;
-
-    return result;
-}
+import { createYearMonthString } from "../lib/create-date";
 
 class Mongo {
     private readonly client;
@@ -90,7 +82,7 @@ if (require.main === module) {
         //     .toArray();
         // console.log("searchResults :", searchResults);
 
-        const yearAndMonth = createDate();
+        const yearAndMonth = createYearMonthString();
         console.log(yearAndMonth);
 
         const preFix = "post";

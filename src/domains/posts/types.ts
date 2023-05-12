@@ -10,4 +10,4 @@ export type Clothes = {
     siteUrl?: string | null;
 };
 
-export const PRE_FIX = "post";
+export const POST_PRE_FIX = "post";
