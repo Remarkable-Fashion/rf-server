@@ -5,11 +5,20 @@ import { createScrap } from "../domains/posts/controller/create-scrap";
 import { deleteFavorite } from "../domains/posts/controller/delete-favorite";
 import { deleteScrap } from "../domains/posts/controller/delete-scrap";
 import { controllerHandler } from "../lib/controller-handler";
-import { authJWT } from "../middleware/auth";
+import { authJWT, authTest } from "../middleware/auth";
 import { conf } from "../config";
 import { upload } from "../middleware/upload";
-import { UserWithRole } from "../@types/express";
 import { getRandomPosts } from "../domains/posts/controller/get-random-posts";
+import { BadReqError } from "../lib/http-error";
+import { CreatePost } from "../domains/posts/service/create-post";
+import Prisma from "../db/prisma";
+import { mongo } from "../db/mongodb";
+import { createCollectionName } from "../domains/posts/create-collection-name";
+import { createYearMonthString } from "../lib/create-date";
+import { POST_PRE_FIX } from "../domains/posts/types";
+import { createPost as createPostService } from "../domains/posts/service/create-post";
+import { createPostMongo as createPostMongoService } from "../domains/posts/service/create-post-mongo";
+import { apiLimiterFunc } from "../middleware/api-rate-limit";
 
 const postRouter = Router();
 
@@ -17,31 +26,43 @@ postRouter.get("/test", (req, res) => {
     res.json({ msg: "post test" });
 });
 
-postRouter.post(
-    "/upload-test",
-    (req, res, next) => {
-        req.user = {
-            id: 10,
-            name: "Asdf",
-            email: "asdf",
-            role: "User",
-            type: "Kakao"
-        } as unknown as UserWithRole;
-        req.id = 10;
-        next();
-    },
-    upload.fields([{ name: "test" }]),
-    (req, res) => {
-        const files = (req.files as { [fieldName: string]: Express.Multer.File[] }).test;
-        const filesName = files.map((f) => `${conf().CLIENT_DOMAIN}/${f.filename}`);
-
-        res.json({ msg: "post test", filesName, body: req.body.name });
-    }
-);
-
 postRouter.get("/", authJWT, controllerHandler(getRandomPosts));
+postRouter.get("/public", apiLimiterFunc({ time: 15, max: 1 }), controllerHandler(getRandomPosts));
 
 postRouter.post("/", authJWT, upload.fields([{ name: "images" }]), controllerHandler(createPost));
+postRouter.post(
+    "/upload-test",
+    authTest,
+    upload.fields([{ name: "images" }]),
+    controllerHandler(async (req, res) => {
+        const imgUrls = (req.files as { [fieldName: string]: Express.Multer.File[] }).images.map((f) => conf().CLIENT_DOMAIN + "/" + f.filename);
+
+        if (!imgUrls || imgUrls.length < 1) {
+            throw new BadReqError("There must be at least one image");
+        }
+
+        const sex = req.body.sex || "Male";
+        // const sex = req.body.sex || req.user.profile.sex;
+        if (!sex) {
+            throw new BadReqError("Check your user profile field, sex");
+        }
+
+        const data: CreatePost = { userId: req.id, ...req.body, imgUrls, sex };
+        const post = await createPostService(data, Prisma);
+        const { id: mysqlId, ..._post } = post;
+
+        /**
+         * @TODO collection 이름을 동적 생성.
+         * 배치잡을 통해 6개월이 지난 collection 일괄 삭제.
+         * @TODO2 get-random-posts controller도 같이 수정.
+         */
+        const collectionName = createCollectionName(createYearMonthString(), POST_PRE_FIX);
+        await createPostMongoService({ mysqlId, ..._post }, mongo.Db, collectionName);
+
+        res.status(200).json(post);
+    })
+);
+
 postRouter.post("/:id/favorite", authJWT, controllerHandler(createFavorite));
 postRouter.delete("/:id/favorite/:favoriteId", authJWT, controllerHandler(deleteFavorite));
 
