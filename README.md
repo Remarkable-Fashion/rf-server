@@ -16,3 +16,8 @@ $ docker-compose up --build -d
 
 1. localhost:3000 // http & https 사용
 2. <배포서버ip>.nip.io // https 사용
+
+
+### 배치
+
+1. /src/cron.ts 실행.

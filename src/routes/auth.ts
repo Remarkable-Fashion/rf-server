@@ -28,7 +28,7 @@ function setCookieAndRedirect() {
         // res.cookie("x-auth-cookie-refresh", refreshToken);
 
         // res.redirect(conf().CLIENT_DOMAIN);
-        res.json({success: true})
+        res.json({ success: true });
     };
 }
 
@@ -63,7 +63,7 @@ authRouter.get(
 authRouter.get(
     "/sign-test",
     (req, res) => {
-        req.user = { id: 1, name: "test", email: "test@gmail.com", role: "Admin", type: "Kakao" } as UserWithRole;
+        req.user = { id: 1, name: "test", email: "test@gmail.com", role: "Admin", type: "Kakao" } as unknown as UserWithRole;
 
         const accessToken = sign(req.user);
         const refreshToken = refresh();

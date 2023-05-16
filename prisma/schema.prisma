@@ -140,6 +140,27 @@ model Scraps {
   @@map("scraps")
 }
 
+model Tpos {
+  id        Int       @id @default(autoincrement()) @db.UnsignedInt
+  tpo       Tpo
+  createdAt DateTime  @default(now()) @map("created_at")
+  deletedAt DateTime? @map("deleted_at")
+}
+
+model Seasons {
+  id        Int       @id @default(autoincrement()) @db.UnsignedInt
+  season    Season
+  createdAt DateTime  @default(now()) @map("created_at")
+  deletedAt DateTime? @map("deleted_at")
+}
+
+model Styles {
+  id        Int       @id @default(autoincrement()) @db.UnsignedInt
+  style     Style
+  createdAt DateTime  @default(now()) @map("created_at")
+  deletedAt DateTime? @map("deleted_at")
+}
+
 enum ClothesCategory {
   Outer
   Top
