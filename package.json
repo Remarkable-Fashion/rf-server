@@ -18,7 +18,7 @@
         "db:generate": "npx prisma generate",
         "db:migrate": "npx prisma migrate dev",
         "db:push": "npx prisma db push",
-        "seed": "ts-node ./src/db/seed.ts",
+        "seed": "ts-node ./src/db/seed.ts && ts-node ./src/db/seed2.ts",
         "cron": "node ./dist/cron.js"
     },
     "lint-staged": {
