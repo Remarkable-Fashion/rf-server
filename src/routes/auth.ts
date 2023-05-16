@@ -28,7 +28,7 @@ function setCookieAndRedirect() {
         // res.cookie("x-auth-cookie-refresh", refreshToken);
 
         // res.redirect(conf().CLIENT_DOMAIN);
-        res.json({success: true})
+        res.json({ success: true });
     };
 }
 

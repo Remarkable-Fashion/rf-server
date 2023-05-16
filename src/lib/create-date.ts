@@ -1,6 +1,5 @@
-
 /**
- * 
+ *
  * @returns 예시 `2023-06`
  */
 export function createYearMonthString(day?: Date) {

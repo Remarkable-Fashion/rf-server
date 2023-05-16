@@ -25,7 +25,7 @@ postRouter.post(
             name: "Asdf",
             email: "asdf",
             role: "User",
-            type: "Kakao",
+            type: "Kakao"
         } as unknown as UserWithRole;
         req.id = 10;
         next();

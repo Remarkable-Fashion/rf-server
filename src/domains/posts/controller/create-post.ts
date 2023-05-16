@@ -41,8 +41,9 @@ export const createPost = async (req: Request<unknown, unknown, CreatePostBody>,
     const { id: mysqlId, ..._post } = post;
 
     /**
-     * collection 이름을 동적 생성.
+     * @TODO collection 이름을 동적 생성.
      * 배치잡을 통해 6개월이 지난 collection 일괄 삭제.
+     * @TODO2 get-random-posts controller도 같이 수정.
      */
     const collectionName = createCollectionName(createYearMonthString(), POST_PRE_FIX);
     await createPostMongoService({ mysqlId, ..._post }, mongo.Db, collectionName);
