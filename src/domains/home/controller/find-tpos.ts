@@ -6,5 +6,7 @@ export const findTposController = async (req: Request<unknown, unknown>, res: Re
 
     const tpos = await findTposService(Prisma);
 
-    res.status(200).json(tpos);
+    const tpoList = tpos.map(tpo => tpo.tpo);
+
+    res.status(200).json(tpoList);
 };

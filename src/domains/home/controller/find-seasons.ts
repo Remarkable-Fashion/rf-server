@@ -7,5 +7,7 @@ export const findSeasonsController = async (req: Request<unknown, unknown>, res:
 
     const seasons = await findSeasonsService(Prisma);
 
-    res.status(200).json(seasons);
+    const seasonList = seasons.map(season => season.season)
+
+    res.status(200).json(seasonList);
 };

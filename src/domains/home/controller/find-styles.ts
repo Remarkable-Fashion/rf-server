@@ -7,5 +7,7 @@ export const findStylesController = async (req: Request<unknown, unknown>, res: 
 
     const styles = await findStylesService(Prisma);
 
-    res.status(200).json(styles);
+    const styleList = styles.map(style => style.style)
+
+    res.status(200).json(styleList);
 };
