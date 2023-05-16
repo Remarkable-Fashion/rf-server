@@ -9,3 +9,7 @@ export type Clothes = {
     imageUrl?: string | null;
     siteUrl?: string | null;
 };
+
+export const POST_PRE_FIX = "post";
+
+export const postSex = ["Male", "Female"] as const

@@ -40,6 +40,9 @@ export const conf = () => {
     const RATELIMIT_WINDOW = Number(process.env.RATELIMIT_WINDOW) || 15 * 60 * 1000; // 15분
     const RATELIMIT_MAX = Number(process.env.RATELIMIT_MAX) || 100;
 
+    const MONGO_URI = process.env.MONGO_URI || "";
+    const MONGO_DB = process.env.MONGO_DB || "nana";
+
     return {
         PORT,
         SESSION_OPTION,
@@ -53,6 +56,8 @@ export const conf = () => {
         RATELIMIT_MAX,
         IMAGES_DIR_PATH,
         MAX_FILE_SIZE,
-        MAX_FILES
+        MAX_FILES,
+        MONGO_URI,
+        MONGO_DB
     };
 };
