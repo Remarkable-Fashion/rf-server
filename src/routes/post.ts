@@ -27,7 +27,14 @@ postRouter.get("/test", (req, res) => {
 });
 
 postRouter.get("/", authJWT, controllerHandler(getRandomPosts));
-postRouter.get("/public", apiLimiterFunc({ time: 15, max: 1 }), controllerHandler(getRandomPosts));
+
+/**
+ * 글로벌 api rate limit 카운트와 분리가 안되어 있음.
+ * 글로벌 +1 / `/public` +1 총 2개씩 카운트됨. => 중복 카운트는 해결
+ * 
+ * redis 스토어에 같은 키 이름으로 카운트되지 않게 분리. => keyGen으로 중복 카운트와 같이 해결
+ */
+postRouter.get("/public", apiLimiterFunc({ time: 15, max: 3, postFix: "public" }), controllerHandler(getRandomPosts));
 
 postRouter.post("/", authJWT, upload.fields([{ name: "images" }]), controllerHandler(createPost));
 postRouter.post(

@@ -26,7 +26,9 @@ export const startApp = () => {
 
     app.set("trust proxy", 1);
 
-    app.use("/rf", apiLimiterFunc());
+    app.use("/rf", apiLimiterFunc({
+        skip: [...conf().API_RATE_LIMIT_WHITE_LIST]
+    }));
 
     app.use(requestLoggerMiddleware);
 

@@ -2,6 +2,8 @@ import rateLimit from "express-rate-limit";
 import RedisStore from "rate-limit-redis";
 import { conf } from "../config";
 import { getRedis } from "../db/redis";
+import typia from "typia";
+import { BadReqError } from "../lib/http-error";
 
 type limitOption = {
     /**
@@ -10,8 +12,19 @@ type limitOption = {
     time?: number;
 
     max?: number;
-};
-export const apiLimiterFunc = ({ time, max: _max }: limitOption = {}) => {
+
+    /**
+     * 카운트 되지않을 ip 화이트리스트.
+     */
+    skip?: string[]
+
+    /**
+     * 글로벌 rate 카운트와 분리하고 싶은 경우.
+     */
+    postFix?: string
+}
+
+export const apiLimiterFunc = ({ time, max: _max, skip, postFix }: limitOption = {}) => {
     const windowMs = (time && time * 60 * 1000) || conf().RATELIMIT_WINDOW;
     const max = _max || conf().RATELIMIT_MAX;
 
@@ -20,6 +33,8 @@ export const apiLimiterFunc = ({ time, max: _max }: limitOption = {}) => {
         max, // Limit each IP to 100 requests per `window` (here, per 15 minutes) // 회수
         standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
         legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+        ...(skip && skip.length > 0 ? { skip: (req) => skip.includes(req.ip) }: {}),
+        ...(postFix ? {keyGenerator: (req, res) => `${req.ip}:${postFix || req.path}`} : {}),
         store: new RedisStore({
             sendCommand: (...args: string[]) => getRedis().sendCommand(args)
         }),
