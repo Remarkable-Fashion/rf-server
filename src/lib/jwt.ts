@@ -7,8 +7,8 @@ import { NotFoundError } from "./http-error";
 export { jwt };
 
 const JWT_ALGORITHM = "HS256";
-const ACCESS_TOKEN_EXPIRES = "1h";
-const REFRESH_TOKEN_EXPIRES = "14d";
+const ACCESS_TOKEN_EXPIRES = "1d";
+const REFRESH_TOKEN_EXPIRES = "30d";
 
 export type JwtPayload = { id: number };
 

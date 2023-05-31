@@ -142,23 +142,29 @@ model Scraps {
 
 model Tpos {
   id        Int       @id @default(autoincrement()) @db.UnsignedInt
-  tpo       Tpo
+  tpo       Tpo       @unique
   createdAt DateTime  @default(now()) @map("created_at")
   deletedAt DateTime? @map("deleted_at")
+
+  @@map("tpos")
 }
 
 model Seasons {
   id        Int       @id @default(autoincrement()) @db.UnsignedInt
-  season    Season
+  season    Season    @unique
   createdAt DateTime  @default(now()) @map("created_at")
   deletedAt DateTime? @map("deleted_at")
+
+  @@map("seasons")
 }
 
 model Styles {
   id        Int       @id @default(autoincrement()) @db.UnsignedInt
-  style     Style
+  style     Style     @unique
   createdAt DateTime  @default(now()) @map("created_at")
   deletedAt DateTime? @map("deleted_at")
+
+  @@map("styles")
 }
 
 enum ClothesCategory {
