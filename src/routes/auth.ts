@@ -10,6 +10,7 @@ import { BadReqError, UnauthorizedError } from "../lib/http-error";
 import { authRole } from "../middleware/auth";
 import { UserWithRole } from "../@types/express";
 import { KakaoStrategyError } from "../passports/kakao-strategy";
+import { loginKakao } from "../domains/auth/controller/kakao-login";
 
 const REFRESH_TOKEN_EXPIRES = 60 * 60 * 24 * 14; // 2주
 function setCookieAndRedirect() {
@@ -80,28 +81,34 @@ authRouter.get(
 
 authRouter.get("/refresh", controllerHandler(refreshJwt));
 
-authRouter.get(
-    "/kakao",
-    passport.authenticate("kakao", {
-        failureRedirect: `${conf().SERVER_DOMAIN}/api/v1/auth/logout`
-    })
-    // passport.authenticate("kakao", {
-    //   scope: []
-    // })
-);
+// authRouter.get(
+//     "/kakao",
+//     passport.authenticate("kakao", {
+//         failureRedirect: `${conf().SERVER_DOMAIN}/api/v1/auth/logout`
+//     })
+//     // passport.authenticate("kakao", {
+//     //   scope: []
+//     // })
+// );
+
+// authRouter.get(
+//     "/kakao/callback",
+//     passport.authenticate("kakao", {
+//         // failureRedirect: "http://localhost/logout",
+//         failureFlash: true,
+//         failureRedirect: `${conf().SERVER_DOMAIN}/api/v1/auth/logout`
+//     }),
+//     setCookieAndRedirect()
+//     // (_, res) => {
+//     //   res.redirect(`${CLIENT_DOMAIN}/test`);
+//     // }
+// );
 
 authRouter.get(
-    "/kakao/callback",
-    passport.authenticate("kakao", {
-        // failureRedirect: "http://localhost/logout",
-        failureFlash: true,
-        failureRedirect: `${conf().SERVER_DOMAIN}/api/v1/auth/logout`
-    }),
+    "/kakao",
+    controllerHandler(loginKakao),
     setCookieAndRedirect()
-    // (_, res) => {
-    //   res.redirect(`${CLIENT_DOMAIN}/test`);
-    // }
-);
+)
 
 authRouter.get(
     "/logout",
