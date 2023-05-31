@@ -43,6 +43,8 @@ export const conf = () => {
     const MONGO_URI = process.env.MONGO_URI || "";
     const MONGO_DB = process.env.MONGO_DB || "nana";
 
+    const API_RATE_LIMIT_WHITE_LIST = ["127.0.0.1"]
+
     return {
         PORT,
         SESSION_OPTION,
@@ -58,6 +60,7 @@ export const conf = () => {
         MAX_FILE_SIZE,
         MAX_FILES,
         MONGO_URI,
-        MONGO_DB
+        MONGO_DB,
+        API_RATE_LIMIT_WHITE_LIST
     };
 };

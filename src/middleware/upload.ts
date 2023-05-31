@@ -12,6 +12,12 @@ export const upload = multer({
         filename: (req, file, cb) => {
             const ext = path.extname(file.originalname); // 확장자 추출
 
+            if (!req.id) {
+                throw new Error("Check your auth");
+            }
+            /**
+             * @format "https://wadada.me/rf/10-d8-1684206706483.png"
+             */
             const fileName = `${req.id}-${file.originalname.substring(0, 2)}-${Date.now()}${ext}`;
             cb(null, fileName);
         }

@@ -1,4 +1,5 @@
 import winston from "winston";
+import moment from "moment-timezone";
 
 const LOG_DIR = "logs";
 
@@ -6,7 +7,8 @@ function getRequestLogFormatter() {
     const { combine, timestamp, printf } = winston.format;
 
     return combine(
-        timestamp({ format: "YYYY-MM-DD HH:MM:SS" }),
+        timestamp({ format: () => moment().tz("Asia/Seoul").format("YYYY-MM-DD HH:mm:ss") }),
+        // timestamp({ format: "YYYY-MM-DD HH:MM:SS" }),
         printf((info) => {
             const { req } = info.message;
             return `${info.timestamp} ${info.level}: ${req.hostname}${req.port || ""} ${req.method} '${req.originalUrl}'`;

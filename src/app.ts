@@ -8,7 +8,7 @@ import { dbErrorMiddleware, errorMiddleware } from "./middleware/error";
 import { requestLoggerMiddleware } from "./middleware/log";
 import { router } from "./routes";
 import { conf } from "./config";
-import { apiLimiter } from "./middleware/api-rate-limit";
+import { apiLimiterFunc } from "./middleware/api-rate-limit";
 
 export const startApp = () => {
     const app = express();
@@ -26,7 +26,9 @@ export const startApp = () => {
 
     app.set("trust proxy", 1);
 
-    app.use("/rf", apiLimiter);
+    app.use("/rf", apiLimiterFunc({
+        skip: [...conf().API_RATE_LIMIT_WHITE_LIST]
+    }));
 
     app.use(requestLoggerMiddleware);
 

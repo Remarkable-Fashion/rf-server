@@ -6,6 +6,6 @@ export type ControllerHandle = <TRequest extends Request, TResponse extends Resp
     req: TRequest,
     res: TResponse,
     next: TNextFunction
-) => Promise<any>;
+) => void;
 export const controllerHandler = (fn: ControllerHandle) => (req: Request, res: Response, next: NextFunction) =>
     Promise.resolve(fn(req, res, next)).catch(next);

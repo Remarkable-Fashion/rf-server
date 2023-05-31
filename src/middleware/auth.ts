@@ -2,6 +2,7 @@ import { Role } from "@prisma/client";
 import type { Request, Response, NextFunction } from "express";
 import { UnauthorizedError, BadReqError } from "../lib/http-error";
 import { verify } from "../lib/jwt";
+import { UserWithRole } from "../@types/express";
 
 export const authJWT = (req: Request, res: Response, next: NextFunction) => {
     if (!req.headers.authorization) {
@@ -26,5 +27,17 @@ export const authRole = (role: Role) => (req: Request, res: Response, next: Next
     if (role !== req.user.role) {
         throw new UnauthorizedError(`You Should be ${role}`);
     }
+    next();
+};
+
+export const authTest = (req: Request, res: Response, next: NextFunction) => {
+    req.user = {
+        id: 1,
+        name: "test",
+        email: "test@gmail.com",
+        role: "User",
+        type: "Kakao"
+    } as unknown as UserWithRole;
+    req.id = req.user.id;
     next();
 };
