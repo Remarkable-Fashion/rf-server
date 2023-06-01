@@ -7,8 +7,10 @@ import passportConfig from "./passports";
 import { dbErrorMiddleware, errorMiddleware } from "./middleware/error";
 import { requestLoggerMiddleware } from "./middleware/log";
 import { router } from "./routes";
-import { conf } from "./config";
+import { conf, isProd } from "./config";
 import { apiLimiterFunc } from "./middleware/api-rate-limit";
+import RedisStore from "connect-redis";
+import { getRedis } from "./db/redis";
 
 export const startApp = () => {
     const app = express();
@@ -18,7 +20,17 @@ export const startApp = () => {
     app.use(express.urlencoded({ extended: true }));
 
     passportConfig();
-    app.use(session({ ...conf().SESSION_OPTION }));
+    app.use(session(
+        { ...conf().SESSION_OPTION, 
+            ...( isProd 
+                ? {
+                    store: new RedisStore({
+                        client: getRedis()
+                    })
+                } 
+                : {}
+                ) 
+        }));
     app.use(flash());
 
     app.use(passport.initialize());
@@ -26,7 +38,7 @@ export const startApp = () => {
 
     app.set("trust proxy", 1);
 
-    app.use("/rf", apiLimiterFunc({
+    app.use("/", apiLimiterFunc({
         skip: [...conf().API_RATE_LIMIT_WHITE_LIST]
     }));
 
@@ -36,9 +48,9 @@ export const startApp = () => {
         res.send("pong");
     });
 
-    app.use("/rf", express.static(conf().IMAGES_DIR_PATH));
+    app.use("/", express.static(conf().IMAGES_DIR_PATH));
 
-    app.use("/rf/api/v1", router);
+    app.use("/api/v1", router);
 
     app.use("*", (req, res) => {
         res.status(404).json({ msg: "Not Found Page" });

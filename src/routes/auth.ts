@@ -104,11 +104,7 @@ authRouter.get("/refresh", controllerHandler(refreshJwt));
 //     // }
 // );
 
-authRouter.get(
-    "/kakao",
-    controllerHandler(loginKakao),
-    setCookieAndRedirect()
-)
+authRouter.get("/kakao", controllerHandler(loginKakao), setCookieAndRedirect());
 
 authRouter.get(
     "/logout",

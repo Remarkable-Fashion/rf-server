@@ -1,7 +1,6 @@
 import winston from "winston";
 import moment from "moment-timezone";
-
-const LOG_DIR = "logs";
+import { conf } from "./config";
 
 function getRequestLogFormatter() {
     const { combine, timestamp, printf } = winston.format;
@@ -26,8 +25,8 @@ const logger = winston.createLogger({
         // - Write all logs with importance level of `error` or less to `error.log`
         // - Write all logs with importance level of `info` or less to `combined.log`
         //
-        new winston.transports.File({ filename: `${LOG_DIR}/error.log`, level: "error" }),
-        new winston.transports.File({ filename: `${LOG_DIR}/combined.log` })
+        new winston.transports.File({ filename: `${conf().LOG_DIR}/error.log`, level: "error" }),
+        new winston.transports.File({ filename: `${conf().LOG_DIR}/combined.log` })
     ]
 });
 
