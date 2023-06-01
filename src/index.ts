@@ -1,5 +1,5 @@
 import { startApp } from "./app";
-import { conf } from "./config";
+import { conf, isProd } from "./config";
 import { mongo } from "./db/mongodb";
 
 const main = async () => {
@@ -8,7 +8,7 @@ const main = async () => {
     const app = startApp();
 
     app.listen(conf().PORT, () => {
-        console.log("rf Server has opened!");
+        console.log(`rc Server has opened! : ${ isProd ? "prod" : "dev"}`);
     });
 };
 

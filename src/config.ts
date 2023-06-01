@@ -1,5 +1,6 @@
 import path from "path";
 
+export const isProd = process.env.NODE_ENV === "production";
 export const conf = () => {
     const PORT = process.env.PORT || 3000;
 
@@ -16,8 +17,11 @@ export const conf = () => {
         }
     };
 
+    const LOG_DIR = isProd ? "logs" : "dev-logs";
+
+
     // /app/images
-    const IMAGES_DIR_PATH = path.join(process.cwd(), "images");
+    const IMAGES_DIR_PATH = path.join(process.cwd(), isProd ? "images" : "dev-images");
     const MAX_FILE_SIZE = Number(process.env.MAX_FILE_SIZE) || 600 * 1000; // 600kb
     const MAX_FILES = Number(process.env.MAX_FILES) || 10;
 
@@ -61,6 +65,7 @@ export const conf = () => {
         MAX_FILES,
         MONGO_URI,
         MONGO_DB,
-        API_RATE_LIMIT_WHITE_LIST
+        API_RATE_LIMIT_WHITE_LIST,
+        LOG_DIR
     };
 };

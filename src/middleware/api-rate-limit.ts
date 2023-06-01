@@ -1,6 +1,7 @@
+import { NextFunction, Request, Response } from "express";
 import rateLimit from "express-rate-limit";
 import RedisStore from "rate-limit-redis";
-import { conf } from "../config";
+import { conf, isProd } from "../config";
 import { getRedis } from "../db/redis";
 import typia from "typia";
 import { BadReqError } from "../lib/http-error";
@@ -27,6 +28,12 @@ type limitOption = {
 export const apiLimiterFunc = ({ time, max: _max, skip, postFix }: limitOption = {}) => {
     const windowMs = (time && time * 60 * 1000) || conf().RATELIMIT_WINDOW;
     const max = _max || conf().RATELIMIT_MAX;
+
+    if (!isProd) {
+        return (req: Request, res: Response, next: NextFunction) => {
+            next();
+        };
+    }
 
     return rateLimit({
         windowMs, // 시간당

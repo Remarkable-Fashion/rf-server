@@ -23,6 +23,12 @@ export const createUser = (data: { user: {name?: string; email: string}, social:
                     role: true
                 }
             },
+            socials:{
+                select: {
+                    type: true,
+                    socialId: true
+                }
+            },
             profile: true
         }
     });

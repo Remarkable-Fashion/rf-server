@@ -1,8 +1,11 @@
 dist
 node_modules
 .env
+.env.dev
 logs
 dbdata
+dev-logs
+dev-dbdata
 
 .DS_Store
 *.pem
@@ -10,3 +13,4 @@ dbdata
 *.key
 
 images
+dev-images
