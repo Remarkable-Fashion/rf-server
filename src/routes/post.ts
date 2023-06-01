@@ -27,6 +27,7 @@ postRouter.get("/test", (req, res) => {
 });
 
 postRouter.get("/", authJWT, controllerHandler(getRandomPosts));
+postRouter.get("/public", apiLimiterFunc({ time: 15, max: 1 }), controllerHandler(getRandomPosts));
 
 /**
  * 글로벌 api rate limit 카운트와 분리가 안되어 있음.

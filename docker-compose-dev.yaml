@@ -1,0 +1,65 @@
+version: "3.7"
+services:
+    dev-redis:
+        image: redis:alpine
+        command: redis-server --port 6379
+        container_name: ${REDIS_CONTAINER_NAME}
+        hostname: rc
+        restart: always
+        labels:
+            - "name=redis"
+            - "mode=standalone"
+        ports:
+            - 30001:${REDIS_PORT}
+    dev-mysql:
+        image: mysql:8
+        container_name: ${DB_CONTAINER_NAME}
+        restart: always
+        cap_add:
+            - SYS_NICE
+        ports:
+            - 3310:3306
+        environment:
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            TZ: Asia/Seoul
+        # env_file:
+        #     - .env
+        command:
+            - --character-set-server=utf8mb4
+            - --collation-server=utf8mb4_unicode_ci
+            - --default-authentication-plugin=mysql_native_password
+            - --sql-mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+        volumes:
+            - ./dev-mysql/initdb.d:/docker-entrypoint-initdb.d
+            - ./dev-dbdata:/var/lib/mysql
+        healthcheck:
+            test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root --password=$$MYSQL_ROOT_PASSWORD"]
+            interval: 10s
+            timeout: 2s
+            retries: 100
+    dev-node:
+        container_name: ${NODE_CONTAINER_NAME}
+        build:
+            context: ./
+            dockerfile: Dockerfile.dev
+        restart: always
+        command: npm run start:dev
+        ports:
+            - ${PORT}:${PORT}
+        depends_on:
+            dev-mysql:
+                condition: service_healthy
+        environment:
+            - DATABASE_URL=mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@${DB_CONTAINER_NAME}/${MYSQL_DATABASE}
+        env_file:
+            - .env.dev
+        volumes:
+            - ./dev-logs:/app/dev-logs
+            - ./dev-images:/app/dev-images
+
+networks:
+    default:
+        name: dev-rc-server

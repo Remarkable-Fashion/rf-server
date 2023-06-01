@@ -21,3 +21,9 @@ $ docker-compose up --build -d
 ### 배치
 
 1. /src/cron.ts 실행.
+
+## 실행 환경 분리
+
+prod : docker compose up --build
+
+dev : docker compose -f docker-compose-dev.yaml --env-file ./.env.dev up --build
