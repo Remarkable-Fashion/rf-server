@@ -1,8 +1,8 @@
-import { Clothes, PrismaClient, Tpo, Season, Style } from "@prisma/client";
+import { PrismaClient, Tpo, Season, Style } from "@prisma/client";
 
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient();
 
-const main = async () => {
+export const createTposSeasonsStyles = async (prisma: PrismaClient = new PrismaClient()) => {
     const tpoList = Array.from<Tpo>(["Occean", "Travel", "Date", "Wedding", "Campus", "Work", "Daily", "Etc"]);
     const tpoData = tpoList.map((tpo) => ({ tpo }));
     const tpos = await prisma.tpos.createMany({
@@ -28,12 +28,14 @@ const main = async () => {
     console.log("tpo :", tpos);
     console.log("style :", styles);
     console.log("season :", seasons);
-    console.log("seed2 완료");
-
-    await prisma.$disconnect();
-    process.exit(1);
+    console.log("seed createTposSeasonsStyles 완료");
 };
 
 if (require.main === module) {
-    main();
+    createTposSeasonsStyles().then(
+        // async () => {
+        //     await prisma.$disconnect();
+        //     process.exit(1);
+        // }
+    );
 }

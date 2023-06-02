@@ -31,6 +31,7 @@ model Profile {
   height       Int?
   weight       Int?
   introduction String?
+  avartar      String?
 
   user   Users @relation(fields: [userId], references: [id])
   userId Int   @unique @map("user_id") @db.UnsignedInt

@@ -27,3 +27,10 @@ $ docker-compose up --build -d
 prod : docker compose up --build
 
 dev : docker compose -f docker-compose-dev.yaml --env-file ./.env.dev up --build
+
+* dotenv-cli를 사용한 환경변수 로드
+
+```bash
+$ dotenv -e .env ts-node <file> // prod
+$ dotenv -e .env.dev ts-node <file> // dev
+```

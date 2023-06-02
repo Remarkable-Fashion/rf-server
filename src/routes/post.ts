@@ -19,23 +19,27 @@ import { POST_PRE_FIX } from "../domains/posts/types";
 import { createPost as createPostService } from "../domains/posts/service/create-post";
 import { createPostMongo as createPostMongoService } from "../domains/posts/service/create-post-mongo";
 import { apiLimiterFunc } from "../middleware/api-rate-limit";
+import { getPostById } from "../domains/posts/controller/get-post-by-id";
 
 const postRouter = Router();
 
-postRouter.get("/test", (req, res) => {
-    res.json({ msg: "post test" });
-});
+// postRouter.get("/test", (req, res) => {
+//     res.json({ msg: "post test" });
+// });
+
 
 postRouter.get("/", authJWT, controllerHandler(getRandomPosts));
-postRouter.get("/public", apiLimiterFunc({ time: 15, max: 1 }), controllerHandler(getRandomPosts));
 
 /**
  * 글로벌 api rate limit 카운트와 분리가 안되어 있음.
  * 글로벌 +1 / `/public` +1 총 2개씩 카운트됨. => 중복 카운트는 해결
- * 
+ *
  * redis 스토어에 같은 키 이름으로 카운트되지 않게 분리. => keyGen으로 중복 카운트와 같이 해결
  */
 postRouter.get("/public", apiLimiterFunc({ time: 15, max: 3, postFix: "public" }), controllerHandler(getRandomPosts));
+
+postRouter.get("/test/:id", authTest, controllerHandler(getPostById));
+postRouter.get("/:id", authJWT, controllerHandler(getPostById));
 
 postRouter.post("/", authJWT, upload.fields([{ name: "images" }]), controllerHandler(createPost));
 postRouter.post(
