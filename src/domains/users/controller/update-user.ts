@@ -6,9 +6,11 @@ import TSON from "typia"
 import { validateBody } from "../../../lib/validate-body";
 import { conf } from "../../../config";
 
-export const updateUser = async (req: Request<{id?: string}, unknown, unknown>, res: Response) => {
+export const updateUser = async (req: Request, res: Response) => {
 
-    if(req.user?.id !== Number(req.params.id)){
+    // if(req.id !== Number(req.params.id)){
+    const userId = req.id;
+    if(!userId){
         throw new UnauthorizedError()
     }
 
@@ -18,8 +20,8 @@ export const updateUser = async (req: Request<{id?: string}, unknown, unknown>, 
         throw new BadReqError("There must be one image");
     }
 
-    const rv = validateBody(TSON.createValidateEquals<UpdateProfile>())(req.body)
+    const data = validateBody(TSON.createValidateEquals<UpdateProfile>())(req.body)
 
-    const user = await updateUserService(req.user.id, {...rv, avartar: avartarUrls[0]}, Prisma);
+    const {user} = await updateUserService(userId, {...data, avartar: avartarUrls[0]}, Prisma);
     res.json(user);
 }

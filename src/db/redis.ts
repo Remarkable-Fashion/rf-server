@@ -14,6 +14,41 @@ client.on("error", (err) => console.log("Redis Client Error", err));
 //   await client.connect();
 // };
 
+export class RedisSingleton {
+
+    private static instance: RedisSingleton
+
+    private readonly _client
+    private constructor(url?: string){
+        this._client = redis.createClient({ url: url || conf().REDIS_URL });
+
+        this._client.on("error", (err) => console.log("Redis Client Error", err));
+    }
+
+    // public static async getClient(){
+    //     const instance = await RedisSingleton.getInstance()
+
+    //     return instance._client;
+    // }
+
+    get client() {
+        return this._client;
+    }
+    public static async getInstance(url?: string){
+        if(!RedisSingleton.instance){
+            RedisSingleton.instance = new RedisSingleton(url);
+        }
+
+        // return RedisSingleton.instance.client;
+        return RedisSingleton.instance;
+    }
+
+    async connect(){
+        await this._client.connect();
+    }
+}
+
+
 export const getRedis = () => {
     if (!client) {
         throw new BadReqError("No Connection Redis");

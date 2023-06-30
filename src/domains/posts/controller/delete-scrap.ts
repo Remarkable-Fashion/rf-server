@@ -5,14 +5,14 @@ import { deleteScrap as deleteScrapService } from "../service/delete-scrap";
 
 type ReqParams = {
     id?: string;
-    scrapId?: string;
+    // scrapId?: string;
 };
 export const deleteScrap = async (req: Request<ReqParams, unknown>, res: Response) => {
-    if (!req.params.id || !req.params.scrapId) {
+    if (!req.params.id) {
         throw new BadReqError("No post id OR favorite id");
     }
 
-    const scrap = await deleteScrapService({ userId: Number(req.id), postId: Number(req.params.id), scrapId: Number(req.params.scrapId) }, Prisma);
+    const scrap = await deleteScrapService({ userId: Number(req.id), postId: Number(req.params.id) }, Prisma);
 
     res.status(200).json(scrap);
 };

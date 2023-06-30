@@ -13,7 +13,7 @@ import { createCollectionName } from "../create-collection-name";
 
 
 export const createPost = async (req: Request<unknown, unknown, CreatePostBody>, res: Response) => {
-    if (!req.user) {
+    if (!req.id) {
         throw new UnauthorizedError("Check your user");
     }
 
@@ -31,14 +31,16 @@ export const createPost = async (req: Request<unknown, unknown, CreatePostBody>,
         throw new BadReqError("There must be at least one image");
     }
 
-    const sex = req.body.sex || req.user.profile.sex;
+    const sex = req.body.sex;
+    // const sex = req.body.sex || req.user.profile.sex;
     if (!sex) {
         throw new BadReqError("Check your user profile field, sex");
     }
 
     const data: CreatePost = { userId: req.id, ...body, imgUrls, sex };
     const post = await createPostService(data, Prisma);
-    const { id: mysqlId, ..._post } = post;
+    const { id: postId } = post;
+    // const { id: postId, ..._post } = post;
 
     /**
      * @TODO collection 이름을 동적 생성.
@@ -46,7 +48,8 @@ export const createPost = async (req: Request<unknown, unknown, CreatePostBody>,
      * @TODO2 get-random-posts controller도 같이 수정.
      */
     const collectionName = createCollectionName(createYearMonthString(), POST_PRE_FIX);
-    await createPostMongoService({ mysqlId, ..._post }, mongo.Db, collectionName);
+    await createPostMongoService({ postId: postId, sex: post.sex }, mongo.Db, collectionName);
+    // await createPostMongoService({ postId: postId, ..._post }, mongo.Db, collectionName);
 
     res.status(200).json(post);
 };

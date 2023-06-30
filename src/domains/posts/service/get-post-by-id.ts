@@ -1,17 +1,40 @@
 import { PrismaClient } from "@prisma/client";
 
-export const getPostByIdService = async (id: number, prisma: PrismaClient) => {
-    return prisma.posts.findUniqueOrThrow({
+export const getPostByIdService = async (data: {id: number, userId: number}, prisma: PrismaClient) => {
+    return prisma.posts.findFirstOrThrow({
         select: {
             id: true,
+            place: true,
+            style: true,
             user: {
                 select: {
                     id: true,
                     profile: {
                         select: {
-                            avartar: true
+                            avartar: true,
+                            height: true,
+                            weight: true,
+                            introduction: true,
+                        }
+                    },
+                    followers: {
+                        where: {
+                            // followingId: data.userId
+                            followerId: data.userId
                         }
                     }
+                }
+            },
+            clothes: {
+                select: {
+                    brand: true,
+                    imageUrl: true,
+                    // siteUrl: true,
+                    category: true,
+                    name: true,
+                    price: true,
+                    color: true,
+                    size: true,
                 }
             },
             _count: {
@@ -21,7 +44,8 @@ export const getPostByIdService = async (id: number, prisma: PrismaClient) => {
             }
         },
         where:{
-            id
+            id: data.id,
+            isPublic: true,
         }
     })
 }

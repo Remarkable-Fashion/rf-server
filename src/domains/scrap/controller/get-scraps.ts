@@ -24,7 +24,7 @@ export const getScraps = async (req: Request<unknown, unknown, unknown, ReqQuery
     // const take = req.query.take ? Number(req.query.take) : DEFAULT_TAKE;
     const take = result.data.take ? Number(result.data.take) : DEFAULT_TAKE;
     // const cursorId = req.query.cursorId ? Number(req.query.cursorId) : DEFAULT_CURSUR;
-    const cursorId = result.data.cursorId ? Number(result.data.cursorId) : DEFAULT_CURSUR;
+    const cursorId = result.data.cursorId ? Number(result.data.cursorId) : undefined;
 
     const scraps = await getScrapsService({ cursorId, take, userId: Number(req.id) }, Prisma);
 

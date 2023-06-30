@@ -5,7 +5,7 @@ import { postSex } from "../types";
 export type CreatePostBody = {
     title: string;
     description: string;
-    clothes?: Omit<Clothes, "id" | "postId">[];
+    clothes?: Omit<Clothes, "id" | "postId" | "createdAt">[];
     tpo?: Tpo;
     season?: Season;
     style?: Style;

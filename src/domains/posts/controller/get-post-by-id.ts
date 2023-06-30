@@ -1,11 +1,5 @@
 import type { Request, Response } from "express";
-import { mongo } from "../../../db/mongodb";
-import { createYearMonthString } from "../../../lib/create-date";
-import { getRandomPostsMongo as getRandomPostsMongoService } from "../service/get-random-posts";
-import { POST_PRE_FIX, postSex } from "../types";
-import { createCollectionName } from "../create-collection-name";
-import typia from "typia"
-import { BadReqError } from "../../../lib/http-error";
+import { BadReqError, UnauthorizedError } from "../../../lib/http-error";
 import Prisma from "../../../db/prisma";
 import { getPostByIdService } from "../service/get-post-by-id";
 
@@ -23,7 +17,13 @@ export const getPostById = async ( req: Request<ReqParams>, res: Response) => {
         throw new BadReqError("Check id");
     }
 
-    const post = await getPostByIdService(parsedId ,Prisma)
+    if(!req.id){
+        throw new UnauthorizedError()
+    }
 
-    res.json(post);
+    const post = await getPostByIdService({id: parsedId, userId: req.id}, Prisma)
+
+    const mergedPost = { ...post, isFollow: post.user.followers.length > 0 };
+
+    res.json(mergedPost);
 };
