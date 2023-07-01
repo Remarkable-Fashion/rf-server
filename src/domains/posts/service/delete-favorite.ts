@@ -1,9 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 
-export const deleteFavorite = ({ userId, postId, favoriteId }: { userId: number; postId: number; favoriteId: number }, prisma: PrismaClient) => {
+export const deleteFavorite = ({ userId, postId }: { userId: number; postId: number; }, prisma: PrismaClient) => {
     return prisma.favorites.delete({
         where: {
-            id: favoriteId,
+            // id: favoriteId,
             userId_postId: {
                 userId,
                 postId

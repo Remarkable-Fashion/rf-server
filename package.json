@@ -8,7 +8,7 @@
         "prepare": "husky install",
         "build": "npx ttsc",
         "start": "node dist/index.js",
-        "start:dev": "npx prisma migrate dev && node dist/index.js",
+        "start:dev": "node dist/index.js",
         "start:w": "nodemon --watch src/** --ext ts,json --ignore src/**/*.spec.ts --exec ts-node ./src/index.ts",
         "lint": "eslint ./src",
         "lint:es:fix": "eslint --ext js --ext ts './' --fix",
@@ -18,7 +18,8 @@
         "db:generate": "npx prisma generate",
         "db:migrate": "npx prisma migrate dev",
         "db:push": "npx prisma db push",
-        "seed": "ts-node ./src/db/seed.ts && ts-node ./src/db/seed2.ts",
+        "seed": "dotenv -e ./.env ts-node ./src/db/seeds/seed.ts",
+        "seed:dev": "dotenv -e ./.env.dev ts-node ./src/db/seeds/seed.ts",
         "cron": "node ./dist/cron.js"
     },
     "lint-staged": {
@@ -51,6 +52,7 @@
         "@types/passport-kakao": "^1.0.0",
         "@typescript-eslint/eslint-plugin": "^5.40.0",
         "@typescript-eslint/parser": "^5.40.0",
+        "dotenv-cli": "^7.2.1",
         "eslint": "^8.25.0",
         "eslint-config-airbnb-base": "^15.0.0",
         "eslint-config-prettier": "^8.5.0",

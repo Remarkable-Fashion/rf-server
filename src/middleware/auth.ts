@@ -13,10 +13,10 @@ export const authJWT = (req: Request, res: Response, next: NextFunction) => {
     const result = verify(token);
 
     if (!result.ok) {
-        throw new BadReqError(result.message);
+        throw new UnauthorizedError(result.message);
     }
-
-    req.id = result.id!;
+    req.id = result.id;
+    // req.user.id = result.id;
     next();
 };
 
@@ -30,9 +30,9 @@ export const authRole = (role: Role) => (req: Request, res: Response, next: Next
     next();
 };
 
-export const authTest = (req: Request, res: Response, next: NextFunction) => {
+export const authTest = (id?: number) => (req: Request, res: Response, next: NextFunction) => {
     req.user = {
-        id: 1,
+        id: id ?? 1,
         name: "test",
         email: "test@gmail.com",
         role: "User",
