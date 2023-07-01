@@ -57,6 +57,7 @@ export const loginKakao = async (req: Request, res: Response, next: NextFunction
         };
 
         req.user = data;
+        req.id = data.id;
 
         next();
 }

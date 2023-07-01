@@ -21,7 +21,39 @@ model Users {
   profile   Profile?
   socials   Socials[]
 
+  followers Follows[] @relation("following")
+  following Follows[] @relation("follower")
+
+  blocked   Block[] @relation("blockedBy")
+  blockedBy Block[] @relation("blocked")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
   @@map("users")
+}
+
+model Follows {
+  follower    Users @relation("follower", fields: [followerId], references: [id])
+  followerId  Int   @map("follower_id") @db.UnsignedInt
+  following   Users @relation("following", fields: [followingId], references: [id])
+  followingId Int   @map("following_id") @db.UnsignedInt
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@id([followerId, followingId])
+  @@map("follows")
+}
+
+model Block {
+  blocker   Users @relation("blockedBy", fields: [blockerId], references: [id])
+  blockerId Int   @map("blocker_id") @db.UnsignedInt
+  blocked   Users @relation("blocked", fields: [blockedId], references: [id])
+  blockedId Int   @map("block_id") @db.UnsignedInt
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@id([blockerId, blockedId])
+  @@map("blocks")
 }
 
 model Profile {
@@ -31,9 +63,12 @@ model Profile {
   height       Int?
   weight       Int?
   introduction String?
+  avartar      String?
 
   user   Users @relation(fields: [userId], references: [id])
   userId Int   @unique @map("user_id") @db.UnsignedInt
+
+  createdAt DateTime @default(now()) @map("created_at")
 
   @@map("profiles")
 }
@@ -44,6 +79,8 @@ model UserMetas {
 
   user    Users @relation(fields: [usersId], references: [id])
   usersId Int   @unique @map("user_id") @db.UnsignedInt
+
+  createdAt DateTime @default(now()) @map("created_at")
 
   @@map("user_metas")
 }
@@ -56,14 +93,17 @@ model Socials {
   user   Users @relation(fields: [userId], references: [id])
   userId Int   @unique @map("user_id") @db.UnsignedInt
 
+  createdAt DateTime @default(now()) @map("created_at")
+
   @@unique([type, socialId])
   @@map("socials")
 }
 
 model Posts {
-  id          Int    @id @default(autoincrement()) @db.UnsignedInt
-  title       String @db.VarChar(50)
-  description String @db.VarChar(200)
+  id          Int     @id @default(autoincrement()) @db.UnsignedInt
+  title       String  @db.VarChar(50)
+  description String  @db.VarChar(200)
+  place       String? @db.VarChar(50)
 
   tpo    Tpo    @default(Etc)
   season Season @default(Etc)
@@ -81,6 +121,10 @@ model Posts {
   images  Images[]
   clothes Clothes[]
 
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
   @@map("posts")
 }
 
@@ -89,6 +133,8 @@ model Images {
   url    String @db.VarChar(200)
   post   Posts  @relation(fields: [postId], references: [id])
   postId Int    @map("post_id") @db.UnsignedInt
+
+  createdAt DateTime @default(now()) @map("created_at")
 
   @@map("images")
 }
@@ -100,12 +146,15 @@ model Clothes {
   price    Int?            @db.UnsignedInt
   color    String?         @db.VarChar(50)
   size     String?         @db.VarChar(10)
+  brand    String?         @db.VarChar(20)
 
   imageUrl String? @map("image_url") @db.VarChar(200)
   siteUrl  String? @map("site_url") @db.VarChar(200)
 
   post   Posts @relation(fields: [postId], references: [id])
   postId Int   @map("post_id") @db.UnsignedInt
+
+  createdAt DateTime @default(now()) @map("created_at")
 
   @@map("clothes")
 }
@@ -118,6 +167,8 @@ model Favorites {
 
   post   Posts @relation(fields: [postId], references: [id])
   postId Int   @map("post_id") @db.UnsignedInt
+
+  createdAt DateTime @default(now()) @map("created_at")
 
   @@unique([userId, postId])
   @@map("favorites")

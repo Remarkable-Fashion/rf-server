@@ -5,7 +5,7 @@ import { postSex } from "../types";
 export type CreatePostBody = {
     title: string;
     description: string;
-    clothes?: Clothes[];
+    clothes?: Omit<Clothes, "id" | "postId" | "createdAt">[];
     tpo?: Tpo;
     season?: Season;
     style?: Style;
@@ -19,11 +19,37 @@ export const createPost = ({ userId, title, description, imgUrls, clothes, tpo, 
     return prisma.posts.create({
         select: {
             id: true,
-            userId: true,
+            // userId: true,
+            user: {
+                select: {
+                    id: true,
+                    profile: {
+                        select: {
+                            avartar: true
+                        }
+                    }
+                }
+            },
             title: true,
             description: true,
-            images: true,
-            clothes: true,
+            images: {
+                select: {
+                    id: true,
+                    url: true,
+                }
+            },
+            clothes: {
+                select: {
+                    id: true,
+                    category: true,
+                    name: true,
+                    price: true,
+                    color: true,
+                    size: true,
+                    imageUrl: true,
+                    siteUrl: true,
+                }
+            },
             tpo: true,
             season: true,
             style: true,

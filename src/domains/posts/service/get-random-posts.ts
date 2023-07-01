@@ -1,52 +1,64 @@
-import { Db } from "mongodb";
-import { postSex } from "../types";
-// import { Sex } from "@prisma/client"
+import { PrismaClient } from "@prisma/client";
 
+export const getRandomPostsService = ({ userId, postIds }: { userId: number; postIds: number[] }, prisma: PrismaClient) => {
 
-
-type Options = {
-    size: number
-    sex?: typeof postSex[number]
-    /**
-     * @TODO Profile의 Sex와 Post의 Sex 타입 불일치. 합칠까?
-     */
-    // sex?: Sex
-}
-
-export const getRandomPostsMongo = (db: Db, collectionName: string, options: Options) => {
-    const { size, sex } = options;
-
-    
-    const pipeLine = [];
-    if(sex){
-        const matchOption = {
-            $match: {
-                sex: sex
+    const posts = prisma.posts.findMany({
+        select: {
+            id: true,
+            images: {
+                select: {
+                    url: true
+                }
+            },
+            user: {
+                select: {
+                    id: true,
+                    profile: {
+                        select: {
+                            avartar: true
+                        }
+                    },
+                    followers: {
+                        select: {
+                            followerId: true,
+                            followingId: true,
+                        },
+                        where: {
+                            followerId: userId
+                        }
+                    }
+                }
+            },
+            favorites: {
+                select: {
+                    userId: true,
+                    postId: true
+                },
+                where: {
+                    userId
+                }
+            },
+            scraps: {
+                select: {
+                    userId: true,
+                    postId: true,
+                },
+                where: {
+                    userId
+                }
             }
-        };
-        pipeLine.push(matchOption)
-    }
-
-    pipeLine.push({
-        $sample: {
-            size
+        },
+        where: {
+            id: {
+                in: postIds
+            },
+            isPublic: true
         }
     });
-    
-    return db
-        .collection(collectionName)
-        .aggregate(pipeLine)
-        // .aggregate([
-        //     {
-        //         $match: {
-        //             status: ""
-        //         }
-        //     },
-        //     {
-        //         $sample: {
-        //             size
-        //         }
-        //     }
-        // ])
-        .toArray();
+
+    // const countsOfPost = prisma.posts.count({
+    //     where: {userId}
+    // })
+
+    return prisma.$transaction([posts])
 };

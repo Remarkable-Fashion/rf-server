@@ -1,9 +1,14 @@
 import { startApp } from "./app";
 import { conf, isProd } from "./config";
 import { mongo } from "./db/mongodb";
+import { RedisSingleton } from "./db/redis";
 
 const main = async () => {
     await mongo.connect();
+
+    // @TODO 클래스로 수정.
+    // const redis = await RedisSingleton.getInstance();
+    // await redis.connect();
 
     const app = startApp();
 

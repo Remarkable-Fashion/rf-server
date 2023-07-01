@@ -17,7 +17,7 @@ export class HttpError extends Error {
     // objects: ObjectType[] | undefined;
 
     constructor(status: number, message?: string) {
-        super(message);
+        super(message || HttpError.name);
         const { name, prototype } = new.target;
 
         Object.setPrototypeOf(this, prototype);
@@ -29,7 +29,7 @@ export class HttpError extends Error {
 
 export class BadReqError extends HttpError {
     constructor(message?: string) {
-        super(HTTP_STATUS_CODE.BAD_REQUEST, message);
+        super(HTTP_STATUS_CODE.BAD_REQUEST, message || BadReqError.name);
         const { name, prototype } = new.target;
 
         Object.setPrototypeOf(this, prototype);
@@ -39,7 +39,7 @@ export class BadReqError extends HttpError {
 
 export class NotFoundError extends HttpError {
     constructor(message?: string) {
-        super(HTTP_STATUS_CODE.NOT_FOUND, message);
+        super(HTTP_STATUS_CODE.NOT_FOUND, message || NotFoundError.name);
         const { name, prototype } = new.target;
 
         Object.setPrototypeOf(this, prototype);
@@ -49,7 +49,7 @@ export class NotFoundError extends HttpError {
 
 export class UnauthorizedError extends HttpError {
     constructor(message?: string) {
-        super(HTTP_STATUS_CODE.UN_AUTHORIZE, message);
+        super(HTTP_STATUS_CODE.UN_AUTHORIZE, message || UnauthorizedError.name);
         const { name, prototype } = new.target;
 
         Object.setPrototypeOf(this, prototype);

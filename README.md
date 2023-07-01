@@ -27,3 +27,31 @@ $ docker-compose up --build -d
 prod : docker compose up --build
 
 dev : docker compose -f docker-compose-dev.yaml --env-file ./.env.dev up --build
+
+* dotenv-cli를 사용한 환경변수 로드
+
+```bash
+$ dotenv -e .env ts-node <file> // prod
+$ dotenv -e .env.dev ts-node <file> // dev
+```
+
+### 예시
+
+```bash
+
+dotenv -e .env.dev npm run db:migrate // 마이그레이션
+// migrate 완료가 안되는 버그 발생.
+dotenv -e .env.dev ts-node ./src/db/seeds/seed.ts // seed
+
+```
+
+# Dev test JWT 
+* id: 1
+ "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjg4MDA4MzQxLCJleHAiOjE3MTk1NDQzNDF9.gr5Ijgdyy_ptL29Y3CE60fZZGNJQbli_eOdrzEOHL_o"
+
+* id: 2
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNjg4MDMwMDk3LCJleHAiOjE3MTk1NjYwOTd9.O_M8bk_TmeUt-YFNahd2V3Zffz94sCPN4fk4L92J2oA"
+
+* id: 3
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNjg4MDMwMDk3LCJleHAiOjE3MTk1NjYwOTd9.4Xe4d3ZTNZ53AiERV_LpjgiNQ5E7KDUN06qL8znYDS8"
+
