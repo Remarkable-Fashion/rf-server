@@ -17,6 +17,8 @@
         "lint-staged": "lint-staged",
         "db:generate": "npx prisma generate",
         "db:migrate": "npx prisma migrate dev",
+        "db:generate:dev": "dotenv -e .env.dev npx prisma generate",
+        "db:migrate:dev": "dotenv -e .env.dev npx prisma migrate dev",
         "db:push": "npx prisma db push",
         "seed": "dotenv -e ./.env ts-node ./src/db/seeds/seed.ts",
         "seed:dev": "dotenv -e ./.env.dev ts-node ./src/db/seeds/seed.ts",
@@ -61,11 +63,11 @@
         "husky": "^8.0.1",
         "lint-staged": "^13.0.3",
         "prettier": "^2.7.1",
-        "prisma": "^4.6.1",
+        "prisma": "^4.16.2",
         "typescript": "^4.8.4"
     },
     "dependencies": {
-        "@prisma/client": "^4.6.0",
+        "@prisma/client": "^4.16.2",
         "axios": "^1.1.3",
         "connect-flash": "^0.1.1",
         "connect-redis": "^7.1.0",

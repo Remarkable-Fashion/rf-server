@@ -5,11 +5,23 @@ export const getRandomPostsPublicService = ({ postIds }: { postIds: number[] }, 
     const posts = prisma.posts.findMany({
         select: {
             id: true,
+<<<<<<< HEAD
+=======
+            createdAt: true,
+>>>>>>> 90fca2f (Feature/get post by (#23))
             images: {
                 select: {
                     url: true
                 }
             },
+<<<<<<< HEAD
+=======
+            _count: {
+                select: {
+                    favorites: true
+                }
+            },
+>>>>>>> 90fca2f (Feature/get post by (#23))
             user: {
                 select: {
                     id: true,
@@ -26,6 +38,12 @@ export const getRandomPostsPublicService = ({ postIds }: { postIds: number[] }, 
                 in: postIds
             },
             isPublic: true
+<<<<<<< HEAD
+=======
+        },
+        orderBy: {
+            createdAt: "desc"
+>>>>>>> 90fca2f (Feature/get post by (#23))
         }
     });
 

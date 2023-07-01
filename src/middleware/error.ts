@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { logger } from "../logger";
 import { HttpError } from "../lib/http-error";
 
@@ -46,7 +46,11 @@ export const errorMiddleware = (err: any, req: Request, res: Response, _next: Ne
         res.status(err.status);
         res.json({ msg: err.message });
     } else {
+<<<<<<< HEAD
         console.log("err :", err);
+=======
+        // console.log("err :", err);
+>>>>>>> 90fca2f (Feature/get post by (#23))
         res.status(500).json({ msg: err.message || "error" });
     }
 };

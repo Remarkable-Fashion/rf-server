@@ -24,6 +24,8 @@ import { getRandomPosts } from "../domains/posts/controller/get-random-posts";
 import { getMyposts } from "../domains/posts/controller/get-my-posts";
 import { getRandomPostsPublic } from "../domains/posts/controller/get-random-posts-public";
 import { getMyFavorites } from "../domains/posts/controller/get-my-favorites";
+import { deletePostById } from "../domains/posts/controller/delete-post-by-id";
+import { getTestSearchPosts } from "../domains/posts/controller/get-search-posts";
 
 const postRouter = Router();
 
@@ -36,9 +38,11 @@ postRouter.get("/public", apiLimiterFunc({ time: 15, max: 3, postFix: "public" }
 // postRouter.get("/public", apiLimiterFunc({ time: 15, max: 3, postFix: "public" }), controllerHandler(getRandomPosts));
 
 postRouter.get("/me", authJWT, controllerHandler(getMyposts));
+postRouter.get("/search", authJWT, controllerHandler(getTestSearchPosts));
 
 postRouter.get("/favorite", authJWT, controllerHandler(getMyFavorites));
 postRouter.get("/:id", authJWT, controllerHandler(getPostById));
+postRouter.delete("/:id", authJWT, controllerHandler(deletePostById));
 postRouter.get("/test/:id", authTest(), controllerHandler(getPostById));
 
 postRouter.post("/", authJWT, upload.fields([{ name: "images" }]), controllerHandler(createPost));

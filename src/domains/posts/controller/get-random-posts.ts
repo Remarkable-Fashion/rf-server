@@ -21,12 +21,15 @@ type ReqType = {
     sex?: typeof postSex[number]
 }
 export const getRandomPosts = async ( req: Request<unknown, unknown, unknown, ReqQuery>, res: Response) => {
-    const { take, sex } = req.query
-    const parsedSize = Number(take);
-    // eslint-disable-next-line no-underscore-dangle
-    const size = take && !Number.isNaN(parsedSize) && parsedSize < DEFAULT_SIZE ? parsedSize : DEFAULT_SIZE;
+    const _take = req.query.take;
+    // const sex = req.query.sex;
 
-    const result = typia.validateEquals<ReqType>({sex: sex})
+    const parsedTake = Number(_take);
+    // eslint-disable-next-line no-underscore-dangle
+    const take = _take && !Number.isNaN(parsedTake) 
+        && parsedTake < DEFAULT_SIZE ? parsedTake : DEFAULT_SIZE;
+
+    const result = typia.validateEquals<ReqType>({sex: req.query.sex})
 
     if(!result.success){
         throw new BadReqError("Check your req.query.sex")
@@ -43,6 +46,7 @@ export const getRandomPosts = async ( req: Request<unknown, unknown, unknown, Re
      * @TODO2 tpo, season, style 필터 넣기?
      */
     const collectionName = createCollectionName(createYearMonthString(), POST_PRE_FIX);
+<<<<<<< HEAD
     const posts = await getRandomPostsMongoService(mongo.Db, collectionName, {
         size,
         sex: result.data.sex
@@ -68,6 +72,34 @@ export const getRandomPosts = async ( req: Request<unknown, unknown, unknown, Re
     }
 
     const mergedPosts = _posts.map( post => {
+=======
+    const randomPosts = await getRandomPostsMongoService(mongo.Db, collectionName, {
+        size: take,
+        sex: result.data.sex
+    });
+
+    const [posts] = await getRandomPostsService({userId: req.id, postIds: randomPosts.map(post => post.postId)}, Prisma);
+
+    // 기본 사이즈보다 가져온 게시글의 수가 적은 경우
+    // 이전 달에서 가져옴.
+    // @TODO 근데 적을 일이 없음.
+    // const countsOfPosts = DEFAULT_SIZE - _posts.length;
+    // if(countsOfPosts > 0){
+    //     // const size = DEFAULT_SIZE - _posts.length;
+
+    //     const getOneMonthAgoCollectionName = createCollectionName(createYearMonthString(getOneMonthAgo()), POST_PRE_FIX);
+    //     const posts = await getRandomPostsMongoService(mongo.Db, getOneMonthAgoCollectionName, {
+    //         size: countsOfPosts,
+    //         sex: result.data.sex
+    //     });
+
+    //     const [__posts] = await getRandomPostsService({userId: req.id, postIds: posts.map(post => post.postId)}, Prisma);
+
+    //     _posts.push(...__posts);
+    // }
+
+    const mergedPosts = posts.map( post => {
+>>>>>>> 90fca2f (Feature/get post by (#23))
         const isFollow = post.user.followers.length > 0;
         const isFavoirte = post.favorites.length > 0;
         const isScrap = post.scraps.length > 0;
@@ -79,7 +111,21 @@ export const getRandomPosts = async ( req: Request<unknown, unknown, unknown, Re
             ...post
 
         }
+<<<<<<< HEAD
     })
 
     res.json(mergedPosts);
+=======
+    });
+
+    const data = {
+        size: posts.length,
+        // totalCounts: posts.length,
+        take,
+        sex: result.data.sex || "NONE",
+        posts: mergedPosts
+    }
+
+    res.json(data);
+>>>>>>> 90fca2f (Feature/get post by (#23))
 };

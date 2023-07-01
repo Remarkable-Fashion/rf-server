@@ -9,21 +9,30 @@ type ReqParams = {
 
 
 export const getPostById = async ( req: Request<ReqParams>, res: Response) => {
-    const { id } = req.params;
+    if(!req.id){
+        throw new UnauthorizedError()
+    }
 
+    const id = validateParamId(req.params.id);
+
+    const post = await getPostByIdService({id, userId: req.id}, Prisma)
+
+    const mergedPost = { 
+        isFollow: post.user.followers.length > 0,
+        isFavorite: post.favorites.length > 0,
+        isScrap: post.scraps.length > 0,
+        ...post, 
+     };
+
+    res.json(mergedPost);
+};
+
+
+const validateParamId = (id?: string) => {
     const parsedId = Number(id);
 
     if(!id || Number.isNaN(parsedId)){
         throw new BadReqError("Check id");
     }
-
-    if(!req.id){
-        throw new UnauthorizedError()
-    }
-
-    const post = await getPostByIdService({id: parsedId, userId: req.id}, Prisma)
-
-    const mergedPost = { ...post, isFollow: post.user.followers.length > 0 };
-
-    res.json(mergedPost);
-};
+    return parsedId;
+}

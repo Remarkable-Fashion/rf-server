@@ -43,31 +43,31 @@ export const getRandomPostsPublic = async ( req: Request<unknown, unknown, unkno
      * @TODO2 tpo, season, style 필터 넣기?
      */
     const collectionName = createCollectionName(createYearMonthString(), POST_PRE_FIX);
-    const posts = await getRandomPostsMongoService(mongo.Db, collectionName, {
+    const randomPosts = await getRandomPostsMongoService(mongo.Db, collectionName, {
         size,
         sex: result.data.sex
     });
 
-    const [_posts] = await getRandomPostsPublicService({ postIds: posts.map(post => post.postId)}, Prisma);
+    const [posts] = await getRandomPostsPublicService({ postIds: randomPosts.map(post => post.postId)}, Prisma);
 
     // 기본 사이즈보다 가져온 게시글의 수가 적은 경우
     // 이전 달에서 가져옴.
-    const _size = DEFAULT_SIZE - _posts.length;
-    if(_size > 0){
-        // const size = DEFAULT_SIZE - _posts.length;
+    // const _size = DEFAULT_SIZE - _posts.length;
+    // if(_size > 0){
+    //     // const size = DEFAULT_SIZE - _posts.length;
 
-        const getOneMonthAgoCollectionName = createCollectionName(createYearMonthString(getOneMonthAgo()), POST_PRE_FIX);
-        const posts = await getRandomPostsMongoService(mongo.Db, getOneMonthAgoCollectionName, {
-            size: _size,
-            sex: result.data.sex
-        });
+    //     const getOneMonthAgoCollectionName = createCollectionName(createYearMonthString(getOneMonthAgo()), POST_PRE_FIX);
+    //     const posts = await getRandomPostsMongoService(mongo.Db, getOneMonthAgoCollectionName, {
+    //         size: _size,
+    //         sex: result.data.sex
+    //     });
 
-        const [__posts] = await getRandomPostsPublicService({ postIds: posts.map(post => post.postId)}, Prisma);
+    //     const [__posts] = await getRandomPostsPublicService({ postIds: posts.map(post => post.postId)}, Prisma);
 
-        _posts.push(...__posts);
-    }
+    //     _posts.push(...__posts);
+    // }
 
-    const mergedPosts = _posts.map( post => {
+    const mergedPosts = posts.map( post => {
         const isFollow = false;
         const isFavoirte = false;
         const isScrap = false;
@@ -79,7 +79,14 @@ export const getRandomPostsPublic = async ( req: Request<unknown, unknown, unkno
             ...post
 
         }
-    })
+    });
 
-    res.json(mergedPosts);
+    const data = {
+        size: posts.length,
+        take: size,
+        sex: sex || "NONE",
+        posts: mergedPosts
+    }
+
+    res.json(data);
 };

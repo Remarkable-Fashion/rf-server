@@ -10,19 +10,48 @@ export const getMyposts = async ( req: Request<unknown, unknown, unknown, {curso
     if(!id){
         throw new UnauthorizedError();
     }
+    
+    const cursor = validateCursor(req.query.cursorId);
+    const take = validateTake(req.query.take);
+    
+    // const _take = req.query.take;
+    // const take = _take ? Number(_take) : DEFAULT_TAKE;
 
-    const _cursor = req.query.cursorId;
-    const _take = req.query.take;
-
-    const cursor = _cursor ? Number(_cursor) : undefined;
-    if(cursor && cursor < 0){
-        throw new BadReqError("cursor should be higher than 0")
-    }
-    const take = _take ? Number(_take) : DEFAULT_TAKE;
-
-    const posts = await getMyPostsService({id, cursor, take} ,Prisma)
+    const [totalCountsOfPosts, lastMyPost, posts] = await getMyPostsService({userId: id, cursor, take} ,Prisma)
 
     const countsOfposts = posts.length;
 
-    res.json({posts: posts, _count: countsOfposts});
+    const data = {
+        nextCursorId: posts.at(-1)?.id,
+        hasNext: posts.at(-1)?.id! > lastMyPost?.id,
+        totalCounts: totalCountsOfPosts,
+        size: countsOfposts,
+        take,
+        cursorId: cursor,
+        posts,
+    }
+
+    res.json(data);
 };
+
+const validateCursor = (cursor?: string) => {
+
+    const _cursor = cursor ? Number(cursor) : undefined;
+    if(_cursor && _cursor < 0){
+        throw new BadReqError("cursor should be higher than 0")
+    }
+
+    return _cursor;
+}
+
+
+const validateTake = (take?: string) => {
+
+    let _take = take ? Number(take) : DEFAULT_TAKE;
+
+    if(take && _take < 0){
+        throw new BadReqError("take should be higher than 0")
+    }
+
+    return _take;
+}
