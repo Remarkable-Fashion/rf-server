@@ -14,14 +14,24 @@ export const updateUser = async (req: Request, res: Response) => {
         throw new UnauthorizedError()
     }
 
-    const avartarUrls = (req.files as { [fieldName: string]: Express.Multer.File[] }).avartar.map((f) => conf().SERVER_DOMAIN + "/" + f.filename);
+    const file = (req.files as { [fieldName: string]: Express.Multer.File[] });
+    
+    const avartarUrls = file.avartar && file.avartar.map((f) => conf().SERVER_DOMAIN + "/" + f.filename);
 
-    if (!avartarUrls || avartarUrls.length !== 1) {
+    console.log("avartarUrls :", avartarUrls)
+
+    if (avartarUrls && avartarUrls.length !== 1) {
         throw new BadReqError("There must be one image");
     }
 
     const data = validateBody(TSON.createValidateEquals<UpdateProfile>())(req.body)
 
-    const {user} = await updateUserService(userId, {...data, avartar: avartarUrls[0]}, Prisma);
+    const {user} = await updateUserService(userId, {
+        ...data,
+        ...(avartarUrls && {
+            avartar: avartarUrls[0]
+        }),
+        // avartar: avartarUrls[0]
+    }, Prisma);
     res.json(user);
 }

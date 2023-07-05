@@ -3,22 +3,14 @@ import { BadReqError, UnauthorizedError } from "../../../lib/http-error";
 import Prisma from "../../../db/prisma";
 import { getBlockUsersService } from "../service/get-block-users";
 
-<<<<<<< HEAD
-export const getBlockUsers = async (req: Request, res: Response) => {
-=======
 
 const DEFAULT_TAKE = 21;
 export const getBlockUsers = async (req: Request<unknown, unknown, unknown, {cursorId?: string, take?: string}>, res: Response) => {
->>>>>>> 90fca2f (Feature/get post by (#23))
 
     if(!req.id){
         throw new UnauthorizedError()
     }
 
-<<<<<<< HEAD
-    const blokedUsers = await getBlockUsersService({userId: req.id}, Prisma);
-    res.json(blokedUsers.map(({blocked}) => ({...blocked})));
-=======
     const cursor = validateCursor(req.query.cursorId);
     const take = validateTake(req.query.take);
 
@@ -61,5 +53,4 @@ const validateTake = (take?: string) => {
     }
 
     return _take;
->>>>>>> 90fca2f (Feature/get post by (#23))
 }

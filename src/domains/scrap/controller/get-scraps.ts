@@ -50,7 +50,7 @@ export const getScraps = async (req: Request, res: Response) => {
         take,
         // cursorId: cursorId,
         cursorId: cursorId ?? 0,
-        scraps: mergedScraps,
+        posts: mergedScraps,
     }
 
     res.status(200).json(data);

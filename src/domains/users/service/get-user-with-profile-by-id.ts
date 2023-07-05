@@ -4,6 +4,7 @@ export const getUserWithProfileById = ({ id }: { id: number }, prisma: PrismaCli
     return prisma.users.findUnique({ 
         select: {
             id: true,
+            name: true,
             profile: {
                 select: {
                     avartar: true,

@@ -15,7 +15,7 @@ const THIRTY_MIN = 60 * 30;
 export type JwtPayload = { id: number };
 
 // export const sign = (user: Users, expiresIn?: string) => {
-export const sign = (user: {id: number}, expiresIn?: string) => {
+export const sign = (user: { id: number }, expiresIn?: string) => {
     const payload: JwtPayload = { id: user.id };
 
     return jwt.sign(payload, conf().JWT_SECRET, {
@@ -24,8 +24,8 @@ export const sign = (user: {id: number}, expiresIn?: string) => {
     });
 };
 
-type Pass = { ok: true, id: number, exp: number }
-type Fail = { ok: false, message: string }
+type Pass = { ok: true; id: number; exp: number };
+type Fail = { ok: false; message: string };
 
 export const verify = (token: string): Pass | Fail => {
     try {
@@ -45,7 +45,6 @@ export const verify = (token: string): Pass | Fail => {
 
 //     const diff = expTime - nowUNIXTime;
 
-    
 //     return diff > 0 && diff < THIRTY_MIN;
 // }
 
@@ -84,12 +83,12 @@ export const verifyRefresh = async (token: string, userId: string) => {
     }
 };
 
-if(require.main === module){
-    const rv1 = jwt.sign({id: 2}, "devjwtsecreta", {
+if (require.main === module) {
+    const rv1 = jwt.sign({ id: 2 }, "devjwtsecreta", {
         algorithm: JWT_ALGORITHM,
         expiresIn: "365d"
     });
-    const rv2 = jwt.sign({id: 3}, "devjwtsecreta", {
+    const rv2 = jwt.sign({ id: 3 }, "devjwtsecreta", {
         algorithm: JWT_ALGORITHM,
         expiresIn: "365d"
     });

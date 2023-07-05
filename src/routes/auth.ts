@@ -16,11 +16,11 @@ const REFRESH_TOKEN_EXPIRES = 60 * 60 * 24 * 14; // 2주
 function setCookieAndRedirect() {
     return (req: Request, res: Response) => {
         if (!req.id) {
-        // if (!req.user) {
+            // if (!req.user) {
             throw new UnauthorizedError("No User");
         }
 
-        const user = { id: req.id }
+        const user = { id: req.id };
 
         const accessToken = sign(user);
         // const accessToken = sign(req.user);

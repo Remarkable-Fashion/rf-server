@@ -8,7 +8,7 @@ export const getMyPostsService = async (data: {userId: number, take: number, cur
         }
     });
 
-    const lastMyPost = prisma.posts.findFirstOrThrow({
+    const lastMyPost = prisma.posts.findFirst({
         select: {
             id: true,
         },

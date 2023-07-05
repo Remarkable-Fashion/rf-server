@@ -47,7 +47,9 @@ export const conf = () => {
     const MONGO_URI = process.env.MONGO_URI || "";
     const MONGO_DB = process.env.MONGO_DB || "nana";
 
-    const API_RATE_LIMIT_WHITE_LIST = ["127.0.0.1"]
+    const API_RATE_LIMIT_WHITE_LIST = ["127.0.0.1"];
+
+    const ELK_DB = process.env.ELK_DB || "localhost:9200";
 
     return {
         PORT,
@@ -66,6 +68,7 @@ export const conf = () => {
         MONGO_URI,
         MONGO_DB,
         API_RATE_LIMIT_WHITE_LIST,
-        LOG_DIR
+        LOG_DIR,
+        ELK_DB
     };
 };

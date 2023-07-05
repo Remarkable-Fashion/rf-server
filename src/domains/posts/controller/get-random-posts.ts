@@ -1,14 +1,11 @@
 import type { Request, Response } from "express";
-import { mongo } from "../../../db/mongodb";
-import { createYearMonthString } from "../../../lib/create-date";
-import { getRandomPostsMongo as getRandomPostsMongoService } from "../service/get-random-posts-mongo";
-import { POST_PRE_FIX, postSex } from "../types";
-import { createCollectionName } from "../create-collection-name";
+import { postSex } from "../types";
 import typia from "typia"
 import { BadReqError } from "../../../lib/http-error";
 import Prisma from "../../../db/prisma";
 import { getRandomPostsService } from "../service/get-random-posts";
-import { getOneMonthAgo } from "../../../lib/get-one-month-ago";
+import { getRandomPostsElasticSearchSerivce } from "../service/get-random-posts-test";
+import { client } from "../../../db/elasticsearch";
 
 const DEFAULT_SIZE = 21;
 
@@ -20,86 +17,40 @@ type ReqQuery = {
 type ReqType = {
     sex?: typeof postSex[number]
 }
+
+const index = "posts";
 export const getRandomPosts = async ( req: Request<unknown, unknown, unknown, ReqQuery>, res: Response) => {
-    const _take = req.query.take;
-    // const sex = req.query.sex;
+    const take = validateQueryTake(req.query.take);
+    const sex = validateQuerySex(req.query.sex);
 
-    const parsedTake = Number(_take);
-    // eslint-disable-next-line no-underscore-dangle
-    const take = _take && !Number.isNaN(parsedTake) 
-        && parsedTake < DEFAULT_SIZE ? parsedTake : DEFAULT_SIZE;
+    const now = new Date();
+    const thirtyDaysAgoISOString = getPastDateISOString(30, now);
+    const nowISOString = now.toISOString().slice(0, -5);
 
-    const result = typia.validateEquals<ReqType>({sex: req.query.sex})
-
-    if(!result.success){
-        throw new BadReqError("Check your req.query.sex")
+    const dateRange = {
+        gte: thirtyDaysAgoISOString,
+        lte: nowISOString
     }
 
     /**
      * @TODO 최근 6개월 총 21개
-     * 최근 3개월 14개
-     * 나머지 3개월 7개
-     * 
-     * @현재
-     * 최근 달에서 21개 호출.
-     * 
-     * @TODO2 tpo, season, style 필터 넣기?
      */
-    const collectionName = createCollectionName(createYearMonthString(), POST_PRE_FIX);
-<<<<<<< HEAD
-    const posts = await getRandomPostsMongoService(mongo.Db, collectionName, {
-        size,
-        sex: result.data.sex
+    // const collectionName = createCollectionName(createYearMonthString(), POST_PRE_FIX);
+    // const randomPosts = await getRandomPostsMongoService(mongo.Db, collectionName, {
+    //     size: take,
+    //     sex: sex
+    // });
+
+    const elkPosts = await getRandomPostsElasticSearchSerivce({index, size: take, sex, date: dateRange}, client);
+
+    const randomPosts = elkPosts.body.hits.hits.map((post: any) => {
+        return post._source;
     });
 
-    const [_posts] = await getRandomPostsService({userId: req.id, postIds: posts.map(post => post.postId)}, Prisma);
+    const ids = randomPosts.map((post: any)=> post.id);
 
-    // 기본 사이즈보다 가져온 게시글의 수가 적은 경우
-    // 이전 달에서 가져옴.
-    const _size = DEFAULT_SIZE - _posts.length;
-    if(_size > 0){
-        // const size = DEFAULT_SIZE - _posts.length;
-
-        const getOneMonthAgoCollectionName = createCollectionName(createYearMonthString(getOneMonthAgo()), POST_PRE_FIX);
-        const posts = await getRandomPostsMongoService(mongo.Db, getOneMonthAgoCollectionName, {
-            size: _size,
-            sex: result.data.sex
-        });
-
-        const [__posts] = await getRandomPostsService({userId: req.id, postIds: posts.map(post => post.postId)}, Prisma);
-
-        _posts.push(...__posts);
-    }
-
-    const mergedPosts = _posts.map( post => {
-=======
-    const randomPosts = await getRandomPostsMongoService(mongo.Db, collectionName, {
-        size: take,
-        sex: result.data.sex
-    });
-
-    const [posts] = await getRandomPostsService({userId: req.id, postIds: randomPosts.map(post => post.postId)}, Prisma);
-
-    // 기본 사이즈보다 가져온 게시글의 수가 적은 경우
-    // 이전 달에서 가져옴.
-    // @TODO 근데 적을 일이 없음.
-    // const countsOfPosts = DEFAULT_SIZE - _posts.length;
-    // if(countsOfPosts > 0){
-    //     // const size = DEFAULT_SIZE - _posts.length;
-
-    //     const getOneMonthAgoCollectionName = createCollectionName(createYearMonthString(getOneMonthAgo()), POST_PRE_FIX);
-    //     const posts = await getRandomPostsMongoService(mongo.Db, getOneMonthAgoCollectionName, {
-    //         size: countsOfPosts,
-    //         sex: result.data.sex
-    //     });
-
-    //     const [__posts] = await getRandomPostsService({userId: req.id, postIds: posts.map(post => post.postId)}, Prisma);
-
-    //     _posts.push(...__posts);
-    // }
-
+    const [posts] = await getRandomPostsService({userId: req.id, postIds: ids}, Prisma);
     const mergedPosts = posts.map( post => {
->>>>>>> 90fca2f (Feature/get post by (#23))
         const isFollow = post.user.followers.length > 0;
         const isFavoirte = post.favorites.length > 0;
         const isScrap = post.scraps.length > 0;
@@ -111,21 +62,52 @@ export const getRandomPosts = async ( req: Request<unknown, unknown, unknown, Re
             ...post
 
         }
-<<<<<<< HEAD
-    })
-
-    res.json(mergedPosts);
-=======
     });
 
     const data = {
         size: posts.length,
         // totalCounts: posts.length,
         take,
-        sex: result.data.sex || "NONE",
+        sex: sex || "NONE",
         posts: mergedPosts
     }
 
     res.json(data);
->>>>>>> 90fca2f (Feature/get post by (#23))
 };
+
+const validateQueryTake = (take?: string) => {
+    if(!take){
+        throw new BadReqError("No 'take'")
+    }
+    const parsedTake = Number(take);
+
+    if(Number.isNaN(parsedTake)){
+        throw new BadReqError("'take' query should be number");
+    }
+
+    if(parsedTake <= 0 || parsedTake > DEFAULT_SIZE){
+        throw new BadReqError(`'take' should be 0 to ${DEFAULT_SIZE}`)
+    }
+
+    return parsedTake;
+}
+
+const validateQuerySex = (sex?: string) => {
+    const result = typia.validateEquals<ReqType>({sex: sex})
+
+    if(!result.success){
+        throw new BadReqError("Check your 'sex' query, should be 'Male' or 'Female'");
+    }
+
+    return result.data.sex;
+}
+
+function getPastDateISOString(days: number, now?: Date) {
+    const currentDate = now || new Date(); // 현재 날짜 및 시간 가져오기
+    const pastDate = new Date(currentDate); // 현재 날짜 및 시간을 복사하여 새로운 객체 생성
+    pastDate.setDate(currentDate.getDate() - days); // 지정된 일 수 이전의 날짜로 설정
+  
+    const isoString = pastDate.toISOString().slice(0, -5); // ISO 문자열로 변환
+    return isoString;
+}
+

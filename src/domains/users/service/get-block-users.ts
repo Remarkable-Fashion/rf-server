@@ -1,14 +1,5 @@
 import { PrismaClient } from "@prisma/client"
 
-<<<<<<< HEAD
-export const getBlockUsersService = ({userId}: { userId: number} ,prisma: PrismaClient) => {
-
-    return prisma.block.findMany({
-        select: {
-            blocked: true
-        },
-        where:{
-=======
 export const getBlockUsersService = ({userId, cursor, take}: { userId: number, cursor?: number, take: number} ,prisma: PrismaClient) => {
 
     const counts = prisma.block.count({
@@ -22,7 +13,6 @@ export const getBlockUsersService = ({userId, cursor, take}: { userId: number, c
             blockedId: true,
         },
         where: {
->>>>>>> 90fca2f (Feature/get post by (#23))
             blockerId: userId
         },
         orderBy: {
@@ -30,8 +20,6 @@ export const getBlockUsersService = ({userId, cursor, take}: { userId: number, c
         }
     })
 
-<<<<<<< HEAD
-=======
     const blocks = prisma.block.findMany({
         select: {
             blocked: {
@@ -64,7 +52,6 @@ export const getBlockUsersService = ({userId, cursor, take}: { userId: number, c
 
     return prisma.$transaction([counts, lastMyBlockedUser, blocks]);
 
->>>>>>> 90fca2f (Feature/get post by (#23))
     // return prisma.follows.delete({
     //     where: {
     //         followerId_followingId: {

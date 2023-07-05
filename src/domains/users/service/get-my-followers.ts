@@ -1,11 +1,5 @@
 import { PrismaClient } from "@prisma/client"
 
-<<<<<<< HEAD
-export const getMyFollowersService = (data: { userId: number} ,prisma: PrismaClient) => {
-    return prisma.follows.findMany({
-        select: {
-            follower: true
-=======
 export const getMyFollowersService = (data: { userId: number, cursor?: number, take: number } ,prisma: PrismaClient) => {
     const counts = prisma.follows.count({
         where: {
@@ -16,7 +10,6 @@ export const getMyFollowersService = (data: { userId: number, cursor?: number, t
     const lastMyFollower = prisma.follows.findFirst({
         select: {
             followerId: true,
->>>>>>> 90fca2f (Feature/get post by (#23))
         },
         where: {
             followingId: data.userId
@@ -25,8 +18,6 @@ export const getMyFollowersService = (data: { userId: number, cursor?: number, t
             createdAt: "asc"
         }
     })
-<<<<<<< HEAD
-=======
     
     const followers = prisma.follows.findMany({
         select: {
@@ -59,5 +50,4 @@ export const getMyFollowersService = (data: { userId: number, cursor?: number, t
     });
 
     return prisma.$transaction([counts, lastMyFollower, followers]);
->>>>>>> 90fca2f (Feature/get post by (#23))
 }

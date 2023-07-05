@@ -10,12 +10,8 @@ export const getMyposts = async ( req: Request<unknown, unknown, unknown, {curso
     if(!id){
         throw new UnauthorizedError();
     }
-    
     const cursor = validateCursor(req.query.cursorId);
     const take = validateTake(req.query.take);
-    
-    // const _take = req.query.take;
-    // const take = _take ? Number(_take) : DEFAULT_TAKE;
 
     const [totalCountsOfPosts, lastMyPost, posts] = await getMyPostsService({userId: id, cursor, take} ,Prisma)
 
@@ -23,7 +19,7 @@ export const getMyposts = async ( req: Request<unknown, unknown, unknown, {curso
 
     const data = {
         nextCursorId: posts.at(-1)?.id,
-        hasNext: posts.at(-1)?.id! > lastMyPost?.id,
+        hasNext: posts.at(-1)?.id! > (lastMyPost?.id || 0),
         totalCounts: totalCountsOfPosts,
         size: countsOfposts,
         take,
