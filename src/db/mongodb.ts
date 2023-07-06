@@ -43,7 +43,6 @@ export class Mongo {
 
         return this.conn.db(dbName);
     }
-
 }
 
 export const mongo = new Mongo(conf().MONGO_URI, conf().MONGO_DB);

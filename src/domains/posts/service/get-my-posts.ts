@@ -1,19 +1,49 @@
 import { PrismaClient } from "@prisma/client";
 
-export const getMyPostsService = async (data: {id: number, take: number, cursor?: number}, prisma: PrismaClient) => {
-    return prisma.posts.findMany({
+export const getMyPostsService = async (data: {userId: number, take: number, cursor?: number}, prisma: PrismaClient) => {
+    const totalCountsOfPosts = prisma.posts.count({
+        where: {
+            userId: data.userId,
+            deletedAt: null
+        }
+    });
+
+    const lastMyPost = prisma.posts.findFirst({
         select: {
             id: true,
-            userId: true,
-            title: true,
-            isPublic: true,
-            images: true
         },
         where: {
-            userId: data.id
+            userId: data.userId
         },
         orderBy: {
             createdAt: "asc"
+        }
+    });
+    const posts = prisma.posts.findMany({
+        select: {
+            id: true,
+            title: true,
+            isPublic: true,
+            images: {
+                select: {
+                    url: true
+                }
+            },
+            createdAt: true,
+            deletedAt: true,
+            _count: {
+                select: {
+                    favorites: true,
+                }
+            }
+        },
+        where: {
+            userId: data.userId,
+            deletedAt: null
+            // AND: {}
+        },
+        orderBy: {
+            createdAt: "desc"
             // id: "desc"
         },
         take: data.take,
@@ -24,5 +54,7 @@ export const getMyPostsService = async (data: {id: number, take: number, cursor?
             skip: 1
         })
         
-    })
+    });
+
+    return prisma.$transaction([totalCountsOfPosts, lastMyPost, posts]);
 }

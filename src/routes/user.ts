@@ -12,10 +12,12 @@ import { getMyFollowings } from "../domains/users/controller/get-my-followings";
 import { getMyFollowers } from "../domains/users/controller/get-my-followers";
 import { deleteBlockFollower } from "../domains/users/controller/delete-block-follower";
 import { getBlockUsers } from "../domains/users/controller/get-block-users";
+import { getUserByIdTest } from "../domains/users/controller/get-user-by-id-test";
 
 const userRouter = Router();
 
 userRouter.get("/me", authJWT, controllerHandler(getUserById));
+userRouter.get("/me/test", controllerHandler(getUserByIdTest));
 userRouter.get("/metest", authTest(), controllerHandler(getUserById));
 
 // userRouter.get("/:id", authJWT, controllerHandler(getUserById));
