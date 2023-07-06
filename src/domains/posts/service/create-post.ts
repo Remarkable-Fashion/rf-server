@@ -19,10 +19,17 @@ export const createPost = ({ userId, title, description, imgUrls, clothes, tpo, 
     return prisma.posts.create({
         select: {
             id: true,
-            // userId: true,
+            createdAt: true,
+            images: {
+                select: {
+                    id: true,
+                    url: true,
+                }
+            },
             user: {
                 select: {
                     id: true,
+                    name: true,
                     profile: {
                         select: {
                             avartar: true
@@ -32,12 +39,6 @@ export const createPost = ({ userId, title, description, imgUrls, clothes, tpo, 
             },
             title: true,
             description: true,
-            images: {
-                select: {
-                    id: true,
-                    url: true,
-                }
-            },
             clothes: {
                 select: {
                     id: true,

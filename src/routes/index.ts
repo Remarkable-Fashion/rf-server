@@ -6,6 +6,7 @@ import { postRouter } from "./post";
 import { scrapRouter } from "./scrap";
 import { userRouter } from "./user";
 import { categoryRouter } from "./category";
+import { searchRouter } from "./search";
 
 const router = Router();
 
@@ -23,5 +24,6 @@ router.use("/post", postRouter);
 router.use("/scrap", scrapRouter);
 router.use("/user", userRouter);
 router.use("/home/category", categoryRouter);
+router.use("/search", searchRouter);
 
 export { router };

@@ -4,13 +4,18 @@ export const getPostByIdService = async (data: {id: number, userId: number}, pri
     return prisma.posts.findFirstOrThrow({
         select: {
             id: true,
+            title: true,
+            description: true,
             place: true,
             style: true,
+            createdAt: true,
+            deletedAt: true,
             user: {
                 select: {
                     id: true,
                     profile: {
                         select: {
+                            id: true,
                             avartar: true,
                             height: true,
                             weight: true,
@@ -27,6 +32,7 @@ export const getPostByIdService = async (data: {id: number, userId: number}, pri
             },
             clothes: {
                 select: {
+                    id: true,
                     brand: true,
                     imageUrl: true,
                     // siteUrl: true,
@@ -41,11 +47,30 @@ export const getPostByIdService = async (data: {id: number, userId: number}, pri
                 select: {
                     favorites: true
                 }
+            },
+            favorites: {
+                select: {
+                    userId: true,
+                    postId: true,
+                },
+                where: {
+                    userId: data.userId
+                }
+            },
+            scraps: {
+                select: {
+                    userId: true,
+                    postId: true,
+                },
+                where: {
+                    userId: data.userId,
+                }
             }
         },
         where:{
             id: data.id,
             isPublic: true,
+            deletedAt: null
         }
     })
 }

@@ -5,20 +5,59 @@ import { getMyFavoritesService } from "../service/get-my-favorites";
 
 const DEFAULT_TAKE = 21;
 
-export const getMyFavorites = async (req: Request, res: Response) => {
+export const getMyFavorites = async (req: Request<unknown, unknown, unknown, {cursorId?: string, take?: string}>, res: Response) => {
 
-    // 다음에 읽을 postId
-    const _cursor = req.query.cursorId;
-    const _take = req.query.take;
+    const cursor = validateCursor(req.query.cursorId);
+    const take = validateTake(req.query.take);
 
-    const cursor = _cursor ? Number(_cursor) : 0;
-    if(cursor && cursor < 0){
+    const [totalCountsOfFavorites, lastMyFavorite, posts] = await getMyFavoritesService({
+        userId: req.id,
+        cursor,
+        take
+    }, Prisma);
+
+    const mergedPosts = posts.map( post => {
+        const isFollow = post.post.user.followers.length > 0;
+        const isFavoirte = post.post.favorites.length > 0;
+
+        return {
+            isFavoirte,
+            isFollow,
+            ...post
+        }
+    });
+
+    const data = {
+        nextCursorId: posts.at(-1)?.id,
+        hasNext: posts.at(-1)?.id! > lastMyFavorite?.id!,
+        totalCounts: totalCountsOfFavorites,
+        size: posts.length,
+        take,
+        cursorId: cursor ?? 0,
+        posts: mergedPosts
+    }
+
+    res.status(200).json(data);
+};
+
+const validateCursor = (cursor?: string) => {
+
+    const _cursor = cursor ? Number(cursor) : undefined;
+    if(_cursor && _cursor < 0){
         throw new BadReqError("cursor should be higher than 0")
     }
-    const take = _take ? Number(_take) : DEFAULT_TAKE;
 
-    const data = { userId: req.id, cursor, take };
-    const post = await getMyFavoritesService(data, Prisma);
+    return _cursor;
+}
 
-    res.status(200).json(post);
-};
+
+const validateTake = (take?: string) => {
+
+    let _take = take ? Number(take) : DEFAULT_TAKE;
+
+    if(take && _take < 0){
+        throw new BadReqError("take should be higher than 0")
+    }
+
+    return _take;
+}

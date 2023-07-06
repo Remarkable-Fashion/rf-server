@@ -1,18 +1,56 @@
 import { PrismaClient } from "@prisma/client"
 
-export const getBlockUsersService = ({userId}: { userId: number} ,prisma: PrismaClient) => {
+export const getBlockUsersService = ({userId, cursor, take}: { userId: number, cursor?: number, take: number} ,prisma: PrismaClient) => {
 
-    return prisma.block.findMany({
+    const counts = prisma.block.count({
+        where: {
+            blockerId: userId,
+        }
+    });
+
+    const lastMyBlockedUser = prisma.block.findFirst({
         select: {
-            blocked: true
+            blockedId: true,
         },
-        where:{
+        where: {
             blockerId: userId
         },
         orderBy: {
             createdAt: "asc"
         }
     })
+
+    const blocks = prisma.block.findMany({
+        select: {
+            blocked: {
+                select: {
+                    id: true,
+                    email: true,
+                    name: true,
+                    profile: {
+                        select: {
+                            avartar: true,
+                        }
+                    }
+                }
+            },
+            createdAt: true,
+        },
+        where:{
+            ...(cursor && {
+                blockedId: {
+                    lt: cursor
+                }
+            }),
+            blockerId: userId
+        },
+        orderBy: {
+            createdAt: "desc"
+        },
+        take
+    });
+
+    return prisma.$transaction([counts, lastMyBlockedUser, blocks]);
 
     // return prisma.follows.delete({
     //     where: {

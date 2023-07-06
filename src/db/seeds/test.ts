@@ -43,10 +43,10 @@ async function main() {
     const userWithProfile = await getUserWithProfileById({id : 1}, prisma);
     console.log("userWithProfile :", userWithProfile);
 
-    const postss = await getMyPostsService({id: 1, take: 1}, prisma);
+    const [_, __, postss] = await getMyPostsService({userId: 1, take: 1}, prisma);
     console.log("postss :", postss);
     console.log("postss :", postss.at(-1));
-    const postss2 = await getMyPostsService({id: 1, take: 1, cursor: postss.at(-1)?.id}, prisma);
+    const postss2 = await getMyPostsService({userId: 1, take: 1, cursor: postss.at(-1)?.id}, prisma);
     console.log("postss2 :", postss2);
 
     await createFollowingService({followerId: 2, followingId: 1}, prisma);
