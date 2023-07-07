@@ -5,9 +5,9 @@ import { getMyFavoritesService } from "../service/get-my-favorites";
 
 const DEFAULT_TAKE = 21;
 
-export const getMyFavorites = async (req: Request<unknown, unknown, unknown, {cursorId?: string, take?: string}>, res: Response) => {
+export const getMyFavorites = async (req: Request<unknown, unknown, unknown, {cursor?: string, take?: string}>, res: Response) => {
 
-    const cursor = validateCursor(req.query.cursorId);
+    const cursor = validateCursor(req.query.cursor);
     const take = validateTake(req.query.take);
 
     const [totalCountsOfFavorites, lastMyFavorite, posts] = await getMyFavoritesService({
@@ -27,13 +27,14 @@ export const getMyFavorites = async (req: Request<unknown, unknown, unknown, {cu
         }
     });
 
+    const lastPostId = posts.at(-1)?.id!;
     const data = {
-        nextCursorId: posts.at(-1)?.id,
-        hasNext: posts.at(-1)?.id! > lastMyFavorite?.id!,
+        nextCursor: lastPostId,
+        hasNext: lastPostId > (lastMyFavorite?.id ?? 0),
         totalCounts: totalCountsOfFavorites,
         size: posts.length,
         take,
-        cursorId: cursor ?? 0,
+        cursor: cursor ?? 0,
         posts: mergedPosts
     }
 

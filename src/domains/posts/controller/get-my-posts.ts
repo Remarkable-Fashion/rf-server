@@ -5,25 +5,26 @@ import { getMyPostsService } from "../service/get-my-posts";
 
 const DEFAULT_TAKE = 21;
 
-export const getMyposts = async ( req: Request<unknown, unknown, unknown, {cursorId?: string, take?: string}>, res: Response) => {
+export const getMyposts = async ( req: Request<unknown, unknown, unknown, {cursor?: string, take?: string}>, res: Response) => {
     const id = req.id;
     if(!id){
         throw new UnauthorizedError();
     }
-    const cursor = validateCursor(req.query.cursorId);
+    const cursor = validateCursor(req.query.cursor);
     const take = validateTake(req.query.take);
 
     const [totalCountsOfPosts, lastMyPost, posts] = await getMyPostsService({userId: id, cursor, take} ,Prisma)
 
     const countsOfposts = posts.length;
 
+    const lastPostId = posts.at(-1)?.id!;
     const data = {
-        nextCursorId: posts.at(-1)?.id,
-        hasNext: posts.at(-1)?.id! > (lastMyPost?.id || 0),
+        nextCursor: lastPostId,
+        hasNext: lastPostId > (lastMyPost?.id ?? 0),
         totalCounts: totalCountsOfPosts,
         size: countsOfposts,
         take,
-        cursorId: cursor,
+        cursor: cursor,
         posts,
     }
 

@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client"
 
-export const getBlockUsersService = ({userId, cursor, take}: { userId: number, cursor?: number, take: number} ,prisma: PrismaClient) => {
+export const getBlockUsersService = ({userId, cursor, take}: { userId: number, cursor?: string, take: number} ,prisma: PrismaClient) => {
 
     const counts = prisma.block.count({
         where: {
@@ -37,12 +37,17 @@ export const getBlockUsersService = ({userId, cursor, take}: { userId: number, c
             createdAt: true,
         },
         where:{
+            // ...(cursor && {
+            //     blockedId: {
+            //         lt: cursor
+            //     }
+            // }),
+            blockerId: userId,
             ...(cursor && {
-                blockedId: {
+                createdAt: {
                     lt: cursor
                 }
             }),
-            blockerId: userId
         },
         orderBy: {
             createdAt: "desc"

@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import { BadReqError } from "../../../lib/http-error";
 import { client } from "../../../db/elasticsearch";
 import { getSearchPostsService } from "../service/get-search-posts";
-import { createSearchService } from "../service/create-search-log";
+import { createSearchLogService } from "../service/create-search-log";
 import { POSTS_INDEX, SEARCH_LOG_INDEX } from "../constants";
 import Prisma from "../../../db/prisma";
 import { getRandomPostsService } from "../../posts/service/get-random-posts";
@@ -21,7 +21,7 @@ export const getSearchPosts = async (req: Request<unknown, unknown, unknown, {se
     });
 
     //create search log
-    await createSearchService({ query, index: SEARCH_LOG_INDEX, userId: req.id }, client);
+    await createSearchLogService({ query, index: SEARCH_LOG_INDEX, userId: req.id }, client);
 
     const ids = organizedPosts.map((post: any) => {
         return post.id;

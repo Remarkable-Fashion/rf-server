@@ -5,24 +5,25 @@ import { getBlockUsersService } from "../service/get-block-users";
 
 
 const DEFAULT_TAKE = 21;
-export const getBlockUsers = async (req: Request<unknown, unknown, unknown, {cursorId?: string, take?: string}>, res: Response) => {
+export const getBlockUsers = async (req: Request<unknown, unknown, unknown, {cursor?: string, take?: string}>, res: Response) => {
 
     if(!req.id){
         throw new UnauthorizedError()
     }
 
-    const cursor = validateCursor(req.query.cursorId);
+    const cursor = validateCursor(req.query.cursor);
     const take = validateTake(req.query.take);
 
     const [counts, lastMyBlockedUser, blokedUsers] = await getBlockUsersService({userId: req.id, cursor, take}, Prisma);
     
+    const lastBlockedUserId = blokedUsers.at(-1)?.blocked.id!;
     const data = {
-        nextCursorId: blokedUsers.at(-1)?.blocked.id,
-        hasNext: blokedUsers.at(-1)?.blocked.id! > lastMyBlockedUser?.blockedId!,
+        nextCursor: lastBlockedUserId,
+        hasNext: lastBlockedUserId > (lastMyBlockedUser?.blockedId ?? 0),
         totalCounts: counts,
         size: blokedUsers.length,
         take,
-        cursorId: cursor,
+        cursor: cursor,
         blokedUsers: blokedUsers.map(blokedUser => {
             return {
                 user: blokedUser.blocked,
@@ -34,13 +35,23 @@ export const getBlockUsers = async (req: Request<unknown, unknown, unknown, {cur
 }
 
 const validateCursor = (cursor?: string) => {
+    if(!cursor){
+        return undefined;
+    }
+    const date = Date.parse(cursor);
 
-    const _cursor = cursor ? Number(cursor) : undefined;
-    if(_cursor && _cursor < 0){
-        throw new BadReqError("cursor should be higher than 0")
+    if(Number.isNaN(date)){
+        throw new BadReqError("cursor should be String Date");
     }
 
-    return _cursor;
+    return cursor;
+
+    // const _cursor = cursor ? Number(cursor) : undefined;
+    // if(_cursor && _cursor < 0){
+    //     throw new BadReqError("cursor should be higher than 0")
+    // }
+
+    // return _cursor;
 }
 
 

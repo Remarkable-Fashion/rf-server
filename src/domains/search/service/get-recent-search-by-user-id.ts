@@ -18,7 +18,21 @@ export const getRecentSearchByUserIdService = async ({index, userId, size}: {ind
                         "order": "desc"
                     }
                 }
-            ]
+            ],
+            "collapse": {
+                "field": "query.keyword",
+                "inner_hits": {
+                    "name": "latest",
+                    "size": 1,
+                    "sort": [
+                        {
+                            "timestamp": {
+                                "order": "desc"
+                            }
+                        }
+                    ]
+                }
+            }
         }
     });
 

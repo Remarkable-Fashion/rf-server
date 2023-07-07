@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client"
 
-export const getMyFollowersService = (data: { userId: number, cursor?: number, take: number } ,prisma: PrismaClient) => {
+export const getMyFollowersService = (data: { userId: number, cursor?: string, take: number } ,prisma: PrismaClient) => {
     const counts = prisma.follows.count({
         where: {
             followingId: data.userId,
@@ -36,12 +36,18 @@ export const getMyFollowersService = (data: { userId: number, cursor?: number, t
             createdAt: true
         },
         where: {
+            
+            // ...(data.cursor && {
+            //     followerId: {
+            //         lt: data.cursor
+            //     }
+            // }),
+            followingId: data.userId,
             ...(data.cursor && {
-                followerId: {
+                createdAt: {
                     lt: data.cursor
                 }
             }),
-            followingId: data.userId
         },
         orderBy: {
             createdAt: "desc"
