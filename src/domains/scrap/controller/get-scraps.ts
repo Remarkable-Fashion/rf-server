@@ -5,29 +5,15 @@ import { getScraps as getScrapsService } from "../service/get-scraps";
 
 type ReqQuerys = {
     take?: string;
-    cursorId?: string;
+    cursor?: string;
 };
 
 const DEFAULT_TAKE = 12;
 const DEFAULT_CURSUR = 1;
 
-export const getScraps = async (req: Request, res: Response) => {
-
-    const _take = req.query.take;
-    const _cursorId = req.query.cursorId;
-
-    const parsedTake = Number(_take);
-    
-    if(_take && Number.isNaN(parsedTake)){
-        throw new BadReqError("Should be Integer 'take'");
-    }
-
-    const parsedCursorId = Number(_cursorId);
-    if(_cursorId && Number.isNaN(parsedCursorId)){
-        throw new BadReqError("Should be Integer 'cursorId'");
-    }
-    const take = _take && parsedTake < DEFAULT_TAKE ? parsedTake : DEFAULT_TAKE;
-    const cursorId = _cursorId ? parsedCursorId : undefined;
+export const getScraps = async (req: Request<unknown, unknown, unknown, ReqQuerys>, res: Response) => {
+    const take = validateQueryTake(req.query.take);
+    const cursorId = validateQueryCursor(req.query.cursor);
 
     const [totalCountsOfScraps, lastScrapedPost, scraps] = await getScrapsService({ cursorId, take, userId: Number(req.id) }, Prisma);
 
@@ -42,16 +28,42 @@ export const getScraps = async (req: Request, res: Response) => {
         }
     })
 
+    const lastPostId = scraps.at(-1)?.post.id!;
     const data = {
-        nextCursorId: scraps.at(-1)?.post.id,
-        hasNext: scraps.at(-1)?.post.id! > lastScrapedPost?.postId!,
+        nextCursor: lastPostId,
+        hasNext: lastPostId > (lastScrapedPost?.postId ?? 0),
         totalCounts: totalCountsOfScraps,
         size: scraps.length,
         take,
-        // cursorId: cursorId,
-        cursorId: cursorId ?? 0,
+        cursor: cursorId ?? 0,
         posts: mergedScraps,
     }
 
     res.status(200).json(data);
 };
+
+const validateQueryCursor = (cursor?: string) => {
+    if(!cursor){
+        return undefined;
+    }
+
+    const parsedCursorId = Number(cursor);
+    if(Number.isNaN(parsedCursorId)){
+        throw new BadReqError("Should be Integer 'cursorId'");
+    }
+
+    return parsedCursorId;
+}
+
+const validateQueryTake = (take?: string) => {
+    if(!take){
+        return DEFAULT_TAKE;
+    }
+
+    const parsedTake = Number(take);
+    
+    if(Number.isNaN(parsedTake)){
+        throw new BadReqError("Should be Integer 'take'");
+    }
+    return parsedTake < DEFAULT_TAKE ? parsedTake : DEFAULT_TAKE;
+}

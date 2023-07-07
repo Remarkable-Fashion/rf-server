@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { BadReqError } from "../../../lib/http-error";
 import { client } from "../../../db/elasticsearch";
-import { createSearchService } from "../service/create-search-log";
+import { createSearchLogService } from "../service/create-search-log";
 import { SEARCH_LOG_INDEX } from "../constants";
 
 
@@ -14,7 +14,7 @@ export const createSearch = async (req: Request<unknown, unknown, unknown, {sear
     // const DEFAULT_INDEX = "search_log";
     const userId = 1;
 
-    const rv = await createSearchService({ query, userId, index: SEARCH_LOG_INDEX }, client);
+    const rv = await createSearchLogService({ query, userId, index: SEARCH_LOG_INDEX }, client);
 
     console.log("rv ", rv.body);
 

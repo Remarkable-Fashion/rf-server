@@ -50,7 +50,8 @@ export const startApp = () => {
 
     app.use("/", express.static(conf().IMAGES_DIR_PATH));
 
-    app.use("/api/v1", router);
+    const API_PREFIX = "/api/v1";
+    app.use(API_PREFIX, router);
 
     app.use("*", (req, res) => {
         res.status(404).json({ msg: "Not Found Page" });

@@ -4,24 +4,25 @@ import Prisma from "../../../db/prisma";
 import { getMyFollowingsService } from "../service/get-my-followings";
 
 const DEFAULT_TAKE = 21;
-export const getMyFollowings = async (req: Request<unknown, unknown, unknown, {cursorId?: string, take?: string}>, res: Response) => {
+export const getMyFollowings = async (req: Request<unknown, unknown, unknown, {cursor?: string, take?: string}>, res: Response) => {
 
     if(!req.id){
         throw new UnauthorizedError();
     }
 
-    const cursor = validateCursor(req.query.cursorId);
+    const cursor = validateCursor(req.query.cursor);
     const take = validateTake(req.query.take);
 
     const [counts, lastOfFollowing, followings] = await getMyFollowingsService({userId: req.id, cursor, take }, Prisma);
  
+    const lastFollowingId = followings.at(-1)?.following.id!;
     const data = {
-        nextCursorId: followings.at(-1)?.following.id,
-        hasNext: followings.at(-1)?.following.id! > lastOfFollowing?.followingId!,
+        nextCursor: lastFollowingId,
+        hasNext: lastFollowingId > (lastOfFollowing?.followingId ?? 0),
         totalCounts: counts,
         size: followings.length,
         take,
-        cursorId: cursor,
+        cursor: cursor,
         followings: followings.map(following => {
             return {
                 user: following.following,
@@ -33,13 +34,23 @@ export const getMyFollowings = async (req: Request<unknown, unknown, unknown, {c
 }
 
 const validateCursor = (cursor?: string) => {
+    if(!cursor){
+        return undefined;
+    }
+    const date = Date.parse(cursor);
 
-    const _cursor = cursor ? Number(cursor) : undefined;
-    if(_cursor && _cursor < 0){
-        throw new BadReqError("cursor should be higher than 0")
+    if(Number.isNaN(date)){
+        throw new BadReqError("cursor should be String Date");
     }
 
-    return _cursor;
+    return cursor;
+
+    // const _cursor = cursor ? Number(cursor) : undefined;
+    // if(_cursor && _cursor < 0){
+    //     throw new BadReqError("cursor should be higher than 0")
+    // }
+
+    // return _cursor;
 }
 
 

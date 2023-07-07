@@ -6,11 +6,13 @@ function getRequestLogFormatter() {
     const { combine, timestamp, printf } = winston.format;
 
     return combine(
-        timestamp({ format: () => moment().tz("Asia/Seoul").format("YYYY-MM-DD HH:mm:ss") }),
+        timestamp({ format: () => moment().tz("Asia/Seoul").format("YYYY-MM-DDTHH:mm:ss") }),
         // timestamp({ format: "YYYY-MM-DD HH:MM:SS" }),
         printf((info) => {
             const { req } = info.message;
-            return `${info.timestamp} ${info.level}: ${req.hostname}${req.port || ""} ${req.method} '${req.originalUrl}'`;
+            const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
+            return `${info.timestamp} ${info.level}: ${ip}${req.port || ""} ${req.method} '${req.originalUrl}'`;
+            // return `${info.timestamp} ${info.level}: ${req.hostname}${req.port || ""} ${req.method} '${req.originalUrl}'`;
         })
     );
 }

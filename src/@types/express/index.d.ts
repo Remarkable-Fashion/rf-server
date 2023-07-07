@@ -12,6 +12,7 @@ declare global {
         interface AuthInfo {}
         export interface Request {
             id: number;
+            kakaoToken?: string;
         }
         export interface User extends UserWithRole {
             // export interface User extends Users, Pick<Roles, "role"> {
