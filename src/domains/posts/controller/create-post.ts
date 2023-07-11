@@ -7,6 +7,7 @@ import { conf } from "../../../config";
 import { validateBody } from "../../../lib/validate-body";
 import { createPostElasticSearchService } from "../service/create-post-elasticsearch";
 import { client } from "../../../db/elasticsearch";
+import { createClothesElasticSearchService } from "../../clothes/service/create-es-clothes";
 
 const index = "posts";
 export const createPost = async (req: Request<unknown, unknown, CreatePostBody>, res: Response) => {
@@ -22,7 +23,7 @@ export const createPost = async (req: Request<unknown, unknown, CreatePostBody>,
 
     // @Check this issue : https://stackoverflow.com/questions/57631753/how-to-properly-handle-req-files-in-node-post-request-using-multer-and-typescrip#answer-70799312
     // const files = (req.files as { [fieldName: string]: Express.Multer.File[]}).images
-    const imgUrls = (req.files as { [fieldName: string]: Express.Multer.File[] }).images.map((f) => conf().SERVER_DOMAIN + "/" + f.filename);
+    const imgUrls = (req.files as { [fieldName: string]: Express.Multer.File[] }).images.map((f) => `${conf().SERVER_DOMAIN}/${f.filename}`);
 
     if (!imgUrls || imgUrls.length < 1) {
         throw new BadReqError("There must be at least one image");
@@ -36,9 +37,8 @@ export const createPost = async (req: Request<unknown, unknown, CreatePostBody>,
 
     const data: CreatePost = { userId: req.id, ...body, imgUrls, sex };
     const post = await createPostService(data, Prisma);
-
     /**
-     * @TODO 
+     * @TODO
      * 기존 몽고디비에 저장해서 random search를 구현했지만
      * elasticsearch에 저장해서 검색엔진과 랜덤서치 둘을 사용하자.
      * 인덱스 저장할 때 _id는 sql의 id값 그대로 넣자.
@@ -48,8 +48,11 @@ export const createPost = async (req: Request<unknown, unknown, CreatePostBody>,
     // const collectionName = createCollectionName(createYearMonthString(), POST_PRE_FIX);
     // await createPostMongoService({ postId: postId, sex: post.sex }, mongo.Db, collectionName);
 
-    
-    await createPostElasticSearchService({ index, id: String(post.id), data: post}, client);
+    await createPostElasticSearchService({ index, id: String(post.id), data: post }, client);
+
+    if(post.clothes.length){
+        await createClothesElasticSearchService({index, clothes: post.clothes}, client);
+    }
     // await createPostMongoService({ postId: postId, ..._post }, mongo.Db, collectionName);
 
     res.status(200).json(post);

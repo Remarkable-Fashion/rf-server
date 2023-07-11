@@ -7,21 +7,20 @@ type ReqParams = {
     id?: string;
 };
 
-
-export const deletePostById = async ( req: Request<ReqParams>, res: Response) => {
+export const deletePostById = async (req: Request<ReqParams>, res: Response) => {
     const { id } = req.params;
 
     const parsedId = Number(id);
 
-    if(!id || Number.isNaN(parsedId)){
+    if (!id || Number.isNaN(parsedId)) {
         throw new BadReqError("Check id");
     }
 
-    if(!req.id){
-        throw new UnauthorizedError()
+    if (!req.id) {
+        throw new UnauthorizedError();
     }
 
-    const post = await deletePostByIdService({id: parsedId, userId: req.id}, Prisma)
+    const post = await deletePostByIdService({ id: parsedId, userId: req.id }, Prisma);
 
     /**
      * @todo

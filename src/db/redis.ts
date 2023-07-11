@@ -18,6 +18,7 @@ export class RedisSingleton {
     private static instance: RedisSingleton;
 
     private readonly _client;
+
     private constructor(url?: string) {
         this._client = redis.createClient({ url: url || conf().REDIS_URL });
 
@@ -33,7 +34,8 @@ export class RedisSingleton {
     get client() {
         return this._client;
     }
-    public static async getInstance(url?: string) {
+
+    public static getInstance(url?: string) {
         if (!RedisSingleton.instance) {
             RedisSingleton.instance = new RedisSingleton(url);
         }
@@ -44,6 +46,10 @@ export class RedisSingleton {
 
     async connect() {
         await this._client.connect();
+    }
+
+    async disConnect() {
+        await this._client.quit();
     }
 }
 

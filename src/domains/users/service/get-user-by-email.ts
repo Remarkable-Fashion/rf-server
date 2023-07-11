@@ -1,16 +1,15 @@
 import type { PrismaClient, SocialType } from "@prisma/client";
 
-export const getUserByEmail = ({ email, type, socialId }: { email: string, type: SocialType, socialId: string }, prisma: PrismaClient) => {
-    return prisma.users.findUnique({ 
-        select: 
-        { 
-            id: true, 
-            email: true, 
-            name: true, 
-            meta: { 
-                select: { 
-                    role: true 
-                } 
+export const getUserByEmail = ({ email, type, socialId }: { email: string; type: SocialType; socialId: string }, prisma: PrismaClient) => {
+    return prisma.users.findUnique({
+        select: {
+            id: true,
+            email: true,
+            name: true,
+            meta: {
+                select: {
+                    role: true
+                }
             },
             socials: {
                 where: {
@@ -19,11 +18,11 @@ export const getUserByEmail = ({ email, type, socialId }: { email: string, type:
                 },
                 select: {
                     type: true,
-                    socialId: true,
+                    socialId: true
                 }
             },
             profile: true
-        }, 
-        where: { email } 
+        },
+        where: { email }
     });
 };

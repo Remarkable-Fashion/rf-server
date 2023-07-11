@@ -15,55 +15,61 @@ export const getScraps = async (req: Request<unknown, unknown, unknown, ReqQuery
     const take = validateQueryTake(req.query.take);
     const cursorId = validateQueryCursor(req.query.cursor);
 
-    const [totalCountsOfScraps, lastScrapedPost, scraps] = await getScrapsService({ cursorId, take, userId: Number(req.id) }, Prisma);
+    const {totalCountsOfScraps, lastScrapedPost, posts} = await getScrapsService({ cursorId, take, userId: Number(req.id) }, Prisma);
+    // const [totalCountsOfScraps, lastScrapedPost, scraps] = await getScrapsService({ cursorId, take, userId: Number(req.id) }, Prisma);
 
-    const mergedScraps = scraps.map(scrap => {
-        const isFollow = scrap.post.user.followers.length > 0;
-        const isFavoirte = scrap.post.favorites.length > 0;
+    // const mergedScraps = scraps.map((scrap) => {
+    //     const isFollow = scrap.post.user.followers.length > 0;
+    //     const isFavoirte = scrap.post.favorites.length > 0;
 
-        return {
-            isFavoirte,
-            isFollow,
-            ...scrap.post
-        }
-    })
+    //     return {
+    //         isFavoirte,
+    //         isFollow,
+    //         ...scrap.post
+    //     };
+    // });
 
-    const lastPostId = scraps.at(-1)?.post.id!;
+    if(!posts || posts.length <= 0){
+        throw new BadReqError("");
+    }
+
+    // const asdfasdf = scraps.at(-1);
+    const lastPostId = posts.at(-1)!.id!;
     const data = {
         nextCursor: lastPostId,
-        hasNext: lastPostId > (lastScrapedPost?.postId ?? 0),
+        hasNext: !!(lastPostId > (lastScrapedPost?.postId ?? 0)),
         totalCounts: totalCountsOfScraps,
-        size: scraps.length,
+        size: posts,
         take,
         cursor: cursorId ?? 0,
-        posts: mergedScraps,
-    }
+        posts: posts
+    };
 
     res.status(200).json(data);
 };
 
 const validateQueryCursor = (cursor?: string) => {
-    if(!cursor){
+    if (!cursor) {
         return undefined;
     }
 
     const parsedCursorId = Number(cursor);
-    if(Number.isNaN(parsedCursorId)){
+    if (Number.isNaN(parsedCursorId)) {
         throw new BadReqError("Should be Integer 'cursorId'");
     }
 
     return parsedCursorId;
-}
+};
 
 const validateQueryTake = (take?: string) => {
-    if(!take){
+    if (!take) {
         return DEFAULT_TAKE;
     }
 
     const parsedTake = Number(take);
-    
-    if(Number.isNaN(parsedTake)){
+
+    if (Number.isNaN(parsedTake)) {
         throw new BadReqError("Should be Integer 'take'");
     }
     return parsedTake < DEFAULT_TAKE ? parsedTake : DEFAULT_TAKE;
-}
+};

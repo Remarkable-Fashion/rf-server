@@ -1,16 +1,14 @@
 import { Client } from "@elastic/elasticsearch";
 
-
-export const getLastSearchService = async ({index}:{index: string},client: Client) => {
-
+export const getLastSearchService = async ({ index }: { index: string }, client: Client) => {
     const result = await client.search({
         index,
         body: {
-            "size": 1,
-            "sort": [
+            size: 1,
+            sort: [
                 {
-                    "timestamp": {
-                        "order": "desc"
+                    timestamp: {
+                        order: "desc"
                     }
                 }
             ]
@@ -18,4 +16,4 @@ export const getLastSearchService = async ({index}:{index: string},client: Clien
     });
 
     return result.body.hits.hits[0]._id;
-}
+};

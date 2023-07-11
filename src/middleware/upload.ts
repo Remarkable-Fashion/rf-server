@@ -16,9 +16,45 @@ export const upload = multer({
                 throw new Error("Check your auth");
             }
             /**
-             * @format "https://wadada.me/rf/10-d8-1684206706483.png"
+             * @format "https://wadada.me/10-d8-1684206706483.png"
              */
-            const fileName = `${req.id}-${file.originalname.substring(0, 2)}-${Date.now()}${ext}`;
+            const _fileName = file.originalname.split(".")[0];
+            const fileName = `${req.id}-${_fileName.substring(0, 2)}-${Date.now()}${ext}`;
+            cb(null, fileName);
+        }
+    }),
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype === "image/png" || file.mimetype === "image/jpg" || file.mimetype === "image/jpeg") {
+            return cb(null, true);
+        }
+
+        return cb(null, false);
+    },
+    limits: {
+        fileSize: MAX_FILE_SIZE, // 600kb
+        files: MAX_FILES
+    }
+});
+
+export const uploadTest = ({prefix}: {prefix?: string}) => multer({
+    storage: multer.diskStorage({
+        destination: (req, file, cb) => {
+            cb(null, IMAGES_DIR_PATH);
+        },
+        filename: (req, file, cb) => {
+            const ext = path.extname(file.originalname); // 확장자 추출
+
+            if (!req.id) {
+                throw new Error("Check your auth");
+            }
+            /**
+             * @format "https://wadada.me/10-d8-1684206706483.png"
+             */
+            const _fileName = file.originalname.split(".")[0];
+            let fileName = `${req.id}-${_fileName.substring(0, 2)}-${Date.now()}${ext}`;
+            if(prefix){
+                fileName = `${prefix}-${fileName}`;
+            }
             cb(null, fileName);
         }
     }),

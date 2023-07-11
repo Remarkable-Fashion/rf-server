@@ -3,27 +3,27 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 /**
  * @softDelete
  */
-export const deletePostByIdService = async (data: {id: number, userId: number}, prisma: PrismaClient) => {
-    const rv = await prisma.$transaction( async (tx) => {
+export const deletePostByIdService = async (data: { id: number; userId: number }, prisma: PrismaClient) => {
+    const rv = await prisma.$transaction(async (tx) => {
         const post = await tx.posts.findFirstOrThrow({
             select: {
                 id: true,
-                deletedAt: true,
+                deletedAt: true
             },
             where: {
                 id: data.id,
-                userId: data.userId,
+                userId: data.userId
                 // deletedAt: {
                 //     not: null
                 // }
             }
         });
-        if(post.deletedAt) {
+        if (post.deletedAt) {
             /**
              * @todo
              * DBError 클래스에 추가?
              */
-            throw new PrismaClientKnownRequestError("Already Deleted", {code: "P2025", meta: undefined, clientVersion: ""});
+            throw new PrismaClientKnownRequestError("Already Deleted", { code: "P2025", meta: undefined, clientVersion: "" });
         }
 
         const softDeletedPost = await tx.users.update({
@@ -42,7 +42,7 @@ export const deletePostByIdService = async (data: {id: number, userId: number}, 
                     }
                 }
             }
-        })
+        });
 
         return softDeletedPost;
     });
@@ -76,4 +76,4 @@ export const deletePostByIdService = async (data: {id: number, userId: number}, 
     //         user: true
     //     }
     // });
-}
+};

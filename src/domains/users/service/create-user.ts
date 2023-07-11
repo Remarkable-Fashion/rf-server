@@ -1,6 +1,9 @@
 import { Role, SocialType, type PrismaClient } from "@prisma/client";
 
-export const createUser = (data: { user: {name?: string; email: string}, social: { type: SocialType, socialId: string}, meta: { role: Role } }, prisma: PrismaClient) => {
+export const createUser = (
+    data: { user: { name?: string; email: string }; social: { type: SocialType; socialId: string }; meta: { role: Role } },
+    prisma: PrismaClient
+) => {
     return prisma.users.create({
         data: {
             ...data.user,
@@ -23,7 +26,7 @@ export const createUser = (data: { user: {name?: string; email: string}, social:
                     role: true
                 }
             },
-            socials:{
+            socials: {
                 select: {
                     type: true,
                     socialId: true

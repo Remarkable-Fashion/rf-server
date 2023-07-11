@@ -1,7 +1,7 @@
 import type { PrismaClient } from "@prisma/client";
 
 export const getUserWithProfileById = ({ id }: { id: number }, prisma: PrismaClient) => {
-    return prisma.users.findUnique({ 
+    return prisma.users.findUnique({
         select: {
             id: true,
             name: true,
@@ -11,7 +11,7 @@ export const getUserWithProfileById = ({ id }: { id: number }, prisma: PrismaCli
                     height: true,
                     weight: true,
                     sex: true,
-                    introduction: true,
+                    introduction: true
                 }
             },
             _count: {
@@ -22,6 +22,6 @@ export const getUserWithProfileById = ({ id }: { id: number }, prisma: PrismaCli
                 }
             }
         },
-        where: { id } 
+        where: { id }
     });
 };

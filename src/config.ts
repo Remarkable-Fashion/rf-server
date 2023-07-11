@@ -19,7 +19,6 @@ export const conf = () => {
 
     const LOG_DIR = isProd ? "logs" : "dev-logs";
 
-
     // /app/images
     const IMAGES_DIR_PATH = path.join(process.cwd(), isProd ? "images" : "dev-images");
     const MAX_FILE_SIZE = Number(process.env.MAX_FILE_SIZE) || 600 * 1000; // 600kb

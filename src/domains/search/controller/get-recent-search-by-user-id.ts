@@ -4,13 +4,13 @@ import { getRecentSearchByUserIdService } from "../service/get-recent-search-by-
 import { SEARCH_LOG_INDEX } from "../constants";
 
 const SIZE = 10;
-export const getRecentSearchByUserId = async (req: Request<unknown, unknown, unknown, {search?: string, size?: string}>, res: Response) => {
+export const getRecentSearchByUserId = async (req: Request<unknown, unknown, unknown, { search?: string; size?: string }>, res: Response) => {
     const rv = await getRecentSearchByUserIdService({ index: SEARCH_LOG_INDEX, userId: req.id, size: SIZE }, client);
 
     // console.log("rv ", rv.body.hits.hits);
-    const logs = rv.body.hits.hits.map( (log: any) => {
+    const logs = rv.body.hits.hits.map((log: any) => {
         return log._source.query;
-    })
+    });
 
     res.status(200).json({
         searchs: logs
@@ -27,7 +27,7 @@ export const getRecentSearchByUserId = async (req: Request<unknown, unknown, unk
 //     if(Number.isNaN(parsedSize)){
 //         throw new BadReqError("'size' should be Number");
 //     }
-    
+
 //     if(parsedSize <= 0 || parsedSize > 20){
 //         throw new BadReqError("'size' should be 0 to 20");
 //     }

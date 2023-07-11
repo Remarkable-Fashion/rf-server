@@ -1,6 +1,6 @@
-import { PrismaClient } from "@prisma/client"
+import { PrismaClient } from "@prisma/client";
 
-export const getMyFollowingsService = (data: { userId: number; cursor?: string, take: number }, prisma: PrismaClient) => {
+export const getMyFollowingsService = (data: { userId: number; cursor?: string; take: number }, prisma: PrismaClient) => {
     const counts = prisma.follows.count({
         where: {
             followerId: data.userId
@@ -10,6 +10,7 @@ export const getMyFollowingsService = (data: { userId: number; cursor?: string, 
     const lastOfFollowing = prisma.follows.findFirst({
         select: {
             followingId: true,
+            createdAt: true
         },
         where: {
             followerId: data.userId
@@ -17,7 +18,7 @@ export const getMyFollowingsService = (data: { userId: number; cursor?: string, 
         orderBy: {
             createdAt: "asc"
         }
-    })
+    });
 
     const followings = prisma.follows.findMany({
         select: {
@@ -28,12 +29,12 @@ export const getMyFollowingsService = (data: { userId: number; cursor?: string, 
                     name: true,
                     profile: {
                         select: {
-                            avartar: true,
+                            avartar: true
                         }
                     }
                 }
             },
-            createdAt: true,
+            createdAt: true
             // follower: true
         },
         where: {
@@ -47,7 +48,7 @@ export const getMyFollowingsService = (data: { userId: number; cursor?: string, 
                 createdAt: {
                     lt: data.cursor
                 }
-            }),
+            })
         },
         orderBy: {
             createdAt: "desc"
@@ -56,4 +57,4 @@ export const getMyFollowingsService = (data: { userId: number; cursor?: string, 
     });
 
     return prisma.$transaction([counts, lastOfFollowing, followings]);
-}
+};

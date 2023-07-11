@@ -1,16 +1,16 @@
-import { PrismaClient } from "@prisma/client"
+import { PrismaClient } from "@prisma/client";
 
-export const getBlockUsersService = ({userId, cursor, take}: { userId: number, cursor?: string, take: number} ,prisma: PrismaClient) => {
-
+export const getBlockUsersService = ({ userId, cursor, take }: { userId: number; cursor?: string; take: number }, prisma: PrismaClient) => {
     const counts = prisma.block.count({
         where: {
-            blockerId: userId,
+            blockerId: userId
         }
     });
 
     const lastMyBlockedUser = prisma.block.findFirst({
         select: {
             blockedId: true,
+            createdAt: true
         },
         where: {
             blockerId: userId
@@ -18,7 +18,7 @@ export const getBlockUsersService = ({userId, cursor, take}: { userId: number, c
         orderBy: {
             createdAt: "asc"
         }
-    })
+    });
 
     const blocks = prisma.block.findMany({
         select: {
@@ -29,14 +29,15 @@ export const getBlockUsersService = ({userId, cursor, take}: { userId: number, c
                     name: true,
                     profile: {
                         select: {
-                            avartar: true,
+                            avartar: true
                         }
                     }
+                    // createdAt: true,
                 }
             },
-            createdAt: true,
+            createdAt: true
         },
-        where:{
+        where: {
             // ...(cursor && {
             //     blockedId: {
             //         lt: cursor
@@ -47,7 +48,7 @@ export const getBlockUsersService = ({userId, cursor, take}: { userId: number, c
                 createdAt: {
                     lt: cursor
                 }
-            }),
+            })
         },
         orderBy: {
             createdAt: "desc"
@@ -65,4 +66,4 @@ export const getBlockUsersService = ({userId, cursor, take}: { userId: number, c
     //         }
     //     }
     // })
-}
+};

@@ -1,9 +1,12 @@
 import { Role, SocialType, type PrismaClient } from "@prisma/client";
 
-export const findUserOrCreate = (data: { user: {name?: string; email: string}, social: { type: SocialType, socialId: string}, meta: { role: Role } }, prisma: PrismaClient) => {
+export const findUserOrCreate = (
+    data: { user: { name?: string; email: string }; social: { type: SocialType; socialId: string }; meta: { role: Role } },
+    prisma: PrismaClient
+) => {
     return prisma.users.upsert({
         where: {
-            email: data.user.email,
+            email: data.user.email
         },
         create: {
             ...data.user,
@@ -27,7 +30,7 @@ export const findUserOrCreate = (data: { user: {name?: string; email: string}, s
                     role: true
                 }
             },
-            socials:{
+            socials: {
                 select: {
                     type: true,
                     socialId: true

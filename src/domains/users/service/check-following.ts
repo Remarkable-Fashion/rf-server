@@ -1,6 +1,6 @@
-import { PrismaClient } from "@prisma/client"
+import { PrismaClient } from "@prisma/client";
 
-export const checkFollowingService = (data: { followerId: number, followingId: number} ,prisma: PrismaClient) => {
+export const checkFollowingService = (data: { followerId: number; followingId: number }, prisma: PrismaClient) => {
     return prisma.follows.findUnique({
         where: {
             followerId_followingId: {
@@ -8,5 +8,5 @@ export const checkFollowingService = (data: { followerId: number, followingId: n
                 followingId: data.followingId
             }
         }
-    })
-}
+    });
+};

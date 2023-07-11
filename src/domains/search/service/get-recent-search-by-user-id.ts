@@ -1,33 +1,33 @@
 import { Client } from "@elastic/elasticsearch";
 
-export const getRecentSearchByUserIdService = async ({index, userId, size}: {index: string, userId: number, size: number}, client: Client) => {
+export const getRecentSearchByUserIdService = async ({ index, userId, size }: { index: string; userId: number; size: number }, client: Client) => {
     const result = await client.search({
         index,
         body: {
-            "size": size,
-            "query": {
-                "term": {
-                    "user_id": {
-                        "value": userId
+            size,
+            query: {
+                term: {
+                    user_id: {
+                        value: userId
                     }
                 }
             },
-            "sort": [
+            sort: [
                 {
-                    "timestamp": {
-                        "order": "desc"
+                    timestamp: {
+                        order: "desc"
                     }
                 }
             ],
-            "collapse": {
-                "field": "query.keyword",
-                "inner_hits": {
-                    "name": "latest",
-                    "size": 1,
-                    "sort": [
+            collapse: {
+                field: "query.keyword",
+                inner_hits: {
+                    name: "latest",
+                    size: 1,
+                    sort: [
                         {
-                            "timestamp": {
-                                "order": "desc"
+                            timestamp: {
+                                order: "desc"
                             }
                         }
                     ]
@@ -37,4 +37,4 @@ export const getRecentSearchByUserIdService = async ({index, userId, size}: {ind
     });
 
     return result;
-}
+};

@@ -1,6 +1,6 @@
-import { PrismaClient } from "@prisma/client"
+import { PrismaClient } from "@prisma/client";
 
-export const deleteFollowingService = (data: { followerId: number, followingId: number} ,prisma: PrismaClient) => {
+export const deleteFollowingService = (data: { followerId: number; followingId: number }, prisma: PrismaClient) => {
     return prisma.follows.delete({
         where: {
             followerId_followingId: {
@@ -8,5 +8,5 @@ export const deleteFollowingService = (data: { followerId: number, followingId: 
                 followingId: data.followingId
             }
         }
-    })
-}
+    });
+};

@@ -1,4 +1,4 @@
-import {Client} from "@elastic/elasticsearch";
+import { Client } from "@elastic/elasticsearch";
 
 const main = async () => {
     const client = new Client({
@@ -6,34 +6,34 @@ const main = async () => {
         node: "http://localhost:9200",
         maxRetries: 5,
         requestTimeout: 60000,
-        sniffOnStart: true,
+        sniffOnStart: true
     });
 
-    const indexName = "search_log"
-    const rv = await client.indices.exists({index: indexName});
+    // const indexName = "search_log";
+    const indexName = "clothes";
+    const rv = await client.indices.exists({ index: indexName });
 
     console.log("rv :", rv.body);
-    if(rv.body){
-
+    if (rv.body) {
         console.log("Alread exist");
         return;
     }
 
     const indexConfig = {
-        "settings": {
-            "index": {
-                "analysis": {
-                    "tokenizer": {
-                        "nori_user_dict": {
-                            "type": "nori_tokenizer",
-                            "decompound_mode": "mixed",
-                            "discard_punctuation": "false"
+        settings: {
+            index: {
+                analysis: {
+                    tokenizer: {
+                        nori_user_dict: {
+                            type: "nori_tokenizer",
+                            decompound_mode: "mixed",
+                            discard_punctuation: "false"
                         }
                     },
-                    "filter": {
-                        "my_pos_f": {
-                            "type": "nori_part_of_speech",
-                            "stoptags": [
+                    filter: {
+                        my_pos_f: {
+                            type: "nori_part_of_speech",
+                            stoptags: [
                                 "E",
                                 "IC",
                                 "J",
@@ -55,47 +55,55 @@ const main = async () => {
                             ]
                         }
                     },
-                    "analyzer": {
-                        "my_analyzer": {
-                            "type": "custom",
-                            "tokenizer": "nori_user_dict",
-                            "filter": "my_pos_f"
+                    analyzer: {
+                        my_analyzer: {
+                            type: "custom",
+                            tokenizer: "nori_user_dict",
+                            filter: "my_pos_f"
                         }
                     }
                 }
             }
         },
-        "mappings": {
-            "properties": {
-                "user_id": {
-                    "type": "integer"
+        mappings: {
+            properties: {
+                clothes_id: {
+                    type: "integer"
                 },
-                "query": {
-                    "type": "text",
-                    "fields": {
-                        "keyword": {
-                            "type": "keyword",
-                            "ignore_above": 256
+                name: {
+                    type: "text",
+                    fields: {
+                        keyword: {
+                            type: "keyword",
+                            ignore_above: 256
                         }
                     }
                 },
-                // "description": {
-                //     "type": "text"
-                // },
-                // "sex": {
-                //     "type": "keyword"
-                // },
-                "value": {
-                    "type": "integer"
+                brand: {
+                    type: "text",
+                    fields: {
+                        keyword: {
+                            type: "keyword",
+                            ignore_above: 256
+                        }
+                    }
+                },
+                category: {
+                    type: "keyword",
+                },
+                value: {
+                    type: "integer"
                 }
             }
         }
     };
 
-    await client.indices.create({index: indexName, body: indexConfig});
-    process.exit(1);
-}
+    await client.indices.create({ index: indexName, body: indexConfig });
+    console.log("CREATE INDEX SUCCESS");
 
-if(require.main === module){
+    process.exit(1);
+};
+
+if (require.main === module) {
     main();
 }

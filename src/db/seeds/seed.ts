@@ -21,7 +21,7 @@ const mongo = new Mongo(conf().MONGO_URI, conf().MONGO_DB);
 async function main() {
     await mongo.connect();
 
-    await createTposSeasonsStyles(prisma)
+    await createTposSeasonsStyles(prisma);
 
     const alice = await prisma.users.upsert({
         where: { email: "alice@prisma.io" },
@@ -80,15 +80,14 @@ async function main() {
         }
     });
 
-    await createFollowingService({followerId: alice.id, followingId: bob.id}, prisma);
-    await createFollowingService({followerId: alice.id, followingId: dohan.id}, prisma);
-    await createFollowingService({followerId: dohan.id, followingId: alice.id}, prisma);
-
+    await createFollowingService({ followerId: alice.id, followingId: bob.id }, prisma);
+    await createFollowingService({ followerId: alice.id, followingId: dohan.id }, prisma);
+    await createFollowingService({ followerId: dohan.id, followingId: alice.id }, prisma);
 
     const clothes: Omit<Clothes, "id" | "postId" | "createdAt">[] = [
-        { brand: "NIKE", category: "Top", name: "옷이름", price: 3000, color: "black", size: "L", imageUrl: "image", siteUrl: "site"}
+        { brand: "NIKE", category: "Top", name: "옷이름", price: 3000, color: "black", size: "L", imageUrl: "image", siteUrl: "site" }
     ];
-    
+
     const postData1 = {
         userId: alice.id,
         title: "test title 1",
@@ -96,16 +95,15 @@ async function main() {
         imgUrls: ["https://dev.rcloset.biz/1-다운-1685674305072.jpg"],
         clothes,
         sex: Sex.Male
-
-    }
+    };
 
     const post = await createPost(postData1, prisma);
     const { id: mysqlId, ..._post } = post;
     const collectionName = createCollectionName(createYearMonthString(), POST_PRE_FIX);
     await createPostMongo({ postId: mysqlId, ..._post }, mongo.Db, collectionName);
 
-    const favorite1 = await createFavorite({userId: bob.id, postId: post.id}, prisma);
-    const scrap1 = await createScrap({userId: bob.id, postId: post.id}, prisma);
+    const favorite1 = await createFavorite({ userId: bob.id, postId: post.id }, prisma);
+    const scrap1 = await createScrap({ userId: bob.id, postId: post.id }, prisma);
 
     const postData2 = {
         userId: alice.id,
@@ -114,15 +112,15 @@ async function main() {
         imgUrls: ["https://dev.rcloset.biz/1-다운-1685674305072.jpg"],
         clothes,
         sex: Sex.Male
-    }
+    };
 
     const post2 = await createPost(postData2, prisma);
     const { id: mysqlId2, ..._post2 } = post2;
     const collectionName2 = createCollectionName(createYearMonthString(), POST_PRE_FIX);
     await createPostMongo({ postId: mysqlId2, ..._post2 }, mongo.Db, collectionName2);
 
-    const favorite2 = await createFavorite({userId: bob.id, postId: post2.id}, prisma);
-    const scrap2 = await createScrap({userId: bob.id, postId: post2.id}, prisma);
+    const favorite2 = await createFavorite({ userId: bob.id, postId: post2.id }, prisma);
+    const scrap2 = await createScrap({ userId: bob.id, postId: post2.id }, prisma);
 
     const postData3 = {
         userId: dohan.id,
@@ -131,15 +129,14 @@ async function main() {
         imgUrls: ["https://dev.rcloset.biz/1-다운-1685674305072.jpg"],
         clothes,
         sex: Sex.Male
-
-    }
+    };
 
     const post3 = await createPost(postData3, prisma);
     const { id: mysqlId3, ..._post3 } = post3;
     const collectionName3 = createCollectionName(createYearMonthString(), POST_PRE_FIX);
     await createPostMongo({ postId: mysqlId3, ..._post3 }, mongo.Db, collectionName3);
 
-    console.log("Complete Seeding")
+    console.log("Complete Seeding");
 }
 main()
     .then(async () => {

@@ -1,21 +1,15 @@
-import type { PrismaClient, Profile } from "@prisma/client";
+import type { PrismaClient, Users } from "@prisma/client";
 import { ExcludeNullAndPartial } from "../../../lib/types";
 
-export type UpdateProfile = ExcludeNullAndPartial<Pick<Profile, "sex" | "height" | "weight" | "introduction" | "avartar">>;
+export type UpdateUser = ExcludeNullAndPartial<Pick<Users, "name" | "phoneNumber">>;
 
-export const updateUser = async (userId: number, data: UpdateProfile, prisma: PrismaClient) => {
-    return prisma.profile.update({
-        select: {
-            user: {
-                select: {
-                    id: true,
-                    name: true,
-                    email: true,
-                }
-            },
-            
+export const updateUserService = async (userId: number, data: UpdateUser, prisma: PrismaClient) => {
+    return prisma.users.update({
+        data: {
+            ...data
         },
-        where: { userId }, 
-        data 
+        where: {
+            id: userId
+        }
     });
-}
+};

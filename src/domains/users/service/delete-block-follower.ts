@@ -1,7 +1,6 @@
-import { PrismaClient } from "@prisma/client"
+import { PrismaClient } from "@prisma/client";
 
-export const deleteBlockFollowerService = (data: { blockerId: number, blockedId: number} ,prisma: PrismaClient) => {
-
+export const deleteBlockFollowerService = (data: { blockerId: number; blockedId: number }, prisma: PrismaClient) => {
     return prisma.block.delete({
         where: {
             blockerId_blockedId: {
@@ -9,7 +8,7 @@ export const deleteBlockFollowerService = (data: { blockerId: number, blockedId:
                 blockedId: data.blockedId
             }
         }
-    })
+    });
 
     // return prisma.follows.delete({
     //     where: {
@@ -19,4 +18,4 @@ export const deleteBlockFollowerService = (data: { blockerId: number, blockedId:
     //         }
     //     }
     // })
-}
+};

@@ -32,10 +32,11 @@ export const createTposSeasonsStyles = async (prisma: PrismaClient = new PrismaC
 };
 
 if (require.main === module) {
-    createTposSeasonsStyles().then(
+    createTposSeasonsStyles()
+        .then
         // async () => {
         //     await prisma.$disconnect();
         //     process.exit(1);
         // }
-    );
+        ();
 }

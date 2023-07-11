@@ -4,42 +4,46 @@ import Prisma from "../../../db/prisma";
 import { getMyFollowingsService } from "../service/get-my-followings";
 
 const DEFAULT_TAKE = 21;
-export const getMyFollowings = async (req: Request<unknown, unknown, unknown, {cursor?: string, take?: string}>, res: Response) => {
-
-    if(!req.id){
+export const getMyFollowings = async (req: Request<unknown, unknown, unknown, { cursor?: string; take?: string }>, res: Response) => {
+    if (!req.id) {
         throw new UnauthorizedError();
     }
 
     const cursor = validateCursor(req.query.cursor);
     const take = validateTake(req.query.take);
 
-    const [counts, lastOfFollowing, followings] = await getMyFollowingsService({userId: req.id, cursor, take }, Prisma);
- 
-    const lastFollowingId = followings.at(-1)?.following.id!;
+    const [counts, oldestFollowing, followings] = await getMyFollowingsService({ userId: req.id, cursor, take }, Prisma);
+    let hasNext = false;
+    const nextCursor = followings.at(-1)?.createdAt;
+    if (nextCursor && oldestFollowing?.createdAt) {
+        hasNext = new Date(nextCursor).getTime() > new Date(oldestFollowing?.createdAt).getTime();
+    }
+
     const data = {
-        nextCursor: lastFollowingId,
-        hasNext: lastFollowingId > (lastOfFollowing?.followingId ?? 0),
+        nextCursor,
+        hasNext,
+        // hasNext: lastFollowingId > (lastOfFollowing?.followingId ?? 0),
         totalCounts: counts,
         size: followings.length,
         take,
-        cursor: cursor,
-        followings: followings.map(following => {
+        cursor,
+        followings: followings.map((following) => {
             return {
                 user: following.following,
-                createdAt: following.createdAt,
-            }
+                createdAt: following.createdAt
+            };
         })
-    }
+    };
     res.json(data);
-}
+};
 
 const validateCursor = (cursor?: string) => {
-    if(!cursor){
+    if (!cursor) {
         return undefined;
     }
     const date = Date.parse(cursor);
 
-    if(Number.isNaN(date)){
+    if (Number.isNaN(date)) {
         throw new BadReqError("cursor should be String Date");
     }
 
@@ -51,16 +55,14 @@ const validateCursor = (cursor?: string) => {
     // }
 
     // return _cursor;
-}
-
+};
 
 const validateTake = (take?: string) => {
+    const _take = take ? Number(take) : DEFAULT_TAKE;
 
-    let _take = take ? Number(take) : DEFAULT_TAKE;
-
-    if(take && _take < 0){
-        throw new BadReqError("take should be higher than 0")
+    if (take && _take < 0) {
+        throw new BadReqError("take should be higher than 0");
     }
 
     return _take;
-}
+};
