@@ -9,10 +9,24 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Logs {
+  id      Int    @id @default(autoincrement()) @db.UnsignedInt
+  message String @db.VarChar(100)
+
+  Users   Users? @relation(fields: [usersId], references: [id])
+  usersId Int?   @db.UnsignedInt
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("logs")
+}
+
 model Users {
-  id    Int     @id @default(autoincrement()) @db.UnsignedInt
-  email String  @unique
-  name  String?
+  id            Int     @id @default(autoincrement()) @db.UnsignedInt
+  email         String  @unique
+  name          String?
+  phoneNumber   String? @map("phone_number") @db.VarChar(20)
+  phoneVerified Boolean @default(false) @map("phone_verified")
 
   favorites Favorites[]
   scraps    Scraps[]
@@ -27,7 +41,10 @@ model Users {
   blocked   Block[] @relation("blockedBy")
   blockedBy Block[] @relation("blocked")
 
-  createdAt DateTime @default(now()) @map("created_at")
+  logs Logs[]
+
+  createdAt        DateTime           @default(now()) @map("created_at")
+  RecommendClothes RecommendClothes[]
 
   @@map("users")
 }
@@ -154,9 +171,36 @@ model Clothes {
   post   Posts @relation(fields: [postId], references: [id])
   postId Int   @map("post_id") @db.UnsignedInt
 
-  createdAt DateTime @default(now()) @map("created_at")
+  recommendClothes RecommendClothes[]
+
+  createdAt DateTime    @default(now()) @map("created_at")
+  favorites Favorites[]
+  scraps    Scraps[]
 
   @@map("clothes")
+}
+
+model RecommendClothes {
+  id       Int             @id @default(autoincrement()) @db.UnsignedInt
+  category ClothesCategory
+  name     String          @db.VarChar(50)
+  imageUrl String          @map("image_url") @db.VarChar(200)
+  price    Int?            @db.UnsignedInt
+  color    String?         @db.VarChar(50)
+  size     String?         @db.VarChar(10)
+  brand    String?         @db.VarChar(20)
+  reason   String?         @db.VarChar(50)
+
+  createdAt DateTime    @default(now()) @map("created_at")
+  favorites Favorites[]
+
+  clothes   Clothes @relation(fields: [clothesId], references: [id])
+  clothesId Int     @map("clothes_id") @db.UnsignedInt
+
+  user   Users @relation(fields: [userId], references: [id])
+  userId Int   @map("user_id") @db.UnsignedInt
+
+  @@map("recommend_clothes")
 }
 
 model Favorites {
@@ -165,12 +209,20 @@ model Favorites {
   user   Users @relation(fields: [userId], references: [id])
   userId Int   @map("user_id") @db.UnsignedInt
 
-  post   Posts @relation(fields: [postId], references: [id])
-  postId Int   @map("post_id") @db.UnsignedInt
+  post   Posts? @relation(fields: [postId], references: [id])
+  postId Int?   @map("post_id") @db.UnsignedInt
+
+  clothes   Clothes? @relation(fields: [clothesId], references: [id])
+  clothesId Int?     @map("clothes_id") @db.UnsignedInt
+
+  recommendClothes   RecommendClothes? @relation(fields: [recommendClothesId], references: [id])
+  recommendClothesId Int?              @map("recommend_clothes_id") @db.UnsignedInt
 
   createdAt DateTime @default(now()) @map("created_at")
 
   @@unique([userId, postId])
+  @@unique([userId, recommendClothesId])
+  @@unique([userId, clothesId])
   @@map("favorites")
 }
 
@@ -180,14 +232,18 @@ model Scraps {
   user   Users @relation(fields: [userId], references: [id])
   userId Int   @map("user_id") @db.UnsignedInt
 
-  post   Posts @relation(fields: [postId], references: [id])
-  postId Int   @map("post_id") @db.UnsignedInt
+  post   Posts? @relation(fields: [postId], references: [id])
+  postId Int?   @map("post_id") @db.UnsignedInt
+
+  clothes   Clothes? @relation(fields: [clothesId], references: [id])
+  clothesId Int?     @map("clothes_id") @db.UnsignedInt
 
   createdAt DateTime @default(now()) @map("created_at")
   // updatedAt        DateTime?         @map("updated_at")
   // deletedAt        DateTime?         @map("deleted_at")
 
   @@unique([userId, postId])
+  @@unique([userId, clothesId])
   @@map("scraps")
 }
 

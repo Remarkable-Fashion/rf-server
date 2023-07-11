@@ -1,12 +1,12 @@
 import { PrismaClient } from "@prisma/client";
 
-export const getMyFavoritesService = ({ userId, cursor, take }: { userId: number; cursor?: number, take: number }, prisma: PrismaClient) => {
+export const getMyFavoritesService = ({ userId, cursor, take }: { userId: number; cursor?: number; take: number }, prisma: PrismaClient) => {
     const totalCountsOfFavorites = prisma.favorites.count({
         where: {
             userId
         }
     });
-    
+
     const lastMyFavorite = prisma.favorites.findFirst({
         where: {
             userId
@@ -14,9 +14,9 @@ export const getMyFavoritesService = ({ userId, cursor, take }: { userId: number
         orderBy: {
             createdAt: "asc"
         }
-    })
+    });
 
-     const posts = prisma.favorites.findMany({
+    const posts = prisma.favorites.findMany({
         select: {
             id: true,
             createdAt: true,
@@ -43,13 +43,13 @@ export const getMyFavoritesService = ({ userId, cursor, take }: { userId: number
                             id: true,
                             profile: {
                                 select: {
-                                    avartar: true,
+                                    avartar: true
                                 }
                             },
                             followers: {
                                 select: {
                                     // followerId: true,
-                                    followingId: true,
+                                    followingId: true
                                 },
                                 where: {
                                     followerId: userId
@@ -60,20 +60,19 @@ export const getMyFavoritesService = ({ userId, cursor, take }: { userId: number
                     favorites: {
                         select: {
                             // userId: true,
-                            postId: true,
+                            postId: true
                         },
                         where: {
                             userId
                         }
                     }
-                },
-                
+                }
             }
         },
         where: {
             ...(cursor && {
                 id: {
-                    lt: cursor,
+                    lt: cursor
                 }
             }),
             // id: {
@@ -81,7 +80,7 @@ export const getMyFavoritesService = ({ userId, cursor, take }: { userId: number
             // },
             userId,
             post: {
-                deletedAt: null,
+                deletedAt: null
             }
         },
         orderBy: {

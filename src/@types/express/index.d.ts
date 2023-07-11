@@ -4,7 +4,7 @@ import { Profile, Role, SocialType, Users } from "@prisma/client";
 export {};
 
 type RoleList = keyof typeof Role;
-export type UserWithRole = Omit<Users, "createdAt"> & {role: RoleList} & { type: SocialType; profile: Profile };
+export type UserWithRole = Omit<Users, "createdAt" | "phoneNumber" | "phoneVerified"> & { role: RoleList } & { type: SocialType; profile: Profile };
 
 declare global {
     namespace Express {

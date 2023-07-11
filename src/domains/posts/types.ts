@@ -12,4 +12,4 @@ export type Clothes = {
 
 export const POST_PRE_FIX = "post";
 
-export const postSex = ["Male", "Female"] as const
+export const postSex = ["Male", "Female"] as const;

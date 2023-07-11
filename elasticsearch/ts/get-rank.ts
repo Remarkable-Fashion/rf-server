@@ -1,4 +1,4 @@
-import {Client, ApiError} from "@elastic/elasticsearch";
+import { Client, ApiError } from "@elastic/elasticsearch";
 
 /**
  * @description
@@ -10,7 +10,7 @@ const main = async () => {
         node: "http://localhost:9200",
         maxRetries: 5,
         requestTimeout: 60000,
-        sniffOnStart: true,
+        sniffOnStart: true
     });
 
     const now = new Date();
@@ -21,32 +21,32 @@ const main = async () => {
     const rv = await client.search({
         index,
         body: {
-            "size": 0,
-            "aggs": {
-              "date_range_filter": {
-                "filter": {
-                  "range": {
-                    "timestamp": {
-                      // @TODO 5분주기로 검색을 할 때
-                      // gte < 시간 < lte
-                      // 사이의 시간을 가져올 텐데
-                      // lte는 현재 시간으로 하고
-                      // gte는 현지시간에서 일주일을 빼서 할까?
-                      "gte": "2023-07-01T00:00:00",
-                      "lte": "2023-07-02T00:00:00",
-                      // "lte": slicedDate,
+            size: 0,
+            aggs: {
+                date_range_filter: {
+                    filter: {
+                        range: {
+                            timestamp: {
+                                // @TODO 5분주기로 검색을 할 때
+                                // gte < 시간 < lte
+                                // 사이의 시간을 가져올 텐데
+                                // lte는 현재 시간으로 하고
+                                // gte는 현지시간에서 일주일을 빼서 할까?
+                                gte: "2023-07-01T00:00:00",
+                                lte: "2023-07-02T00:00:00"
+                                // "lte": slicedDate,
+                            }
+                        }
+                    },
+                    aggs: {
+                        popular_keywords: {
+                            terms: {
+                                field: "query",
+                                size: 5
+                            }
+                        }
                     }
-                  }
-                },
-                "aggs": {
-                  "popular_keywords": {
-                    "terms": {
-                      "field": "query",
-                      "size": 5
-                    }
-                  }
                 }
-              }
             }
             // "aggs": {
             //   "popular_keywords": {
@@ -63,8 +63,8 @@ const main = async () => {
     // console.log(rv.body.aggregations.popular_keywords.buckets);
 
     process.exit(1);
-}
+};
 
-if(require.main === module){
+if (require.main === module) {
     main();
 }

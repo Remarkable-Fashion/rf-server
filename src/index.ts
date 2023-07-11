@@ -4,7 +4,6 @@ import { client } from "./db/elasticsearch";
 import { mongo } from "./db/mongodb";
 import { RedisSingleton } from "./db/redis";
 
-
 const main = async () => {
     await mongo.connect();
     // await client.ping();
@@ -16,7 +15,7 @@ const main = async () => {
     const app = startApp();
 
     app.listen(conf().PORT, () => {
-        console.log(`rc Server has opened! : ${ isProd ? "prod" : "dev"}`);
+        console.log(`rc Server has opened! : ${isProd ? "prod" : "dev"}`);
     });
 };
 

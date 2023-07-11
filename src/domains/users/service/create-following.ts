@@ -1,6 +1,6 @@
-import { PrismaClient } from "@prisma/client"
+import { PrismaClient } from "@prisma/client";
 
-export const createFollowingService = async (data: { followerId: number, followingId: number} ,prisma: PrismaClient) => {
+export const createFollowingService = async (data: { followerId: number; followingId: number }, prisma: PrismaClient) => {
     // return prisma.follows.upsert({
     //     create: {
     //         followerId: data.followerId,
@@ -32,5 +32,5 @@ export const createFollowingService = async (data: { followerId: number, followi
             followerId: data.followerId,
             followingId: data.followingId
         }
-    })
-}
+    });
+};

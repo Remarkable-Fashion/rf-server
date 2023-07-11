@@ -1,19 +1,30 @@
 import { Clothes, Season, Sex, Style, Tpo, type PrismaClient } from "@prisma/client";
 import { postSex } from "../types";
-// import { ReqBody } from "../controller/create-post";
+type IfNull<T, Y, N> = T extends null ? Y : N;
+
+type Optionalize<T> = {
+  [K in keyof T]: IfNull<T[K], T[K] | undefined, T[K]>;
+}
+type ClothesWithout = Omit<Clothes, "id" | "postId" | "createdAt">;
+type CCC = Optionalize<ClothesWithout>;
 
 export type CreatePostBody = {
     title: string;
     description: string;
-    clothes?: Omit<Clothes, "id" | "postId" | "createdAt">[];
+    clothes?: CCC[];
+    // clothes?: Omit<Clothes, "id" | "postId" | "createdAt">[];
     tpo?: Tpo;
     season?: Season;
     style?: Style;
     isPublic?: boolean;
-    sex?: typeof postSex[number];
+    sex?: (typeof postSex)[number];
     // sex?: Sex;
 };
 export type CreatePost = CreatePostBody & { imgUrls: string[]; userId: number };
+type PromiseType<T extends Promise<any>> = T extends Promise<infer U> ? U : never;
+
+// type CreatePostReturn = ;
+export type CreatePostReturn = PromiseType<ReturnType<typeof createPost>>;
 export const createPost = ({ userId, title, description, imgUrls, clothes, tpo, season, style, isPublic, sex }: CreatePost, prisma: PrismaClient) => {
     const isClosthes = clothes && clothes.length > 0;
     return prisma.posts.create({
@@ -23,7 +34,7 @@ export const createPost = ({ userId, title, description, imgUrls, clothes, tpo, 
             images: {
                 select: {
                     id: true,
-                    url: true,
+                    url: true
                 }
             },
             user: {
@@ -43,12 +54,13 @@ export const createPost = ({ userId, title, description, imgUrls, clothes, tpo, 
                 select: {
                     id: true,
                     category: true,
+                    brand: true,
                     name: true,
                     price: true,
                     color: true,
                     size: true,
                     imageUrl: true,
-                    siteUrl: true,
+                    siteUrl: true
                 }
             },
             tpo: true,

@@ -5,7 +5,6 @@ import { getUserWithProfileById } from "../../domains/users/service/get-user-wit
 import { getMyPostsService } from "../../domains/posts/service/get-my-posts";
 import { createFollowingService } from "../../domains/users/service/create-following";
 
-
 const prisma = new PrismaClient();
 const mongo = new Mongo(conf().MONGO_URI, conf().MONGO_DB);
 /**
@@ -28,28 +27,28 @@ async function main() {
                         }
                     },
                     followers: {
-                        where:{
+                        where: {
                             followerId: 3
                         }
-                    },
+                    }
                     // following: true,
                 }
             }
         }
-    });    
+    });
     console.log("posts :", posts[0].user.followers);
     // console.log("posts :", posts[0].user.following);
 
-    const userWithProfile = await getUserWithProfileById({id : 1}, prisma);
+    const userWithProfile = await getUserWithProfileById({ id: 1 }, prisma);
     console.log("userWithProfile :", userWithProfile);
 
-    const [_, __, postss] = await getMyPostsService({userId: 1, take: 1}, prisma);
+    const [_, __, postss] = await getMyPostsService({ userId: 1, take: 1 }, prisma);
     console.log("postss :", postss);
     console.log("postss :", postss.at(-1));
-    const postss2 = await getMyPostsService({userId: 1, take: 1, cursor: postss.at(-1)?.id}, prisma);
+    const postss2 = await getMyPostsService({ userId: 1, take: 1, cursor: postss.at(-1)?.id }, prisma);
     console.log("postss2 :", postss2);
 
-    await createFollowingService({followerId: 2, followingId: 1}, prisma);
+    await createFollowingService({ followerId: 2, followingId: 1 }, prisma);
 }
 main()
     .then(async () => {

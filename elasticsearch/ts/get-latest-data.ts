@@ -1,4 +1,4 @@
-import {Client} from "@elastic/elasticsearch";
+import { Client } from "@elastic/elasticsearch";
 
 const main = async () => {
     const client = new Client({
@@ -6,20 +6,20 @@ const main = async () => {
         node: "http://localhost:9200",
         maxRetries: 5,
         requestTimeout: 60000,
-        sniffOnStart: true,
+        sniffOnStart: true
     });
 
     const index = "search_log";
     const rv = await client.search({
         index,
         body: {
-            "size": 1,
-            "sort": [
-              {
-                "timestamp": {
-                  "order": "desc"
+            size: 1,
+            sort: [
+                {
+                    timestamp: {
+                        order: "desc"
+                    }
                 }
-              }
             ]
         }
     });
@@ -28,8 +28,8 @@ const main = async () => {
     console.log(rv.body.hits.hits[0]._id);
 
     process.exit(1);
-}
+};
 
-if(require.main === module){
+if (require.main === module) {
     main();
 }

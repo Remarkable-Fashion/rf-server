@@ -10,7 +10,7 @@ function getRequestLogFormatter() {
         // timestamp({ format: "YYYY-MM-DD HH:MM:SS" }),
         printf((info) => {
             const { req } = info.message;
-            const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
+            const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
             return `${info.timestamp} ${info.level}: ${ip}${req.port || ""} ${req.method} '${req.originalUrl}'`;
             // return `${info.timestamp} ${info.level}: ${req.hostname}${req.port || ""} ${req.method} '${req.originalUrl}'`;
         })

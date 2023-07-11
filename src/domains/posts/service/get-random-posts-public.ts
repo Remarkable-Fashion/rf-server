@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 
 export const getRandomPostsPublicService = ({ postIds }: { postIds: number[] }, prisma: PrismaClient) => {
-
     const posts = prisma.posts.findMany({
         select: {
             id: true,
@@ -24,20 +23,24 @@ export const getRandomPostsPublicService = ({ postIds }: { postIds: number[] }, 
                         select: {
                             avartar: true
                         }
-                    },
+                    }
                 }
-            },
+            }
         },
         where: {
             id: {
                 in: postIds
             },
-            isPublic: true
+            isPublic: true,
+            deletedAt: null
+            // deletedAt: {
+            //     not: null
+            // }
         },
         orderBy: {
             createdAt: "desc"
         }
     });
 
-    return prisma.$transaction([posts])
+    return prisma.$transaction([posts]);
 };

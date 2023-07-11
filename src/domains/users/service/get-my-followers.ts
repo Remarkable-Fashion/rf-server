@@ -1,15 +1,16 @@
-import { PrismaClient } from "@prisma/client"
+import { PrismaClient } from "@prisma/client";
 
-export const getMyFollowersService = (data: { userId: number, cursor?: string, take: number } ,prisma: PrismaClient) => {
+export const getMyFollowersService = (data: { userId: number; cursor?: string; take: number }, prisma: PrismaClient) => {
     const counts = prisma.follows.count({
         where: {
-            followingId: data.userId,
+            followingId: data.userId
         }
     });
 
     const lastMyFollower = prisma.follows.findFirst({
         select: {
             followerId: true,
+            createdAt: true
         },
         where: {
             followingId: data.userId
@@ -17,8 +18,8 @@ export const getMyFollowersService = (data: { userId: number, cursor?: string, t
         orderBy: {
             createdAt: "asc"
         }
-    })
-    
+    });
+
     const followers = prisma.follows.findMany({
         select: {
             follower: {
@@ -28,7 +29,7 @@ export const getMyFollowersService = (data: { userId: number, cursor?: string, t
                     name: true,
                     profile: {
                         select: {
-                            avartar: true,
+                            avartar: true
                         }
                     }
                 }
@@ -36,7 +37,6 @@ export const getMyFollowersService = (data: { userId: number, cursor?: string, t
             createdAt: true
         },
         where: {
-            
             // ...(data.cursor && {
             //     followerId: {
             //         lt: data.cursor
@@ -47,7 +47,7 @@ export const getMyFollowersService = (data: { userId: number, cursor?: string, t
                 createdAt: {
                     lt: data.cursor
                 }
-            }),
+            })
         },
         orderBy: {
             createdAt: "desc"
@@ -56,4 +56,4 @@ export const getMyFollowersService = (data: { userId: number, cursor?: string, t
     });
 
     return prisma.$transaction([counts, lastMyFollower, followers]);
-}
+};

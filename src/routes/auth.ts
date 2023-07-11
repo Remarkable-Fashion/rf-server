@@ -1,7 +1,6 @@
 import { Router, type Request, type Response } from "express";
 // import passport from "passport";
 import axios from "axios";
-import { conf } from "../config";
 import { getRedis } from "../db/redis";
 import { refreshJwt } from "../domains/auth/controller/refresh-jwt";
 import { controllerHandler } from "../lib/controller-handler";
@@ -57,7 +56,6 @@ authRouter.get(
     // setCookieAndRedirect()
 );
 
-
 authRouter.get("/refresh", controllerHandler(refreshJwt));
 
 authRouter.get("/kakao", controllerHandler(loginKakao), setCookieAndRedirect());
@@ -96,7 +94,7 @@ authRouter.get(
         console.log("flash :", flash);
 
         // const KAKAO_ACCESS_TOKEN = req.user?.accessToken || req.flash(KakaoStrategyError)[0];
-        
+
         res.status(204).send("ok");
     })
 );

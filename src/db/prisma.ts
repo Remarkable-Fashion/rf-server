@@ -13,7 +13,7 @@ const Prisma = new PrismaClient({
 if (!isProd) {
     Prisma.$on("query", (e) => {
         console.log("Query: ", e.query);
-        console.log("Duration: ", e.duration + "ms");
+        console.log("Duration: ", `${e.duration}ms`);
     });
 }
 

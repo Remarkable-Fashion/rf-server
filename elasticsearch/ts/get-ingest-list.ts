@@ -1,4 +1,4 @@
-import {Client} from "@elastic/elasticsearch";
+import { Client } from "@elastic/elasticsearch";
 
 const main = async () => {
     const client = new Client({
@@ -6,15 +6,23 @@ const main = async () => {
         node: "http://localhost:9200",
         maxRetries: 5,
         requestTimeout: 60000,
-        sniffOnStart: true,
+        sniffOnStart: true
     });
 
-    const rv = await client.ingest.getPipeline({})
+    const index = "clothes";
+    const rv = await client.search({
+        index,
+        body: {
+            query: {
+                match_all: {}
+            }
+        }
+    })
 
-    console.log(rv.body);
+    console.log(rv.body.hits.hits);
     process.exit(1);
-}
+};
 
-if(require.main === module){
+if (require.main === module) {
     main();
 }

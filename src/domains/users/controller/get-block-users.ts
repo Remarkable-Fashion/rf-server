@@ -3,44 +3,48 @@ import { BadReqError, UnauthorizedError } from "../../../lib/http-error";
 import Prisma from "../../../db/prisma";
 import { getBlockUsersService } from "../service/get-block-users";
 
-
 const DEFAULT_TAKE = 21;
-export const getBlockUsers = async (req: Request<unknown, unknown, unknown, {cursor?: string, take?: string}>, res: Response) => {
-
-    if(!req.id){
-        throw new UnauthorizedError()
+export const getBlockUsers = async (req: Request<unknown, unknown, unknown, { cursor?: string; take?: string }>, res: Response) => {
+    if (!req.id) {
+        throw new UnauthorizedError();
     }
 
     const cursor = validateCursor(req.query.cursor);
     const take = validateTake(req.query.take);
 
-    const [counts, lastMyBlockedUser, blokedUsers] = await getBlockUsersService({userId: req.id, cursor, take}, Prisma);
-    
-    const lastBlockedUserId = blokedUsers.at(-1)?.blocked.id!;
+    const [counts, oldestBlockedUser, blokedUsers] = await getBlockUsersService({ userId: req.id, cursor, take }, Prisma);
+
+    let hasNext = false;
+    const nextCursor = blokedUsers.at(-1)?.createdAt;
+    if (nextCursor && oldestBlockedUser?.createdAt) {
+        hasNext = new Date(nextCursor).getTime() > new Date(oldestBlockedUser?.createdAt).getTime();
+    }
+
     const data = {
-        nextCursor: lastBlockedUserId,
-        hasNext: lastBlockedUserId > (lastMyBlockedUser?.blockedId ?? 0),
+        nextCursor,
+        hasNext,
+        // hasNext: lastBlockedUserId > (lastMyBlockedUser?.blockedId ?? 0),
         totalCounts: counts,
         size: blokedUsers.length,
         take,
-        cursor: cursor,
-        blokedUsers: blokedUsers.map(blokedUser => {
+        cursor,
+        blokedUsers: blokedUsers.map((blokedUser) => {
             return {
                 user: blokedUser.blocked,
                 createdAt: blokedUser.createdAt
-            }
-        }),
-    }
+            };
+        })
+    };
     res.json(data);
-}
+};
 
 const validateCursor = (cursor?: string) => {
-    if(!cursor){
+    if (!cursor) {
         return undefined;
     }
     const date = Date.parse(cursor);
 
-    if(Number.isNaN(date)){
+    if (Number.isNaN(date)) {
         throw new BadReqError("cursor should be String Date");
     }
 
@@ -52,16 +56,14 @@ const validateCursor = (cursor?: string) => {
     // }
 
     // return _cursor;
-}
-
+};
 
 const validateTake = (take?: string) => {
+    const _take = take ? Number(take) : DEFAULT_TAKE;
 
-    let _take = take ? Number(take) : DEFAULT_TAKE;
-
-    if(take && _take < 0){
-        throw new BadReqError("take should be higher than 0")
+    if (take && _take < 0) {
+        throw new BadReqError("take should be higher than 0");
     }
 
     return _take;
-}
+};

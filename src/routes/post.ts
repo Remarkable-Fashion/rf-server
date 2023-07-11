@@ -6,18 +6,7 @@ import { deleteFavorite } from "../domains/posts/controller/delete-favorite";
 import { deleteScrap } from "../domains/posts/controller/delete-scrap";
 import { controllerHandler } from "../lib/controller-handler";
 import { authJWT, authTest } from "../middleware/auth";
-import { conf } from "../config";
 import { upload } from "../middleware/upload";
-// import { getRandomPosts } from "../domains/posts/controller/get-random-posts";
-import { BadReqError } from "../lib/http-error";
-import { CreatePost } from "../domains/posts/service/create-post";
-import Prisma from "../db/prisma";
-import { mongo } from "../db/mongodb";
-import { createCollectionName } from "../domains/posts/create-collection-name";
-import { createYearMonthString } from "../lib/create-date";
-import { POST_PRE_FIX } from "../domains/posts/types";
-import { createPost as createPostService } from "../domains/posts/service/create-post";
-import { createPostMongo as createPostMongoService } from "../domains/posts/service/create-post-mongo";
 import { apiLimiterFunc } from "../middleware/api-rate-limit";
 import { getPostById } from "../domains/posts/controller/get-post-by-id";
 import { getRandomPosts } from "../domains/posts/controller/get-random-posts";
@@ -25,8 +14,6 @@ import { getMyposts } from "../domains/posts/controller/get-my-posts";
 import { getRandomPostsPublic } from "../domains/posts/controller/get-random-posts-public";
 import { getMyFavorites } from "../domains/posts/controller/get-my-favorites";
 import { deletePostById } from "../domains/posts/controller/delete-post-by-id";
-// import { getTestSearchPosts } from "../domains/posts/controller/get-search-posts";
-import { getRandomPostsTest } from "../domains/posts/controller/get-random-posts-test";
 
 const postRouter = Router();
 

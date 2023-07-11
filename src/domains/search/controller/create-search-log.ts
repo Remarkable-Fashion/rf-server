@@ -4,11 +4,9 @@ import { client } from "../../../db/elasticsearch";
 import { createSearchLogService } from "../service/create-search-log";
 import { SEARCH_LOG_INDEX } from "../constants";
 
-
-export const createSearch = async (req: Request<unknown, unknown, unknown, {search?: string}>, res: Response) => {
-
+export const createSearch = async (req: Request<unknown, unknown, unknown, { search?: string }>, res: Response) => {
     const query = req.query.search;
-    if(!query){
+    if (!query) {
         throw new BadReqError();
     }
     // const DEFAULT_INDEX = "search_log";

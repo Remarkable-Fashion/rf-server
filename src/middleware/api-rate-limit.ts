@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import rateLimit from "express-rate-limit";
 import RedisStore from "rate-limit-redis";
+import typia from "typia";
 import { conf, isProd } from "../config";
 import { getRedis } from "../db/redis";
-import typia from "typia";
 import { BadReqError } from "../lib/http-error";
 
 type limitOption = {

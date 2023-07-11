@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 
-export const getPostByIdService = async (data: {id: number, userId: number}, prisma: PrismaClient) => {
+export const getPostByIdService = async (data: { id: number; userId: number }, prisma: PrismaClient) => {
     return prisma.posts.findFirstOrThrow({
         select: {
             id: true,
@@ -19,7 +19,7 @@ export const getPostByIdService = async (data: {id: number, userId: number}, pri
                             avartar: true,
                             height: true,
                             weight: true,
-                            introduction: true,
+                            introduction: true
                         }
                     },
                     followers: {
@@ -40,7 +40,7 @@ export const getPostByIdService = async (data: {id: number, userId: number}, pri
                     name: true,
                     price: true,
                     color: true,
-                    size: true,
+                    size: true
                 }
             },
             _count: {
@@ -51,7 +51,7 @@ export const getPostByIdService = async (data: {id: number, userId: number}, pri
             favorites: {
                 select: {
                     userId: true,
-                    postId: true,
+                    postId: true
                 },
                 where: {
                     userId: data.userId
@@ -60,17 +60,17 @@ export const getPostByIdService = async (data: {id: number, userId: number}, pri
             scraps: {
                 select: {
                     userId: true,
-                    postId: true,
+                    postId: true
                 },
                 where: {
-                    userId: data.userId,
+                    userId: data.userId
                 }
             }
         },
-        where:{
+        where: {
             id: data.id,
             isPublic: true,
             deletedAt: null
         }
-    })
-}
+    });
+};
