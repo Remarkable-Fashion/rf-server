@@ -26,7 +26,7 @@ export const getSearchClothes = async (req: Request<unknown, unknown, unknown, {
         size: _clothes.length,
         search: query,
         take,
-        posts: _clothes
+        clothes: _clothes
     };
 
     res.status(200).json(data);

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import Prisma from "../../../db/prisma";
 import { BadReqError } from "../../../lib/http-error";
-import { getScraps as getScrapsService } from "../service/get-scraps";
+import { getScrapsAllService } from "../service/get-scraps-all";
 
 type ReqQuerys = {
     take?: string;
@@ -11,25 +11,25 @@ type ReqQuerys = {
 const DEFAULT_TAKE = 12;
 const DEFAULT_CURSUR = 1;
 
-export const getScraps = async (req: Request<unknown, unknown, unknown, ReqQuerys>, res: Response) => {
+export const getScrapsAll = async (req: Request<unknown, unknown, unknown, ReqQuerys>, res: Response) => {
     const take = validateQueryTake(req.query.take);
     const cursorId = validateQueryCursor(req.query.cursor);
 
-    const {totalCountsOfScraps, lastScrapedPost, posts} = await getScrapsService({ cursorId, take, userId: Number(req.id) }, Prisma);
+    const {totalCountsOfScraps, lastScrap, scraps} = await getScrapsAllService({ cursorId, take, userId: Number(req.id) }, Prisma);
 
-    if(!posts || posts.length <= 0){
+    if(!scraps || scraps.length <= 0){
         throw new BadReqError("No posts In scrap");
     }
 
-    const lastPostId = posts.at(-1)!.id!;
+    const lastPostId = scraps.at(-1)!.id!;
     const data = {
         nextCursor: lastPostId,
-        hasNext: !!(lastPostId > (lastScrapedPost?.postId ?? 0)),
+        hasNext: !!(lastPostId > (lastScrap?.postId ?? 0)),
         totalCounts: totalCountsOfScraps,
-        size: posts.length,
+        size: scraps.length,
         take,
         cursor: cursorId ?? 0,
-        posts: posts
+        scraps: scraps
     };
 
     res.status(200).json(data);

@@ -1,3 +1,15 @@
+# RCloset 서버
+
+## 사용 스택
+
+ExpressJS, Typescript, Prisma
+
+Mysql 8, Redis, ElasticSearch
+
+Docker, Docker-Compose
+
+Cloudflare DNS
+
 ## 실행 방법
 
 ### 도커
@@ -8,9 +20,8 @@ $ docker-compose up --build -d
 
 1. 도커 실행 후 mysql 테이블 생성을 위해 `npm run db:push` 입력.
 
-> ~~`.env`의 `DATABASE_URL`를 localhost로 사용해야함.~~
 
-2. seed 실행 `npm run seed`
+~~2. seed 실행 `npm run seed`~~
 
 ### 접속 방법
 
@@ -18,7 +29,7 @@ $ docker-compose up --build -d
 
 ### 배치
 
-1. /src/cron.ts 실행.
+1. rank : pm2 start ./src/batch/search-rank.ts 
 
 ## 실행 환경 분리
 
@@ -53,3 +64,6 @@ dotenv -e .env.dev ts-node ./src/db/seeds/seed.ts // seed
 * id: 3
 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNjg4MDMwMDk3LCJleHAiOjE3MTk1NjYwOTd9.4Xe4d3ZTNZ53AiERV_LpjgiNQ5E7KDUN06qL8znYDS8"
 
+# ERD
+
+![Mysql ERD](./prisma-erd.svg)

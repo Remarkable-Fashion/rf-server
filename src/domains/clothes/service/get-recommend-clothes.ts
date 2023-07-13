@@ -1,12 +1,29 @@
 import { ClothesCategory, PrismaClient } from "@prisma/client";
-import { Unarray } from "../../../lib/types";
-// type Unarray<T> = T extends Array<infer U> ? U : T;
-const DEFAULT_TAKE = 3;
-export const getRecommendClothesByIdService = (id: number, userId: number, category: ClothesCategory, prisma: PrismaClient) => {
+import { BadReqError } from "../../../lib/http-error";
+export const getRecommendClothesByIdService = ({ id, userId, category, cursor, take}:{ id: number, userId: number, category: ClothesCategory, cursor?: number, take: number}, prisma: PrismaClient) => {
     return prisma.$transaction(async (tx) => {
-        const recommendClothes = await tx.recommendClothes.findMany({
+
+        const countOfRecommendClothes = await tx.clothes.count({
+            where: {
+                recommendedClothesId: id
+            }
+        });
+
+        const lastRecommendAllClothes = await tx.clothes.findFirst({
+            where: {
+                recommendedClothesId: id
+            },
+            orderBy: {
+                createdAt: "asc"
+            }
+        });
+
+        const clothes = await tx.clothes.findMany({
             select: {
                 id: true,
+                // recommendedClothesId: true,
+                // userId: true,
+                name: true,
                 createdAt: true,
                 _count: {
                     select: {
@@ -25,55 +42,97 @@ export const getRecommendClothesByIdService = (id: number, userId: number, categ
                             where: {
                                 followerId: userId
                             }
+                        },
+                        profile: {
+                            select: {
+                                avartar: true,
+                            }
                         }
+                    }
+                },
+                favorites: {
+                    select: {
+                        userId: true,
+                        clothesId: true,
+                    },
+                    where: {
+                        userId
+                    }
+                },
+                scraps: {
+                    select: {
+                        userId: true,
+                        clothesId: true,
+                    },
+                    where: {
+                        userId
                     }
                 }
             },
             where: {
-                clothesId: id,
-                category
+                // id,
+                // @info cursor가 undefined여도 제대로 출력됨. 아래처럼 안해도됨.
+                id: {
+                    lt: cursor
+                },
+                // ...(cursor && {
+                //     id: {
+                //         lt: cursor
+                //     }
+                // }),
+                recommendedClothesId: id,
+                category,
             },
-            orderBy: {
-                favorites: {
-                    _count: "desc"
-                }
-            },
-            take: DEFAULT_TAKE
+            orderBy: [
+                {
+                    id: "desc"
+                },
+                // @info 좋아요 순으로 출력
+                // {
+                //     favorites: {
+                //         _count: "desc"
+                //     }
+                // }
+            ],
+            take
         });
 
-        type RecommendClothesArray = Omit<Unarray<typeof recommendClothes>, "user"> & {
-            user: {
-                name?: string | null;
-            };
-        };
-        type RecommendClothes = RecommendClothesArray & {
-            isFavorite: boolean;
-            isFollowing: boolean;
-        };
+        const objs = [];
 
-        const objs: RecommendClothes[] = [];
-
-        for (const { user, ...rest } of recommendClothes) {
+        for(const clothe of clothes){
+            const { user, favorites, scraps, ...restClothe } = clothe;
+            if(!user){
+                throw new BadReqError("DB Error recommendClothes Should have userId")
+            }
             const { followers, ...restUser } = user;
-            const isFavoirte = await tx.favorites.findUnique({
-                where: {
-                    userId_recommendClothesId: {
-                        userId,
-                        recommendClothesId: rest.id
-                    }
-                }
-            });
+            // const isFavoirte = await tx.favorites.findUnique({
+            //     where: {
+            //         userId_clothesId: {
+            //             userId,
+            //             clothesId: rest.id
+            //         }
+            //     }
+            // });
+            const isFavoirte = favorites.length > 0;
+            const isScrap = scraps.length > 0;
 
-            const obj: RecommendClothes = {
-                isFavorite: !!isFavoirte,
-                isFollowing: user.followers.length > 0,
-                ...rest,
+            const obj = {
+                isFavoirte: !!isFavoirte,
+                isFollwoing: followers.length > 0,
+                isScrap,
+                ...restClothe,
                 user: restUser
             };
 
             objs.push(obj);
-        }
 
-        return [objs];
+        }
+            
+
+        return {
+            clothes: objs,
+            countOfRecommendClothes,
+            lastRecommendAllClothes
+        };
     });
 };
