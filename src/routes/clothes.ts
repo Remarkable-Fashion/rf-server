@@ -3,13 +3,15 @@ import { controllerHandler } from "../lib/controller-handler";
 import { authJWT } from "../middleware/auth";
 import { upload, uploadTest } from "../middleware/upload";
 import { createRecommendClothes } from "../domains/clothes/controller/create-recommend-clothes";
-import { getRecommendClothesById } from "../domains/clothes/controller/get-recommend-clothes";
+import { getRecommendClothesByIdTop3 } from "../domains/clothes/controller/get-recommend-clothes-top3";
 import { createFavoriteClothes } from "../domains/clothes/controller/create-favorite-clothes";
 import { createScrapClothesById } from "../domains/clothes/controller/create-scrap-clothes";
 import { uploadClthesImages } from "../domains/clothes/controller/upload-clothes-image";
+import { getRecommendClothesById } from "../domains/clothes/controller/get-recommend-clothes";
 
 const clothesRouter = Router();
 
+clothesRouter.get("/:id/recommend/top", authJWT, controllerHandler(getRecommendClothesByIdTop3));
 clothesRouter.get("/:id/recommend/", authJWT, controllerHandler(getRecommendClothesById));
 clothesRouter.post("/:id/recommend/", authJWT, controllerHandler(createRecommendClothes));
 

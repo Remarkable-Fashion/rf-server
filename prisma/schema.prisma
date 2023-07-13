@@ -43,8 +43,9 @@ model Users {
 
   logs Logs[]
 
-  createdAt        DateTime           @default(now()) @map("created_at")
-  RecommendClothes RecommendClothes[]
+  createdAt DateTime  @default(now()) @map("created_at")
+  // recommendClothes Clothes[] @map("recommend_clothes")
+  Clothes   Clothes[]
 
   @@map("users")
 }
@@ -164,43 +165,24 @@ model Clothes {
   color    String?         @db.VarChar(50)
   size     String?         @db.VarChar(10)
   brand    String?         @db.VarChar(20)
+  reason   String?         @db.VarChar(50)
+  imageUrl String?         @map("image_url") @db.VarChar(200)
+  siteUrl  String?         @map("site_url") @db.VarChar(200)
 
-  imageUrl String? @map("image_url") @db.VarChar(200)
-  siteUrl  String? @map("site_url") @db.VarChar(200)
+  post   Posts? @relation(fields: [postId], references: [id])
+  postId Int?   @map("post_id") @db.UnsignedInt
 
-  post   Posts @relation(fields: [postId], references: [id])
-  postId Int   @map("post_id") @db.UnsignedInt
+  user   Users? @relation(fields: [userId], references: [id])
+  userId Int?   @map("user_id") @db.UnsignedInt
 
-  recommendClothes RecommendClothes[]
-
-  createdAt DateTime    @default(now()) @map("created_at")
-  favorites Favorites[]
-  scraps    Scraps[]
+  createdAt            DateTime    @default(now()) @map("created_at")
+  favorites            Favorites[]
+  scraps               Scraps[]
+  recommendedClothesId Int?        @map("recommended_clothes_id") @db.UnsignedInt
+  recommendedClothes   Clothes?    @relation("RecommendClothes", fields: [recommendedClothesId], references: [id])
+  recommendClothes     Clothes[]   @relation("RecommendClothes")
 
   @@map("clothes")
-}
-
-model RecommendClothes {
-  id       Int             @id @default(autoincrement()) @db.UnsignedInt
-  category ClothesCategory
-  name     String          @db.VarChar(50)
-  imageUrl String          @map("image_url") @db.VarChar(200)
-  price    Int?            @db.UnsignedInt
-  color    String?         @db.VarChar(50)
-  size     String?         @db.VarChar(10)
-  brand    String?         @db.VarChar(20)
-  reason   String?         @db.VarChar(50)
-
-  createdAt DateTime    @default(now()) @map("created_at")
-  favorites Favorites[]
-
-  clothes   Clothes @relation(fields: [clothesId], references: [id])
-  clothesId Int     @map("clothes_id") @db.UnsignedInt
-
-  user   Users @relation(fields: [userId], references: [id])
-  userId Int   @map("user_id") @db.UnsignedInt
-
-  @@map("recommend_clothes")
 }
 
 model Favorites {
@@ -215,13 +197,9 @@ model Favorites {
   clothes   Clothes? @relation(fields: [clothesId], references: [id])
   clothesId Int?     @map("clothes_id") @db.UnsignedInt
 
-  recommendClothes   RecommendClothes? @relation(fields: [recommendClothesId], references: [id])
-  recommendClothesId Int?              @map("recommend_clothes_id") @db.UnsignedInt
-
   createdAt DateTime @default(now()) @map("created_at")
 
   @@unique([userId, postId])
-  @@unique([userId, recommendClothesId])
   @@unique([userId, clothesId])
   @@map("favorites")
 }
@@ -239,8 +217,6 @@ model Scraps {
   clothesId Int?     @map("clothes_id") @db.UnsignedInt
 
   createdAt DateTime @default(now()) @map("created_at")
-  // updatedAt        DateTime?         @map("updated_at")
-  // deletedAt        DateTime?         @map("deleted_at")
 
   @@unique([userId, postId])
   @@unique([userId, clothesId])

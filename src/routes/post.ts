@@ -35,40 +35,6 @@ postRouter.delete("/:id", authJWT, controllerHandler(deletePostById));
 // postRouter.get("/test/:id", authTest(), controllerHandler(getPostById));
 
 postRouter.post("/", authJWT, upload.fields([{ name: "images" }]), controllerHandler(createPost));
-// postRouter.post(
-//     "/upload-test",
-//     authTest(),
-//     upload.fields([{ name: "images" }]),
-//     controllerHandler(async (req, res) => {
-//         const imgUrls = (req.files as { [fieldName: string]: Express.Multer.File[] }).images.map((f) => conf().CLIENT_DOMAIN + "/" + f.filename);
-
-//         if (!imgUrls || imgUrls.length < 1) {
-//             throw new BadReqError("There must be at least one image");
-//         }
-
-//         const sex = req.body.sex || "Male";
-//         // const sex = req.body.sex || req.user.profile.sex;
-//         if (!sex) {
-//             throw new BadReqError("Check your user profile field, sex");
-//         }
-
-//         const data: CreatePost = { userId: req.id, ...req.body, imgUrls, sex };
-//         const post = await createPostService(data, Prisma);
-//         const { id: mysqlId } = post;
-//         // const { id: mysqlId, ..._post } = post;
-
-//         /**
-//          * @TODO collection 이름을 동적 생성.
-//          * 배치잡을 통해 6개월이 지난 collection 일괄 삭제.
-//          * @TODO2 get-random-posts controller도 같이 수정.
-//          */
-//         const collectionName = createCollectionName(createYearMonthString(), POST_PRE_FIX);
-//         await createPostMongoService({ postId: mysqlId }, mongo.Db, collectionName);
-//         // await createPostMongoService({ postId: mysqlId, ..._post }, mongo.Db, collectionName);
-
-//         res.status(200).json(post);
-//     })
-// );
 
 postRouter.post("/:id/favorite", authJWT, controllerHandler(createFavorite));
 postRouter.delete("/:id/favorite", authJWT, controllerHandler(deleteFavorite));

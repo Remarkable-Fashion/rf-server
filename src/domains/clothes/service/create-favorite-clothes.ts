@@ -4,7 +4,7 @@ export const createFavoirteClothesService = (recommendClothesId: number, userId:
     return prisma.favorites.create({
         data: {
             userId,
-            recommendClothesId
+            clothesId: recommendClothesId
         }
     });
 };
