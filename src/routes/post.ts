@@ -14,6 +14,7 @@ import { getMyposts } from "../domains/posts/controller/get-my-posts";
 import { getRandomPostsPublic } from "../domains/posts/controller/get-random-posts-public";
 import { getMyFavorites } from "../domains/posts/controller/get-my-favorites";
 import { deletePostById } from "../domains/posts/controller/delete-post-by-id";
+import { getPostsByUserId } from "../domains/posts/controller/get-post-by-user-id";
 
 const postRouter = Router();
 
@@ -26,6 +27,8 @@ postRouter.get("/public", apiLimiterFunc({ time: 15, max: 3, postFix: "public" }
 // postRouter.get("/public", apiLimiterFunc({ time: 15, max: 3, postFix: "public" }), controllerHandler(getRandomPosts));
 
 postRouter.get("/me", authJWT, controllerHandler(getMyposts));
+
+postRouter.get("/user/:id", authJWT, controllerHandler(getPostsByUserId));
 // postRouter.get("/me/test", authTest(5), controllerHandler(getMyposts));
 // postRouter.get("/search", authJWT, controllerHandler(getTestSearchPosts));
 
