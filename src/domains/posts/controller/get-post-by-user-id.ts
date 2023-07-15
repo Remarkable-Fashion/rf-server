@@ -2,13 +2,14 @@ import { Request, Response } from "express";
 import { BadReqError, UnauthorizedError } from "../../../lib/http-error";
 import Prisma from "../../../db/prisma";
 import { getPostsByUserIdService } from "../service/get-posts-by-user-id";
+import { redisClient } from "../../../db/redis";
 
 export const getPostsByUserId = async (req: Request<{ id?: string }, unknown, unknown, {cursor?: string, take?: string}>, res: Response) => {
     const id = validateParamId(req.params.id);
     const cursor = validateQueryCursor(req.query.cursor);
     const take = validateQueryTake(req.query.take);
 
-    const {posts, countOfPosts, lastOfPost} = await getPostsByUserIdService({ userId: id, cursor, take }, Prisma);
+    const {posts, countOfPosts, lastOfPost} = await getPostsByUserIdService({ userId: id, cursor, take }, Prisma, redisClient);
     const last = posts.at(-1)!;
     const data = {
         nextCursor: last.id,

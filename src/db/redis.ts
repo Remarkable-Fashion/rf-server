@@ -2,17 +2,13 @@ import * as redis from "redis";
 import { conf } from "../config";
 import { BadReqError } from "../lib/http-error";
 
-const client = redis.createClient({ url: conf().REDIS_URL });
-client.on("error", (err) => console.log("Redis Client Error", err));
-(async () => {
-    await client.connect();
-})();
+export type RedisClient = typeof redisClient;
 
-// export const connectRedis = async () => {
-//   client = redis.createClient({ url: REDIS_URL });
-//   client.on("error", (err) => console.log("Redis Client Error", err));
-//   await client.connect();
-// };
+const redisClient = redis.createClient({ url: conf().REDIS_URL });
+redisClient.on("error", (err) => console.log("Redis Client Error", err));
+(async () => {
+    await redisClient.connect();
+})();
 
 export class RedisSingleton {
     private static instance: RedisSingleton;
@@ -54,8 +50,10 @@ export class RedisSingleton {
 }
 
 export const getRedis = () => {
-    if (!client) {
+    if (!redisClient) {
         throw new BadReqError("No Connection Redis");
     }
-    return client;
+    return redisClient;
 };
+
+export {redisClient};

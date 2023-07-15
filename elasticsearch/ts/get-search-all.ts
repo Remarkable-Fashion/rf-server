@@ -9,7 +9,7 @@ const main = async () => {
         sniffOnStart: true
     });
 
-    const index = "posts";
+    const index = "test-nori";
     // const query = "삼성전자";
 
     const rv = await client.search({ index });

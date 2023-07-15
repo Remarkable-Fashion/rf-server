@@ -9,7 +9,7 @@ const main = async () => {
         sniffOnStart: true
     });
 
-    const indexName = "search_log";
+    const indexName = "test-nori";
     const rv = await client.indices.exists({ index: indexName });
 
     if (!rv.body) {
