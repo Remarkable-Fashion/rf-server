@@ -10,7 +10,7 @@ const main = async () => {
     });
 
     const rv = await client.ingest.getPipeline();
-    console.log("rv :", rv.body);
+    console.log("rv :", rv.body["timestamp"].processors);
 };
 
 main();

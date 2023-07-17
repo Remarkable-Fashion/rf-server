@@ -12,14 +12,6 @@ const main = async () => {
     // const indexName = "search_log";
     const indexName = "test-nori";
 
-    // const rv = await client.indices.exists({ index: indexName });
-
-    // console.log("rv :", rv.body);
-    // if (rv.body) {
-    //     console.log("Alread exist");
-    //     return;
-    // }
-
     const indexConfig = {
         settings: {
             "index":{

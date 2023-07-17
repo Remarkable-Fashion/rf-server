@@ -11,16 +11,12 @@ const main = async () => {
 
     const rv = await client.cat.indices({ format: "json" });
 
-    const plugins = await client.cat.plugins({
-        v: true
-    });
-
     const indexNames = rv.body.map( (a: any)=>{
         return a.index;
     });
 
     console.log("indexNames :", indexNames);
-    console.log("plugins :", plugins.body);
+    // console.log("plugins :", plugins.body);
 };
 
 main();
