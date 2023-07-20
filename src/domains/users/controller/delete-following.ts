@@ -15,5 +15,9 @@ export const deleteFollowing = async (req: Request<{ id?: string }, unknown, unk
     }
 
     const following = await deleteFollowingService({ followerId: req.id, followingId }, Prisma);
-    res.json(following);
+    res.json({
+        success: true,
+        msg: "Success delete following"
+    });
+    // res.json(following);
 };

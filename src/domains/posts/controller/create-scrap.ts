@@ -15,5 +15,9 @@ export const createScrap = async (req: Request<ReqParam, unknown>, res: Response
     const data = { userId: req.id, postId: Number(req.params.id) };
     const scrap = await createScrapService(data, Prisma);
 
-    res.status(200).json(scrap);
+    res.status(200).json({
+        success: true,
+        msg: "Success create scrap"
+    });
+    // res.status(200).json(scrap);
 };

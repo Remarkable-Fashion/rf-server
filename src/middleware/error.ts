@@ -13,19 +13,31 @@ export const dbErrorMiddleware = (err: unknown, req: Request, res: Response, nex
         res.status(400);
         switch (err.code) {
             case "P2002":
-                res.json({ msg: "Record already exist" });
+                res.json({ 
+                    success: false,
+                    msg: "Record already exist" 
+                });
                 break;
 
             case "P2003":
-                res.json({ msg: "Foreign key constraint failed on the field" });
+                res.json({ 
+                    success: false,
+                    msg: "Foreign key constraint failed on the field" 
+                });
                 break;
 
             case "P2025":
-                res.json({ msg: "Record to delete does not exist" });
+                res.json({ 
+                    success: false,
+                    msg: "Record to delete does not exist" 
+                });
                 break;
 
             default:
-                res.json({ msg: err.message });
+                res.json({ 
+                    success: false,
+                    msg: err.message 
+                });
                 break;
         }
 
@@ -43,9 +55,15 @@ export const errorMiddleware = (err: any, req: Request, res: Response, _next: Ne
 
     if (err instanceof HttpError) {
         res.status(err.status);
-        res.json({ msg: err.message });
+        res.json({ 
+            success: false,
+            msg: err.message 
+        });
     } else {
         // console.log("err :", err);
-        res.status(500).json({ msg: err.message || "error" });
+        res.status(500).json({ 
+            success: false,
+            msg: err.message || "No error msg" 
+        });
     }
 };

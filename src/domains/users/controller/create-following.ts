@@ -15,5 +15,9 @@ export const createFollowing = async (req: Request<{ id?: string }, unknown, unk
     }
 
     const following = await createFollowingService({ followerId: req.id, followingId }, Prisma);
-    res.json(following);
+    res.json({
+        success: true,
+        msg: "Success create following"
+    });
+    // res.json(following);
 };

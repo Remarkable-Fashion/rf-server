@@ -1,14 +1,14 @@
 import { Request, Response } from "express";
 import { BadReqError, UnauthorizedError } from "../../../lib/http-error";
 import Prisma from "../../../db/prisma";
-import { deleteBlockFollowerService } from "../service/delete-block-follower";
+import { deleteBlockUserService } from "../service/delete-block-follower";
 
 /**
  * @TODO 팔로우 삭제가 아닌 차단으로.
  * @param req
  * @param res
  */
-export const deleteBlockFollower = async (req: Request<{ id?: string }, unknown, unknown>, res: Response) => {
+export const deleteBlockUser = async (req: Request<{ id?: string }, unknown, unknown>, res: Response) => {
     if (!req.id) {
         throw new UnauthorizedError();
     }
@@ -25,6 +25,10 @@ export const deleteBlockFollower = async (req: Request<{ id?: string }, unknown,
         throw new BadReqError("Could not self delete block");
     }
 
-    const follower = await deleteBlockFollowerService({ blockerId: req.id, blockedId }, Prisma);
-    res.json(follower);
+    const follower = await deleteBlockUserService({ blockerId: req.id, blockedId }, Prisma);
+    res.json({
+        success: true,
+        msg: "Success delete block_user"
+    });
+    // res.json(follower);
 };

@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 
-export const createBlockFollowerService = (data: { blockerId: number; blockedId: number }, prisma: PrismaClient) => {
+export const createBlockUserService = (data: { blockerId: number; blockedId: number }, prisma: PrismaClient) => {
     return prisma.block.create({
         data: {
             blockerId: data.blockerId,

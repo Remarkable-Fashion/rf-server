@@ -96,17 +96,17 @@ export const getScraps = async ({ userId, cursorId, take }: { userId: number; cu
         const mergedScraps = scraps.map((scrap) => {
 
             let isFollow = false;
-            let isFavoirte = false;
+            let isFavorite = false;
             if(scrap.post){
                 const {post} = scrap;
                 const {user, favorites, ...restPost} = post;
                 const {followers, ...restUser} = user;
 
                 isFollow = post.user.followers.length > 0;
-                isFavoirte = post.favorites.length > 0;
+                isFavorite = post.favorites.length > 0;
 
                 return {
-                    isFavoirte,
+                    isFavorite,
                     isFollow,
                     ...restPost,
                     user: restUser

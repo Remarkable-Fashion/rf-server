@@ -12,7 +12,11 @@ export const createFavoriteClothes = async (req: Request<{ id?: string }, unknow
 
     const recommendClothes = await createFavoirteClothesService(clothesId, req.id, Prisma);
 
-    res.json({ clothes: recommendClothes });
+    res.json({
+        success: true,
+        msg: "Success create favorite"
+    });
+    // res.json({ clothes: recommendClothes });
 };
 
 const validateParamClothesId = (id?: string) => {

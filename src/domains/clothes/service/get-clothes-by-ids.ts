@@ -48,11 +48,11 @@ export const getClothesByIdsService = ({ userId, clothesIds }: { userId: number;
         });
 
         const mergedClothes = clothes.map( ({favorites, scraps, ...restClothe}) => {
-            const isFavoirte = favorites.length > 0;
+            const isFavorite = favorites.length > 0;
             const isScrap = scraps.length > 0;
 
             return {
-                isFavoirte,
+                isFavorite,
                 isScrap,
                 clothes: restClothe
             }

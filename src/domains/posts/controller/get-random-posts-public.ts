@@ -45,26 +45,13 @@ export const getRandomPostsPublic = async (req: Request<unknown, unknown, unknow
 
     const ids = randomPosts.map((post: any) => post.id);
 
-    const [posts] = await getRandomPostsPublicService({ postIds: ids }, Prisma);
-
-    const mergedPosts = posts.map((post) => {
-        const isFollow = false;
-        const isFavoirte = false;
-        const isScrap = false;
-
-        return {
-            isFavoirte,
-            isFollow,
-            isScrap,
-            ...post
-        };
-    });
+    const posts = await getRandomPostsPublicService({ postIds: ids }, Prisma);
 
     const data = {
         size: posts.length,
         take,
         sex: sex || "NONE",
-        posts: mergedPosts
+        posts: posts
     };
 
     res.json(data);

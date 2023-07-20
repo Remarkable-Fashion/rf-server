@@ -48,28 +48,15 @@ export const getRandomPosts = async (req: Request<unknown, unknown, unknown, Req
     });
 
     const ids = randomPosts.map((post: any) => post.id);
-    console.log("ids :", ids);
-
-    const [posts] = await getRandomPostsService({ userId: req.id, postIds: ids }, Prisma);
-    const mergedPosts = posts.map((post) => {
-        const isFollow = post.user.followers.length > 0;
-        const isFavoirte = post.favorites.length > 0;
-        const isScrap = post.scraps.length > 0;
-
-        return {
-            isFavoirte,
-            isFollow,
-            isScrap,
-            ...post
-        };
-    });
+    const posts = await getRandomPostsService({ userId: req.id, postIds: ids }, Prisma);
+    
 
     const data = {
         size: posts.length,
         // totalCounts: posts.length,
         take,
         sex: sex || "NONE",
-        posts: mergedPosts
+        posts: posts
     };
 
     res.json(data);

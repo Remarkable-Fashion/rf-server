@@ -24,5 +24,9 @@ export const createFavorite = async (req: Request<ReqParam, unknown>, res: Respo
 
     await redisClient.incrBy(key, 1);
 
-    res.status(200).json(favorite);
+    res.status(200).json({
+        success: true,
+        msg: "Success create favorite"
+    });
+    // res.status(200).json(favorite);
 };

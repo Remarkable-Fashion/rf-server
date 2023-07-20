@@ -127,7 +127,7 @@ export const getScrapsAllService = async ({ userId, cursorId, take }: { userId: 
         const mergedScraps = scraps.map((scrap) => {
 
             let isFollow = false;
-            let isFavoirte = false;
+            let isFavorite = false;
             if(scrap.post){
 
                 const {post} = scrap;
@@ -135,11 +135,11 @@ export const getScrapsAllService = async ({ userId, cursorId, take }: { userId: 
                 const {followers, ...restUser} = user;
 
                 isFollow = post.user.followers.length > 0;
-                isFavoirte = post.favorites.length > 0;
+                isFavorite = post.favorites.length > 0;
 
                 return {
                     type: "post",
-                    isFavoirte,
+                    isFavorite,
                     isFollow,
                     id: scrap.id,
                     createdAt: scrap.createdAt,
@@ -153,10 +153,10 @@ export const getScrapsAllService = async ({ userId, cursorId, take }: { userId: 
             if(scrap.clothes){
                 const {clothes} = scrap;
                 const {favorites, ...restClothes} = clothes;
-                isFavoirte = scrap.clothes.favorites.length > 0;
+                isFavorite = scrap.clothes.favorites.length > 0;
                 return {
                     type: "clothes",
-                    isFavoirte,
+                    isFavorite,
                     isFollow,
                     id: scrap.id,
                     createdAt: scrap.createdAt,
