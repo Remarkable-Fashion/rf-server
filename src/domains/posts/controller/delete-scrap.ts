@@ -14,5 +14,8 @@ export const deleteScrap = async (req: Request<ReqParams, unknown>, res: Respons
 
     const scrap = await deleteScrapService({ userId: Number(req.id), postId: Number(req.params.id) }, Prisma);
 
-    res.status(200).json(scrap);
+    res.status(200).json({
+        success: true,
+        msg: "Success delete scrap"
+    });
 };

@@ -25,5 +25,8 @@ export const deleteFavorite = async (req: Request<ReqParams, unknown>, res: Resp
 
     await redisClient.decrBy(key, 1);
 
-    res.json(favorite);
+    res.json({
+        success: true,
+        msg: "Success delete favorite"
+    });
 };

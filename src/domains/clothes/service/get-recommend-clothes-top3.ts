@@ -76,7 +76,7 @@ export const getRecommendClothesByIdTop3Service = (id: number, userId: number, c
                 throw new BadReqError("DB Error recommendClothes Should have userId")
             }
             const { followers, ...restUser } = user;
-            const isFavoirte = await tx.favorites.findUnique({
+            const isFavorite = await tx.favorites.findUnique({
                 where: {
                     userId_clothesId: {
                         userId,
@@ -86,7 +86,7 @@ export const getRecommendClothesByIdTop3Service = (id: number, userId: number, c
             });
 
             const obj: RecommendClothes = {
-                isFavorite: !!isFavoirte,
+                isFavorite: !!isFavorite,
                 isFollowing: user.followers.length > 0,
                 ...rest,
                 user: restUser

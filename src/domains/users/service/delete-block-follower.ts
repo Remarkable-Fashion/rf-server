@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 
-export const deleteBlockFollowerService = (data: { blockerId: number; blockedId: number }, prisma: PrismaClient) => {
+export const deleteBlockUserService = (data: { blockerId: number; blockedId: number }, prisma: PrismaClient) => {
     return prisma.block.delete({
         where: {
             blockerId_blockedId: {

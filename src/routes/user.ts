@@ -6,11 +6,11 @@ import { upload } from "../middleware/upload";
 import { getUserById } from "../domains/users/controller/get-user-by-id";
 import { createFollowing } from "../domains/users/controller/create-following";
 import { deleteFollowing } from "../domains/users/controller/delete-following";
-import { createBlockFollower } from "../domains/users/controller/create-block-follower";
+import { createBlockUser } from "../domains/users/controller/create-block-follower";
 import { checkFollowing } from "../domains/users/controller/check-following";
 import { getMyFollowings } from "../domains/users/controller/get-my-followings";
 import { getMyFollowers } from "../domains/users/controller/get-my-followers";
-import { deleteBlockFollower } from "../domains/users/controller/delete-block-follower";
+import { deleteBlockUser } from "../domains/users/controller/delete-block-follower";
 import { getBlockUsers } from "../domains/users/controller/get-block-users";
 import { updateUser } from "../domains/users/controller/update-user";
 
@@ -29,7 +29,7 @@ userRouter.post("/following/:id", authJWT, controllerHandler(createFollowing));
 userRouter.delete("/following/:id", authJWT, controllerHandler(deleteFollowing));
 
 userRouter.get("/block", authJWT, controllerHandler(getBlockUsers));
-userRouter.post("/block/:id", authJWT, controllerHandler(createBlockFollower));
-userRouter.delete("/block/:id", authJWT, controllerHandler(deleteBlockFollower));
+userRouter.post("/block/:id", authJWT, controllerHandler(createBlockUser));
+userRouter.delete("/block/:id", authJWT, controllerHandler(deleteBlockUser));
 
 export { userRouter };

@@ -16,7 +16,11 @@ export const createRecommendClothes = async (req: Request<{ id?: string }, unkno
 
     const recommendClothes = await createRecommendClothesService(clothesId, req.id, body, Prisma);
 
-    res.json({ clothes: recommendClothes });
+    res.json({
+        success: true,
+        msg: "Success create clothes"
+    });
+    // res.json({ clothes: recommendClothes });
 };
 
 const validateParamClothesId = (id?: string) => {

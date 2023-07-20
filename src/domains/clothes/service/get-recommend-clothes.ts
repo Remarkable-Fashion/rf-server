@@ -105,7 +105,7 @@ export const getRecommendClothesByIdService = ({ id, userId, category, cursor, t
                 throw new BadReqError("DB Error recommendClothes Should have userId")
             }
             const { followers, ...restUser } = user;
-            // const isFavoirte = await tx.favorites.findUnique({
+            // const isFavorite = await tx.favorites.findUnique({
             //     where: {
             //         userId_clothesId: {
             //             userId,
@@ -113,11 +113,11 @@ export const getRecommendClothesByIdService = ({ id, userId, category, cursor, t
             //         }
             //     }
             // });
-            const isFavoirte = favorites.length > 0;
+            const isFavorite = favorites.length > 0;
             const isScrap = scraps.length > 0;
 
             const obj = {
-                isFavoirte: !!isFavoirte,
+                isFavorite: !!isFavorite,
                 isFollwoing: followers.length > 0,
                 isScrap,
                 ...restClothe,

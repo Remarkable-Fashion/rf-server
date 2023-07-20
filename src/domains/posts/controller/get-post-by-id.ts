@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { BadReqError, UnauthorizedError } from "../../../lib/http-error";
+import { BadReqError, NotFoundError, UnauthorizedError } from "../../../lib/http-error";
 import Prisma from "../../../db/prisma";
 import { getPostByIdService } from "../service/get-post-by-id";
 
@@ -7,6 +7,10 @@ type ReqParams = {
     id?: string;
 };
 
+/**
+ * 
+ * @INFO 게시글 정보보기
+ */
 export const getPostById = async (req: Request<ReqParams>, res: Response) => {
     if (!req.id) {
         throw new UnauthorizedError();
@@ -16,14 +20,17 @@ export const getPostById = async (req: Request<ReqParams>, res: Response) => {
 
     const post = await getPostByIdService({ id, userId: req.id }, Prisma);
 
-    const mergedPost = {
-        isFollow: post.user.followers.length > 0,
-        isFavorite: post.favorites.length > 0,
-        isScrap: post.scraps.length > 0,
-        ...post
-    };
+    if(!post){
+        throw new NotFoundError("No post");
+    }
+    // const mergedPost = {
+    //     isFollow: post.user.followers.length > 0,
+    //     isFavorite: post.favorites.length > 0,
+    //     isScrap: post.scraps.length > 0,
+    //     ...post
+    // };
 
-    res.json(mergedPost);
+    res.json(post);
 };
 
 const validateParamId = (id?: string) => {

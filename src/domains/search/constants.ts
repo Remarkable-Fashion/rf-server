@@ -8,3 +8,5 @@ export const SEARCH_LOG_INDEX = "search_log";
 export const SEARCH_LOG_QUERY = "query";
 
 export const REDIS_SEARCH_RANK_KEY = "search:rank";
+
+export const RANK_SIZE = 10;

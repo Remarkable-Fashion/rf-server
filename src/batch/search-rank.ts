@@ -1,12 +1,11 @@
 import { Client } from "@elastic/elasticsearch";
 import * as redis from "redis";
 import cron from "node-cron";
-import { SEARCH_LOG_QUERY, SEARCH_LOG_INDEX, REDIS_SEARCH_RANK_KEY } from "../domains/search/constants";
+import { SEARCH_LOG_QUERY, SEARCH_LOG_INDEX, REDIS_SEARCH_RANK_KEY, RANK_SIZE } from "../domains/search/constants";
 import { getSearchRankService } from "../domains/search/service/get-search-rank";
 import { Rank } from "../domains/search/types";
 import { getDateRange } from "../domains/search/get-date-range";
 
-const RANK_SIZE = 5;
 const CRON_EXPRESSION = "*/5 * * * *"; // 5분
 
 const redisURL = "redis://localhost:30001";
@@ -31,6 +30,7 @@ const main = async () => {
             { query: SEARCH_LOG_QUERY, index: SEARCH_LOG_INDEX, date: getDateRange(new Date()), size: RANK_SIZE },
             esClient
         );
+        console.log("currentRank :", currentRank);
 
         const _previousRank = await redisClient.get(REDIS_SEARCH_RANK_KEY);
         let previousRank: Rank[] = [];

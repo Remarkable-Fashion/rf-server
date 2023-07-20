@@ -20,10 +20,10 @@ export const getMyFavorites = async (req: Request<unknown, unknown, unknown, { c
 
     const mergedPosts = posts.map((post) => {
         const isFollow = post.post!.user.followers.length > 0;
-        const isFavoirte = post.post!.favorites.length > 0;
+        const isFavorite = post.post!.favorites.length > 0;
 
         return {
-            isFavoirte,
+            isFavorite,
             isFollow,
             ...post
         };

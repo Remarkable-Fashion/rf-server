@@ -12,7 +12,7 @@ export const getSearchPosts = async (req: Request<unknown, unknown, unknown, { s
     if (!query) {
         throw new BadReqError("No 'Search' query string");
     }
-    const take = validateSize(req.query.take);
+    const take = validateTake(req.query.take);
     const posts = await getSearchPostsService({ query, size: take, index: POSTS_INDEX }, client);
 
     await createSearchLogService({ query, index: SEARCH_LOG_INDEX, userId: req.id }, client);
@@ -21,43 +21,31 @@ export const getSearchPosts = async (req: Request<unknown, unknown, unknown, { s
         return post.id;
     });
 
-    const [_posts] = await getRandomPostsService({ userId: req.id, postIds: ids }, Prisma);
-    const mergedPosts = _posts.map((post) => {
-        const isFollow = post.user.followers.length > 0;
-        const isFavoirte = post.favorites.length > 0;
-        const isScrap = post.scraps.length > 0;
-
-        return {
-            isFavoirte,
-            isFollow,
-            isScrap,
-            ...post
-        };
-    });
+    const _posts = await getRandomPostsService({ userId: req.id, postIds: ids }, Prisma);
 
     const data = {
         size: _posts.length,
         search: query,
         take,
-        posts: mergedPosts
+        posts: _posts
     };
 
     res.status(200).json(data);
 };
 
-const validateSize = (size?: string) => {
-    if (!size) {
+const validateTake = (take?: string) => {
+    if (!take) {
         throw new BadReqError("No 'take' query string");
     }
 
-    const parsedSize = Number(size);
-    if (Number.isNaN(parsedSize)) {
+    const parsedTake = Number(take);
+    if (Number.isNaN(parsedTake)) {
         throw new BadReqError("'take' should be Number");
     }
 
-    if (parsedSize <= 0 || parsedSize > 20) {
+    if (parsedTake <= 0 || parsedTake > 20) {
         throw new BadReqError("'take' should be 0 to 20");
     }
 
-    return parsedSize;
+    return parsedTake;
 };
