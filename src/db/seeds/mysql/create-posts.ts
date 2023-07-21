@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { CreatePost, _Clothes, createPost } from "../../../domains/posts/service/create-post";
+import { CreatePost, _Clothes, _Clothes2, createPost } from "../../../domains/posts/service/create-post";
 import { conf } from "../../../config";
 import {createPostElasticSearchService} from "../../../domains/posts/service/create-post-elasticsearch";
 import { CLOTHES_INDEX, POSTS_INDEX } from "../../../domains/search/constants";
@@ -19,30 +19,30 @@ export const createPosts = async (prisma: PrismaClient, client: Client) => {
         for(let i = 0; i < 10; i++){
             const img = `${conf().SERVER_DOMAIN}/${i}.jpg`;
 
-            const topClothes: _Clothes = {
+            const topClothes: _Clothes2 = {
                 category: "Top",
                 name: `top-${user}-${i}`,
                 price: 100,
-                brand: null,
-                color: null,
-                size: null,
-                imageUrl: null,
-                siteUrl: null,
-                reason: null,
-                recommendedClothesId: null
+                // brand: null,
+                // color: null,
+                // size: null,
+                // imageUrl: null,
+                // siteUrl: null,
+                // reason: null,
+                // recommendedClothesId: null
             };
 
-            const bottomClothes: _Clothes = {
+            const bottomClothes: _Clothes2 = {
                 category: "Bottom",
                 name: `bottom-${user}-${i}`,
                 price: 100,
-                brand: null,
-                color: null,
-                size: null,
-                imageUrl: null,
-                siteUrl: null,
-                reason: null,
-                recommendedClothesId: null
+                // brand: null,
+                // color: null,
+                // size: null,
+                // imageUrl: null,
+                // siteUrl: null,
+                // reason: null,
+                // recommendedClothesId: null
             };
 
             const data: CreatePost = {
