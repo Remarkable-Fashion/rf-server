@@ -8,8 +8,8 @@ import { validateBody } from "../../../lib/validate-body";
 import { createPostElasticSearchService } from "../service/create-post-elasticsearch";
 import { client } from "../../../db/elasticsearch";
 import { createClothesElasticSearchService } from "../../clothes/service/create-es-clothes";
+import { CLOTHES_INDEX, POSTS_INDEX } from "../../search/constants";
 
-const index = "posts";
 export const createPost = async (req: Request<unknown, unknown, CreatePostBody>, res: Response) => {
     if (!req.id) {
         throw new UnauthorizedError("Check your user");
@@ -48,10 +48,10 @@ export const createPost = async (req: Request<unknown, unknown, CreatePostBody>,
     // const collectionName = createCollectionName(createYearMonthString(), POST_PRE_FIX);
     // await createPostMongoService({ postId: postId, sex: post.sex }, mongo.Db, collectionName);
 
-    await createPostElasticSearchService({ index, id: String(post.id), data: post }, client);
+    await createPostElasticSearchService({ index: POSTS_INDEX, id: String(post.id), data: post }, client);
 
     if(post.clothes.length){
-        await createClothesElasticSearchService({index, clothes: post.clothes}, client);
+        await createClothesElasticSearchService({index: CLOTHES_INDEX, clothes: post.clothes}, client);
     }
     // await createPostMongoService({ postId: postId, ..._post }, mongo.Db, collectionName);
 

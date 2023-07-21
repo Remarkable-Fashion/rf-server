@@ -59,7 +59,8 @@ export const getRandomPostsPublic = async (req: Request<unknown, unknown, unknow
 
 const validateQueryTake = (take?: string) => {
     if (!take) {
-        throw new BadReqError("No 'take'");
+        return DEFAULT_SIZE;
+        // throw new BadReqError("No 'take'");
     }
     const parsedTake = Number(take);
 

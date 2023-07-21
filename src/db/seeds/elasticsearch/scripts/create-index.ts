@@ -3,7 +3,7 @@ import { CLOTHES_INDEX, POSTS_INDEX, SEARCH_LOG_INDEX } from "../../../../domain
 
 const createIndex = async (indexName: string, config: {}, client: Client) => {
     const isIndexExist = await client.indices.exists({ index: indexName });
-    if(isIndexExist){
+    if(isIndexExist.body){
         console.log(`Index already exist : ${indexName}`);
         return;
     }
@@ -72,7 +72,7 @@ export const createClothesIndex = async (client: Client) => {
                     },
                     "name": {
                         "type": "text",
-                        filelds : {
+                        fields : {
                             "keyword": {
                                 type: "keyword",
                                 ignore_above: 256
@@ -81,7 +81,7 @@ export const createClothesIndex = async (client: Client) => {
                     },
                     "brand": {
                         "type": "text",
-                        filelds : {
+                        fields : {
                             "keyword": {
                                 type: "keyword",
                                 ignore_above: 256

@@ -8,7 +8,18 @@ export const getPostByIdService = async (data: { id: number; userId: number }, p
                 title: true,
                 description: true,
                 place: true,
-                styles: true,
+                // styles: true,
+                styles: {
+                    select: {
+                        stylesId: true,
+                        styles: {
+                            select: {
+                                text: true,
+                                emoji: true,
+                            }
+                        }
+                    }
+                },
                 createdAt: true,
                 deletedAt: true,
                 user: {
@@ -80,19 +91,27 @@ export const getPostByIdService = async (data: { id: number; userId: number }, p
             return;
         }
 
-        const {user, clothes, favorites, scraps, ...restPost} = post;
+        const {user, clothes, favorites, scraps, styles, ...restPost} = post;
 
         const {followers, ...restUser} = user;
 
         const isFollow = user.followers.length > 0;
         const isFavorite = favorites.length > 0;
         const isScrap = scraps.length > 0;
+        const parsedStyles = styles.map( style => {
+            return {
+                stylesId: style.stylesId,
+                text: style.styles.text,
+                emoji: style.styles.emoji
+            }
+        });
 
         const parsedPosts = {
             isFollow,
             isFavorite,
             isScrap,
             ...restPost,
+            styles: parsedStyles,
             user: restUser,
             clothes,
         };
