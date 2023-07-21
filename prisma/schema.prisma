@@ -123,9 +123,9 @@ model Posts {
   description String  @db.VarChar(200)
   place       String? @db.VarChar(50)
 
-  tpo    Tpo    @default(Etc)
-  season Season @default(Etc)
-  style  Style  @default(Etc)
+  tpos    PostTpos[]
+  seasons PostSeasons[]
+  styles  PostStyles[]
 
   sex      String? @db.VarChar(10)
   isPublic Boolean @default(true) @map("is_public")
@@ -224,30 +224,77 @@ model Scraps {
 }
 
 model Tpos {
-  id        Int       @id @default(autoincrement()) @db.UnsignedInt
-  tpo       Tpo       @unique
-  createdAt DateTime  @default(now()) @map("created_at")
-  deletedAt DateTime? @map("deleted_at")
+  id        Int        @id @default(autoincrement()) @db.UnsignedInt
+  text      Tpo        @unique @default(Etc)
+  emoji     String?
+  createdAt DateTime   @default(now()) @map("created_at")
+  deletedAt DateTime?  @map("deleted_at")
+  PostTpos  PostTpos[]
 
   @@map("tpos")
 }
 
-model Seasons {
-  id        Int       @id @default(autoincrement()) @db.UnsignedInt
-  season    Season    @unique
+model PostTpos {
+  Posts   Posts @relation(fields: [postsId], references: [id])
+  postsId Int   @map("post_id") @db.UnsignedInt
+
+  tpo   Tpos @relation(fields: [tpoId], references: [id])
+  tpoId Int  @map("tpo_id") @db.UnsignedInt
+
   createdAt DateTime  @default(now()) @map("created_at")
   deletedAt DateTime? @map("deleted_at")
+
+  @@id([postsId, tpoId])
+  @@map("post_tpos")
+}
+
+model Seasons {
+  id          Int           @id @default(autoincrement()) @db.UnsignedInt
+  text        Season        @unique @default(Etc)
+  emoji       String?
+  createdAt   DateTime      @default(now()) @map("created_at")
+  deletedAt   DateTime?     @map("deleted_at")
+  PostSeasons PostSeasons[]
 
   @@map("seasons")
 }
 
-model Styles {
-  id        Int       @id @default(autoincrement()) @db.UnsignedInt
-  style     Style     @unique
+model PostSeasons {
+  Posts   Posts @relation(fields: [postsId], references: [id])
+  postsId Int   @map("post_id") @db.UnsignedInt
+
+  season   Seasons @relation(fields: [seasonId], references: [id])
+  seasonId Int     @map("season_id") @db.UnsignedInt
+
   createdAt DateTime  @default(now()) @map("created_at")
   deletedAt DateTime? @map("deleted_at")
 
+  @@id([postsId, seasonId])
+  @@map("post_seasons")
+}
+
+model Styles {
+  id         Int          @id @default(autoincrement()) @db.UnsignedInt
+  text       Style        @unique @default(Etc)
+  emoji      String?
+  createdAt  DateTime     @default(now()) @map("created_at")
+  deletedAt  DateTime?    @map("deleted_at")
+  PostStyles PostStyles[]
+
   @@map("styles")
+}
+
+model PostStyles {
+  createdAt DateTime  @default(now()) @map("created_at")
+  deletedAt DateTime? @map("deleted_at")
+  Posts     Posts     @relation(fields: [postsId], references: [id])
+  postsId   Int       @db.UnsignedInt
+
+  styles   Styles @relation(fields: [stylesId], references: [id])
+  stylesId Int    @map("styles_id") @db.UnsignedInt
+
+  @@id([postsId, stylesId])
+  @@map("post_styles")
 }
 
 enum ClothesCategory {

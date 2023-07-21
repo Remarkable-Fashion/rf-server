@@ -5,7 +5,7 @@ import { findSeasonsService } from "../service";
 export const findSeasonsController = async (req: Request<unknown, unknown>, res: Response) => {
     const seasons = await findSeasonsService(Prisma);
 
-    const seasonList = seasons.map((season) => season.season);
+    // const seasonList = seasons.map((season) => season.season);
 
-    res.status(200).json(seasonList);
+    res.status(200).json(seasons);
 };
