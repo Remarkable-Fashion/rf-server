@@ -11,6 +11,7 @@ const main = async () => {
 
     const rv = await client.cat.indices({ format: "json" });
 
+    console.log("rv :", rv);
     const indexNames = rv.body.map( (a: any)=>{
         return a.index;
     });

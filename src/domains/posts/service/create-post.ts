@@ -2,11 +2,18 @@ import { Clothes, Season, Sex, Style, Tpo, type PrismaClient } from "@prisma/cli
 import { postSex } from "../types";
 type IfNull<T, Y, N> = T extends null ? Y : N;
 
-type Optionalize<T> = {
-  [K in keyof T]: IfNull<T[K], T[K] | undefined, T[K]>;
-}
-type ClothesWithout = Omit<Clothes, "id" | "postId" | "createdAt">;
-type _Clothes = Optionalize<ClothesWithout>;
+// type Optionalize<T> = {
+//   [K in keyof T]: IfNull<T[K], T[K] | undefined, T[K]>;
+// }
+
+type ReplaceNullWithUndefined<T> = T extends null ? undefined : T;
+type NullToUndefined<T> = {
+    [K in keyof T]: T[K] extends (infer U)[] ? ReplaceNullWithUndefined<U>[] : ReplaceNullWithUndefined<T[K]>
+};
+
+type ClothesWithout = Omit<Clothes, "id" | "postId" | "userId" | "createdAt">;
+export type _Clothes = ClothesWithout;
+// export type _Clothes = NullToUndefined<ClothesWithout>;
 
 export type CreatePostBody = {
     title: string;
@@ -91,7 +98,6 @@ export const createPost = async ({ userId, title, description, imgUrls, clothes,
             styles: true,
             isPublic: true,
             sex: true
-            // ...(isClosthes && { clothes: true })
         },
         data: {
             userId,

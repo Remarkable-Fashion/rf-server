@@ -3,8 +3,8 @@ import { createClothesIndex, createPostIndex, createSearchLogIndex } from "./scr
 import { createIdWithTimestampPipeline, createTimestampPipeline } from "./scripts/create-piptline";
 export const seedElasticsearch = async (client: Client) => {
 
-    await createTimestampPipeline(client);
-    await createIdWithTimestampPipeline(client);
+    // await createTimestampPipeline(client);
+    // await createIdWithTimestampPipeline(client);
     
     await createPostIndex(client);
     await createClothesIndex(client);
