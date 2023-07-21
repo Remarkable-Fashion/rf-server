@@ -8,12 +8,13 @@ export const getPostByIdService = async (data: { id: number; userId: number }, p
                 title: true,
                 description: true,
                 place: true,
-                style: true,
+                styles: true,
                 createdAt: true,
                 deletedAt: true,
                 user: {
                     select: {
                         id: true,
+                        name: true,
                         profile: {
                             select: {
                                 id: true,

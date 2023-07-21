@@ -3,25 +3,97 @@ import { PrismaClient, Tpo, Season, Style } from "@prisma/client";
 // const prisma = new PrismaClient();
 
 export const createTposSeasonsStyles = async (prisma: PrismaClient = new PrismaClient()) => {
-    const tpoList = Array.from<Tpo>(["Occean", "Travel", "Date", "Wedding", "Campus", "Work", "Daily", "Etc"]);
-    const tpoData = tpoList.map((tpo) => ({ tpo }));
+    const tpoList: {text: Tpo, emoji: string}[] = [
+        {
+            text: "Occean",
+            emoji: "🌊"
+        },
+        {
+            text: "Travel",
+            emoji: "✈"
+        },
+        {
+            text: "Date",
+            emoji: "🧑‍🤝‍🧑"
+        },
+        {
+            text: "Wedding",
+            emoji: "👰"
+        },
+        {
+            text: "Campus",
+            emoji: "🎓"
+        },
+        {
+            text: "Work",
+            emoji: "⛏"
+        },
+        {
+            text: "Daily",
+            emoji: "🚶‍♂️"
+        },
+        {
+            text: "Etc",
+            emoji: "😴"
+        },
+    ];
     const tpos = await prisma.tpos.createMany({
-        data: tpoData,
+        data: tpoList,
         skipDuplicates: true
     });
 
-    const seasonList = Array.from<Season>(["Spring", "Summer", "Fall", "Winter", "Etc"]);
-    const seasonData = seasonList.map((season) => ({ season }));
+    const seasonList: {text: Season, emoji: string}[] = [
+        {
+            text: "Fall",
+            emoji: "🍂"
+        },
+        {
+            text: "Spring",
+            emoji: "🌼"
+        },
+        {
+            text: "Summer",
+            emoji: "🏖"
+        },
+        {
+            text: "Winter",
+            emoji: "⛷"
+        },
+        {
+            text: "Etc",
+            emoji: "😴"
+        },
+    ];
 
     const seasons = await prisma.seasons.createMany({
-        data: seasonData,
+        data: seasonList,
         skipDuplicates: true
     });
 
-    const styleList = Array.from<Style>(["Classic", "Dandy", "Street", "Retro", "Etc"]);
-    const styleData = styleList.map((style) => ({ style }));
+    const styleList: {text: Style, emoji: string}[] = [
+        {
+            text: "Classic",
+            emoji: "🍔"
+        },
+        {
+            text: "Dandy",
+            emoji: "🕶"
+        },
+        {
+            text: "Retro",
+            emoji: "🛼"
+        },
+        {
+            text: "Street",
+            emoji: "🛣️"
+        },
+        {
+            text: "Etc",
+            emoji: "😴"
+        },
+    ];
     const styles = await prisma.styles.createMany({
-        data: styleData,
+        data: styleList,
         skipDuplicates: true
     });
 

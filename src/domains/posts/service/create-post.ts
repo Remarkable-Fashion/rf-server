@@ -6,16 +6,19 @@ type Optionalize<T> = {
   [K in keyof T]: IfNull<T[K], T[K] | undefined, T[K]>;
 }
 type ClothesWithout = Omit<Clothes, "id" | "postId" | "createdAt">;
-type CCC = Optionalize<ClothesWithout>;
+type _Clothes = Optionalize<ClothesWithout>;
 
 export type CreatePostBody = {
     title: string;
     description: string;
-    clothes?: CCC[];
+    clothes?: _Clothes[];
     // clothes?: Omit<Clothes, "id" | "postId" | "createdAt">[];
-    tpo?: Tpo;
-    season?: Season;
-    style?: Style;
+    tpos?: number[];
+    seasons?: number[];
+    styles?: number[];
+    // tpos?: Tpo[];
+    // seasons?: Season[];
+    // styles?: Style[];
     isPublic?: boolean;
     sex?: (typeof postSex)[number];
     // sex?: Sex;
@@ -25,8 +28,28 @@ type PromiseType<T extends Promise<any>> = T extends Promise<infer U> ? U : neve
 
 // type CreatePostReturn = ;
 export type CreatePostReturn = PromiseType<ReturnType<typeof createPost>>;
-export const createPost = ({ userId, title, description, imgUrls, clothes, tpo, season, style, isPublic, sex }: CreatePost, prisma: PrismaClient) => {
+export const createPost = async ({ userId, title, description, imgUrls, clothes, tpos, seasons, styles, isPublic, sex }: CreatePost, prisma: PrismaClient) => {
     const isClosthes = clothes && clothes.length > 0;
+
+    // let tpoIds: {tpoId: number}[] = [];
+    // if(tpos && tpos.length > 0) {
+    //     const _tpos = await prisma.tpos.findMany({
+    //         select: {
+    //             id: true,
+    //         },
+    //         where:{
+    //             text: {
+    //                 in: tpos
+    //             }
+    //         }
+    //     });
+    //     tpoIds = _tpos.map(tpo => ({
+    //         tpoId: tpo.id
+    //     }));
+    // }
+
+    // tpos?.map(tpo => ({tpoId: tpo}));
+
     return prisma.posts.create({
         select: {
             id: true,
@@ -63,9 +86,9 @@ export const createPost = ({ userId, title, description, imgUrls, clothes, tpo, 
                     siteUrl: true
                 }
             },
-            tpo: true,
-            season: true,
-            style: true,
+            tpos: true,
+            seasons: true,
+            styles: true,
             isPublic: true,
             sex: true
             // ...(isClosthes && { clothes: true })
@@ -74,9 +97,38 @@ export const createPost = ({ userId, title, description, imgUrls, clothes, tpo, 
             userId,
             title,
             description,
-            ...(tpo && { tpo }),
-            ...(season && { season }),
-            ...(style && { style }),
+            ...(tpos && { 
+                tpos: {
+                    createMany: {
+                        data: tpos.map(tpo => ({tpoId: tpo}))
+                    }
+                }
+            }),
+            // ...(tpos && { 
+            //     tpos: {
+            //         createMany: {
+            //             data: {
+            //                 tpoId: []
+            //             }
+            //         }
+            //     }
+            // }),
+            ...(seasons && { 
+                seasons: {
+                    createMany: {
+                        data: seasons.map(season => ({seasonId: season}))
+                    }
+                }
+            }),
+            ...(styles && { 
+                styles: {
+                    createMany: {
+                        data: styles.map(style => ({stylesId: style}))
+                    }
+                }
+            }),
+            // ...(seasons && { seasons }),
+            // ...(styles && { styles }),
             ...(isPublic && { isPublic }),
             ...(sex && { sex }),
             images: {
@@ -88,7 +140,8 @@ export const createPost = ({ userId, title, description, imgUrls, clothes, tpo, 
                           create: clothes.map((e) => ({ ...e }))
                       }
                   }
-                : {})
+                : {}
+            )
         }
     });
 };
