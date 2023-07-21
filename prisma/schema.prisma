@@ -297,6 +297,13 @@ model PostStyles {
   @@map("post_styles")
 }
 
+model tmpImages {
+  id  Int    @id @default(autoincrement()) @db.UnsignedInt
+  url String @db.VarChar(200)
+
+  @@map("tmp_images")
+}
+
 enum ClothesCategory {
   Outer
   Top

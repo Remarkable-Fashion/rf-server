@@ -6,7 +6,7 @@ import { deleteFavorite } from "../domains/posts/controller/delete-favorite";
 import { deleteScrap } from "../domains/posts/controller/delete-scrap";
 import { controllerHandler } from "../lib/controller-handler";
 import { authJWT, authTest } from "../middleware/auth";
-import { upload } from "../middleware/upload";
+import { upload, uploadTest } from "../middleware/upload";
 import { apiLimiterFunc } from "../middleware/api-rate-limit";
 import { getPostById } from "../domains/posts/controller/get-post-by-id";
 import { getRandomPosts } from "../domains/posts/controller/get-random-posts";
@@ -15,6 +15,7 @@ import { getRandomPostsPublic } from "../domains/posts/controller/get-random-pos
 import { getMyFavorites } from "../domains/posts/controller/get-my-favorites";
 import { deletePostById } from "../domains/posts/controller/delete-post-by-id";
 import { getPostsByUserId } from "../domains/posts/controller/get-post-by-user-id";
+import { uploadPostImage } from "../domains/posts/controller/upload-post-image";
 
 const postRouter = Router();
 
@@ -37,7 +38,9 @@ postRouter.get("/:id", authJWT, controllerHandler(getPostById));
 postRouter.delete("/:id", authJWT, controllerHandler(deletePostById));
 // postRouter.get("/test/:id", authTest(), controllerHandler(getPostById));
 
-postRouter.post("/", authJWT, upload.fields([{ name: "images" }]), controllerHandler(createPost));
+postRouter.post("/image", authJWT, uploadTest({prefix: "post"}).fields([{ name: "posts" }]), controllerHandler(uploadPostImage));
+// postRouter.post("/image", authJWT, upload.fields([{ name: "posts" }]), controllerHandler(uploadPostImage));
+postRouter.post("/", authJWT, controllerHandler(createPost));
 
 postRouter.post("/:id/favorite", authJWT, controllerHandler(createFavorite));
 postRouter.delete("/:id/favorite", authJWT, controllerHandler(deleteFavorite));

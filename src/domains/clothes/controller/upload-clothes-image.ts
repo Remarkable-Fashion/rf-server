@@ -8,8 +8,8 @@ type ReqParam = {
     id?: string;
 };
 
-export const uploadClthesImages = async (req: Request<ReqParam, unknown>, res: Response) => {
-    const imgUrls = (req.files as { [fieldName: string]: Express.Multer.File[] }).images.map((f) => `${conf().SERVER_DOMAIN}/${f.filename}`);
+export const uploadClothesImages = async (req: Request<ReqParam, unknown>, res: Response) => {
+    const imgUrls = (req.files as { [fieldName: string]: Express.Multer.File[] }).clothes.map((f) => `${conf().SERVER_DOMAIN}/${f.filename}`);
 
     if (!imgUrls || imgUrls.length < 1) {
         throw new BadReqError("There must be at least one image");
@@ -20,7 +20,8 @@ export const uploadClthesImages = async (req: Request<ReqParam, unknown>, res: R
 
     res.status(200).json({
         success: true,
-        msg: "Success upload clothes images"
+        msg: "Success upload clothes images",
+        imgUrls: imgUrls
     });
     // res.status(200).json({msg: "test", images: imgUrls});
 };

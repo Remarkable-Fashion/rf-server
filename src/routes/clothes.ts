@@ -6,7 +6,7 @@ import { createRecommendClothes } from "../domains/clothes/controller/create-rec
 import { getRecommendClothesByIdTop3 } from "../domains/clothes/controller/get-recommend-clothes-top3";
 import { createFavoriteClothes } from "../domains/clothes/controller/create-favorite-clothes";
 import { createScrapClothesById } from "../domains/clothes/controller/create-scrap-clothes";
-import { uploadClthesImages } from "../domains/clothes/controller/upload-clothes-image";
+import { uploadClothesImages } from "../domains/clothes/controller/upload-clothes-image";
 import { getRecommendClothesById } from "../domains/clothes/controller/get-recommend-clothes";
 
 const clothesRouter = Router();
@@ -18,7 +18,7 @@ clothesRouter.post("/:id/recommend/", authJWT, controllerHandler(createRecommend
 clothesRouter.post("/:id/favorite", authJWT, controllerHandler(createFavoriteClothes));
 clothesRouter.post("/:id/scrap", authJWT, controllerHandler(createScrapClothesById));
 
-clothesRouter.post("/image", authJWT, uploadTest({prefix: "clothes"}).fields([{name: "images" }]), controllerHandler(uploadClthesImages));
+clothesRouter.post("/image", authJWT, uploadTest({prefix: "clothes"}).fields([{name: "clothes" }]), controllerHandler(uploadClothesImages));
 // clothesRouter.post("/image", authJWT, upload.fields([{name: "images" }]), controllerHandler(uploadClthesImages));
 
 

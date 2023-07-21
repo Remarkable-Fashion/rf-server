@@ -13,16 +13,29 @@ type NullToUndefined<T> = {
 
 type ClothesWithout = Omit<Clothes, "id" | "postId" | "userId" | "createdAt">;
 export type _Clothes = ClothesWithout;
-// export type _Clothes = NullToUndefined<ClothesWithout>;
+export type _Clothes2 = {
+    category: ClothesWithout["category"];
+    name: string;
+    price?: number;
+    color?: string;
+    size?: string;
+    brand?: string;
+    reason?: string;
+    imageUrl?: string;
+    siteUrl?: string;
+    recommendedClothesId?: number;
+};
 
 export type CreatePostBody = {
+    imgUrls: string[];
     title: string;
     description: string;
-    clothes?: _Clothes[];
+    clothes?: _Clothes2[];
+    // clothes?: _Clothes[];
     // clothes?: Omit<Clothes, "id" | "postId" | "createdAt">[];
-    tpos?: number[];
-    seasons?: number[];
-    styles?: number[];
+    tpos?: number[] | string[];
+    seasons?: number[] | string[];
+    styles?: number[] | string[];
     // tpos?: Tpo[];
     // seasons?: Season[];
     // styles?: Style[];
@@ -30,7 +43,7 @@ export type CreatePostBody = {
     sex?: (typeof postSex)[number];
     // sex?: Sex;
 };
-export type CreatePost = CreatePostBody & { imgUrls: string[]; userId: number };
+export type CreatePost = CreatePostBody & { userId: number };
 type PromiseType<T extends Promise<any>> = T extends Promise<infer U> ? U : never;
 
 // type CreatePostReturn = ;
@@ -93,7 +106,11 @@ export const createPost = async ({ userId, title, description, imgUrls, clothes,
                     siteUrl: true
                 }
             },
-            tpos: true,
+            tpos: {
+                select: {
+                    tpoId: true,
+                }
+            },
             seasons: true,
             styles: true,
             isPublic: true,
@@ -106,7 +123,7 @@ export const createPost = async ({ userId, title, description, imgUrls, clothes,
             ...(tpos && { 
                 tpos: {
                     createMany: {
-                        data: tpos.map(tpo => ({tpoId: tpo}))
+                        data: tpos.map(tpo => ({tpoId: Number(tpo)}))
                     }
                 }
             }),
@@ -122,14 +139,14 @@ export const createPost = async ({ userId, title, description, imgUrls, clothes,
             ...(seasons && { 
                 seasons: {
                     createMany: {
-                        data: seasons.map(season => ({seasonId: season}))
+                        data: seasons.map(season => ({seasonId: Number(season)}))
                     }
                 }
             }),
             ...(styles && { 
                 styles: {
                     createMany: {
-                        data: styles.map(style => ({stylesId: style}))
+                        data: styles.map(style => ({stylesId: Number(style)}))
                     }
                 }
             }),
