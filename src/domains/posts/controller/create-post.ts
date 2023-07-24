@@ -3,7 +3,6 @@ import TSON from "typia";
 import Prisma from "../../../db/prisma";
 import { CreatePost, createPost as createPostService, CreatePostBody } from "../service/create-post";
 import { BadReqError, UnauthorizedError } from "../../../lib/http-error";
-import { conf } from "../../../config";
 import { validateBody } from "../../../lib/validate-body";
 import { createPostElasticSearchService } from "../service/create-post-elasticsearch";
 import { client } from "../../../db/elasticsearch";
@@ -37,8 +36,8 @@ export const createPost = async (req: Request<unknown, unknown, CreatePostBody>,
 
     await createPostElasticSearchService({ index: POSTS_INDEX, id: String(post.id), data: post }, client);
 
-    if(post.clothes.length){
-        await createClothesElasticSearchService({index: CLOTHES_INDEX, clothes: post.clothes}, client);
+    if (post.clothes.length) {
+        await createClothesElasticSearchService({ index: CLOTHES_INDEX, clothes: post.clothes }, client);
     }
     // await createPostMongoService({ postId: postId, ..._post }, mongo.Db, collectionName);
 

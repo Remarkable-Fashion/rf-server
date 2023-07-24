@@ -1,9 +1,9 @@
 import { Client } from "@elastic/elasticsearch";
 import { CLOTHES_INDEX, POSTS_INDEX, SEARCH_LOG_INDEX } from "../../../../domains/search/constants";
 
-const createIndex = async (indexName: string, config: {}, client: Client) => {
+const createIndex = async (indexName: string, config: any, client: Client) => {
     const isIndexExist = await client.indices.exists({ index: indexName });
-    if(isIndexExist.body){
+    if (isIndexExist.body) {
         console.log(`Index already exist : ${indexName}`);
         return;
     }
@@ -12,12 +12,13 @@ const createIndex = async (indexName: string, config: {}, client: Client) => {
         index: indexName,
         body: config
     });
-}
+};
 
 /**
- * 
+ *
  * @info item 검색엔진
  */
+/* eslint-disable camelcase */
 export const createClothesIndex = async (client: Client) => {
     const config = {
         settings: {
@@ -63,44 +64,43 @@ export const createClothesIndex = async (client: Client) => {
                         }
                     }
                 }
-            },
+            }
         },
         mappings: {
-                "properties": {
-                    "clothes_id": {
-                        "type": "integer",
-                    },
-                    "name": {
-                        "type": "text",
-                        fields : {
-                            "keyword": {
-                                type: "keyword",
-                                ignore_above: 256
-                            }
+            properties: {
+                clothes_id: {
+                    type: "integer"
+                },
+                name: {
+                    type: "text",
+                    fields: {
+                        keyword: {
+                            type: "keyword",
+                            ignore_above: 256
                         }
-                    },
-                    "brand": {
-                        "type": "text",
-                        fields : {
-                            "keyword": {
-                                type: "keyword",
-                                ignore_above: 256
-                            }
-                        }
-                    },
-                    "category": {
-                        "type": "keyword",
-                    },
-                    "value": {
-                        "type": "integer"
                     }
+                },
+                brand: {
+                    type: "text",
+                    fields: {
+                        keyword: {
+                            type: "keyword",
+                            ignore_above: 256
+                        }
+                    }
+                },
+                category: {
+                    type: "keyword"
+                },
+                value: {
+                    type: "integer"
                 }
-            
+            }
         }
     };
 
     await createIndex(CLOTHES_INDEX, config, client);
-}
+};
 
 export const createPostIndex = async (client: Client) => {
     /**
@@ -152,26 +152,26 @@ export const createPostIndex = async (client: Client) => {
                         }
                     }
                 }
-            },
+            }
         },
         mappings: {
-                "properties": {
-                    "title": {
-                        "type": "text",
-                        "analyzer": "my_analyzer"
-                    },
-                    "description": {
-                        "type": "text",
-                        "analyzer": "my_analyzer"
-                    }
+            properties: {
+                title: {
+                    type: "text",
+                    analyzer: "my_analyzer"
+                },
+                description: {
+                    type: "text",
+                    analyzer: "my_analyzer"
                 }
-            
+            }
         }
     };
 
     await createIndex(POSTS_INDEX, config, client);
-}
+};
 
+// eslint-disable-next-line camelcase
 export const createSearchLogIndex = async (client: Client) => {
     /**
      * @info
@@ -222,25 +222,25 @@ export const createSearchLogIndex = async (client: Client) => {
                         }
                     }
                 }
-            },
+            }
         },
         mappings: {
-            "properties": {
-                "user_id": {
-                    "type": "integer",
+            properties: {
+                user_id: {
+                    type: "integer"
                 },
-                "query": {
-                    "type": "text",
-                    "fields": {
-                        "keyword": {
-                            "type": "keyword",
-                            "ignore_above": 256
+                query: {
+                    type: "text",
+                    fields: {
+                        keyword: {
+                            type: "keyword",
+                            ignore_above: 256
                         }
                     }
-                },
+                }
             }
         }
     };
 
     await createIndex(SEARCH_LOG_INDEX, config, client);
-}
+};

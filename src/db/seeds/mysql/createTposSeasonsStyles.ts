@@ -3,7 +3,7 @@ import { PrismaClient, Tpo, Season, Style } from "@prisma/client";
 // const prisma = new PrismaClient();
 
 export const createTposSeasonsStyles = async (prisma: PrismaClient = new PrismaClient()) => {
-    const tpoList: {text: Tpo, emoji: string}[] = [
+    const tpoList: { text: Tpo; emoji: string }[] = [
         {
             text: "Occean",
             emoji: "🌊"
@@ -35,14 +35,14 @@ export const createTposSeasonsStyles = async (prisma: PrismaClient = new PrismaC
         {
             text: "Etc",
             emoji: "😴"
-        },
+        }
     ];
     const tpos = await prisma.tpos.createMany({
         data: tpoList,
         skipDuplicates: true
     });
 
-    const seasonList: {text: Season, emoji: string}[] = [
+    const seasonList: { text: Season; emoji: string }[] = [
         {
             text: "Fall",
             emoji: "🍂"
@@ -62,7 +62,7 @@ export const createTposSeasonsStyles = async (prisma: PrismaClient = new PrismaC
         {
             text: "Etc",
             emoji: "😴"
-        },
+        }
     ];
 
     const seasons = await prisma.seasons.createMany({
@@ -70,7 +70,7 @@ export const createTposSeasonsStyles = async (prisma: PrismaClient = new PrismaC
         skipDuplicates: true
     });
 
-    const styleList: {text: Style, emoji: string}[] = [
+    const styleList: { text: Style; emoji: string }[] = [
         {
             text: "Classic",
             emoji: "🍔"
@@ -90,7 +90,7 @@ export const createTposSeasonsStyles = async (prisma: PrismaClient = new PrismaC
         {
             text: "Etc",
             emoji: "😴"
-        },
+        }
     ];
     const styles = await prisma.styles.createMany({
         data: styleList,

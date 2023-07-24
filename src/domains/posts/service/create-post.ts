@@ -1,30 +1,30 @@
-import { Clothes, Season, Sex, Style, Tpo, type PrismaClient } from "@prisma/client";
+import { Clothes, type PrismaClient } from "@prisma/client";
 import { postSex } from "../types";
-type IfNull<T, Y, N> = T extends null ? Y : N;
 
-// type Optionalize<T> = {
-//   [K in keyof T]: IfNull<T[K], T[K] | undefined, T[K]>;
-// }
+type NullableKeys<T> = { [k in keyof T]: null extends T[k] ? k : never }[keyof T];
 
-type ReplaceNullWithUndefined<T> = T extends null ? undefined : T;
-type NullToUndefined<T> = {
-    [K in keyof T]: T[K] extends (infer U)[] ? ReplaceNullWithUndefined<U>[] : ReplaceNullWithUndefined<T[K]>
+type Obj = { [key: string]: any };
+
+type NonNullableObj<T> = {
+    [K in keyof T]: null extends T[K] ? NonNullable<T[K]> : T[K];
 };
+
+type NullToOptional<T extends Obj, NK extends NullableKeys<T> = NullableKeys<T>> = Omit<T, NK> & Partial<NonNullableObj<Pick<T, NK>>>;
 
 type ClothesWithout = Omit<Clothes, "id" | "postId" | "userId" | "createdAt">;
-export type _Clothes = ClothesWithout;
-export type _Clothes2 = {
-    category: ClothesWithout["category"];
-    name: string;
-    price?: number;
-    color?: string;
-    size?: string;
-    brand?: string;
-    reason?: string;
-    imageUrl?: string;
-    siteUrl?: string;
-    recommendedClothesId?: number;
-};
+export type _Clothes2 = NullToOptional<ClothesWithout>;
+// export type _Clothes2 = {
+//     category: ClothesWithout["category"];
+//     name: string;
+//     price?: number;
+//     color?: string;
+//     size?: string;
+//     brand?: string;
+//     reason?: string;
+//     imageUrl?: string;
+//     siteUrl?: string;
+//     recommendedClothesId?: number;
+// };
 
 export type CreatePostBody = {
     imgUrls: string[];
@@ -40,35 +40,19 @@ export type CreatePostBody = {
     // seasons?: Season[];
     // styles?: Style[];
     isPublic?: boolean;
-    sex?: (typeof postSex)[number];
+    sex?: typeof postSex[number];
     // sex?: Sex;
 };
 export type CreatePost = CreatePostBody & { userId: number };
 type PromiseType<T extends Promise<any>> = T extends Promise<infer U> ? U : never;
 
 // type CreatePostReturn = ;
-export type CreatePostReturn = PromiseType<ReturnType<typeof createPost>>;
-export const createPost = async ({ userId, title, description, imgUrls, clothes, tpos, seasons, styles, isPublic, sex }: CreatePost, prisma: PrismaClient) => {
+
+export const createPost = async (
+    { userId, title, description, imgUrls, clothes, tpos, seasons, styles, isPublic, sex }: CreatePost,
+    prisma: PrismaClient
+) => {
     const isClosthes = clothes && clothes.length > 0;
-
-    // let tpoIds: {tpoId: number}[] = [];
-    // if(tpos && tpos.length > 0) {
-    //     const _tpos = await prisma.tpos.findMany({
-    //         select: {
-    //             id: true,
-    //         },
-    //         where:{
-    //             text: {
-    //                 in: tpos
-    //             }
-    //         }
-    //     });
-    //     tpoIds = _tpos.map(tpo => ({
-    //         tpoId: tpo.id
-    //     }));
-    // }
-
-    // tpos?.map(tpo => ({tpoId: tpo}));
 
     return prisma.posts.create({
         select: {
@@ -108,7 +92,7 @@ export const createPost = async ({ userId, title, description, imgUrls, clothes,
             },
             tpos: {
                 select: {
-                    tpoId: true,
+                    tpoId: true
                 }
             },
             seasons: true,
@@ -120,14 +104,14 @@ export const createPost = async ({ userId, title, description, imgUrls, clothes,
             userId,
             title,
             description,
-            ...(tpos && { 
+            ...(tpos && {
                 tpos: {
                     createMany: {
-                        data: tpos.map(tpo => ({tpoId: Number(tpo)}))
+                        data: tpos.map((tpo) => ({ tpoId: Number(tpo) }))
                     }
                 }
             }),
-            // ...(tpos && { 
+            // ...(tpos && {
             //     tpos: {
             //         createMany: {
             //             data: {
@@ -136,17 +120,17 @@ export const createPost = async ({ userId, title, description, imgUrls, clothes,
             //         }
             //     }
             // }),
-            ...(seasons && { 
+            ...(seasons && {
                 seasons: {
                     createMany: {
-                        data: seasons.map(season => ({seasonId: Number(season)}))
+                        data: seasons.map((season) => ({ seasonId: Number(season) }))
                     }
                 }
             }),
-            ...(styles && { 
+            ...(styles && {
                 styles: {
                     createMany: {
-                        data: styles.map(style => ({stylesId: Number(style)}))
+                        data: styles.map((style) => ({ stylesId: Number(style) }))
                     }
                 }
             }),
@@ -163,8 +147,9 @@ export const createPost = async ({ userId, title, description, imgUrls, clothes,
                           create: clothes.map((e) => ({ ...e }))
                       }
                   }
-                : {}
-            )
+                : {})
         }
     });
 };
+
+export type CreatePostReturn = PromiseType<ReturnType<typeof createPost>>;

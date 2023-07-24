@@ -15,7 +15,7 @@ export const deleteFavorite = async (req: Request<ReqParams, unknown>, res: Resp
     }
 
     const postId = Number(req.params.id);
-    const favorite = await deleteFavoriteService(
+    await deleteFavoriteService(
         { userId: Number(req.id), postId },
         // { userId: Number(req.id), postId: Number(req.params.id), favoriteId: Number(req.params.favoriteId) },
         Prisma

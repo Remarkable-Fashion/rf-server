@@ -7,6 +7,7 @@ export const getRecentSearchByUserIdService = async ({ index, userId, size }: { 
             size,
             query: {
                 term: {
+                    // eslint-disable-next-line camelcase
                     user_id: {
                         value: userId
                     }
@@ -21,6 +22,7 @@ export const getRecentSearchByUserIdService = async ({ index, userId, size }: { 
             ],
             collapse: {
                 field: "query.keyword",
+                // eslint-disable-next-line camelcase
                 inner_hits: {
                     name: "latest",
                     size: 1,

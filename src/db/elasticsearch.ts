@@ -1,6 +1,7 @@
 import { Client } from "@elastic/elasticsearch";
 import { conf } from "../config";
 
+console.log("asdf : ", conf().ELK_DB);
 export const client = new Client({
     node: conf().ELK_DB,
     // node: "http://dev-elasticsearch:9200",
@@ -12,6 +13,7 @@ export const client = new Client({
 
 if (require.main === module) {
     console.log("test");
+    // eslint-disable-next-line no-shadow
     const client = new Client({
         node: "http://localhost:9200",
         maxRetries: 5,

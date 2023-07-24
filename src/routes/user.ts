@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { updateUserProfile } from "../domains/users/controller/update-user-profile";
 import { controllerHandler } from "../lib/controller-handler";
-import { authJWT, authTest } from "../middleware/auth";
+import { authJWT } from "../middleware/auth";
 import { upload } from "../middleware/upload";
 import { getUserById } from "../domains/users/controller/get-user-by-id";
 import { createFollowing } from "../domains/users/controller/create-following";
@@ -18,8 +18,7 @@ const userRouter = Router();
 
 userRouter.get("/me", authJWT, controllerHandler(getUserById));
 userRouter.patch("/me", authJWT, controllerHandler(updateUser));
-userRouter.patch("/me/profile", authJWT, upload.fields([{ name: "avartar" }]), controllerHandler(updateUserProfile));
-
+userRouter.patch("/me/profile", authJWT, upload().fields([{ name: "avartar" }]), controllerHandler(updateUserProfile));
 
 userRouter.get("/following/:id", authJWT, controllerHandler(checkFollowing));
 userRouter.get("/following", authJWT, controllerHandler(getMyFollowings));

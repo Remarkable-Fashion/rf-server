@@ -17,6 +17,7 @@ export const getSearchRankService = async (
                 }
             },
             aggs: {
+                // eslint-disable-next-line camelcase
                 popular_keywords: {
                     terms: {
                         field: `${query}.keyword`, // text filed shuld have keyword (subfield)

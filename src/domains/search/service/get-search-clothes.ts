@@ -6,6 +6,7 @@ export const getSearchClothesService = async ({ query, size, index }: { query: s
         body: {
             size,
             query: {
+                // eslint-disable-next-line camelcase
                 multi_match: {
                     query,
                     fields: ["name", "brand"]

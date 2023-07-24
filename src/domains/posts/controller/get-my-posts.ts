@@ -5,6 +5,25 @@ import { getMyPostsService } from "../service/get-my-posts";
 
 const DEFAULT_TAKE = 21;
 
+const validateCursor = (cursor?: string) => {
+    const cursorT = cursor ? Number(cursor) : undefined;
+    if (cursorT && cursorT < 0) {
+        throw new BadReqError("cursor should be higher than 0");
+    }
+
+    return cursorT;
+};
+
+const validateTake = (take?: string) => {
+    const takeT = take ? Number(take) : DEFAULT_TAKE;
+
+    if (take && takeT < 0) {
+        throw new BadReqError("take should be higher than 0");
+    }
+
+    return takeT;
+};
+
 export const getMyposts = async (req: Request<unknown, unknown, unknown, { cursor?: string; take?: string }>, res: Response) => {
     const id = req.id;
     if (!id) {
@@ -17,7 +36,7 @@ export const getMyposts = async (req: Request<unknown, unknown, unknown, { curso
 
     const countsOfposts = posts.length;
 
-    const lastPostId = posts.at(-1)?.id!;
+    const lastPostId = posts[posts.length - 1].id!;
     const data = {
         nextCursor: lastPostId,
         hasNext: lastPostId > (lastMyPost?.id ?? 0),
@@ -29,23 +48,4 @@ export const getMyposts = async (req: Request<unknown, unknown, unknown, { curso
     };
 
     res.json(data);
-};
-
-const validateCursor = (cursor?: string) => {
-    const _cursor = cursor ? Number(cursor) : undefined;
-    if (_cursor && _cursor < 0) {
-        throw new BadReqError("cursor should be higher than 0");
-    }
-
-    return _cursor;
-};
-
-const validateTake = (take?: string) => {
-    const _take = take ? Number(take) : DEFAULT_TAKE;
-
-    if (take && _take < 0) {
-        throw new BadReqError("take should be higher than 0");
-    }
-
-    return _take;
 };

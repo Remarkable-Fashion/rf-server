@@ -1,8 +1,10 @@
+import { redisClient } from "./db/redis";
 import { startApp } from "./app";
 import { conf, isProd } from "./config";
 
 const main = async () => {
     // await mongo.connect();
+    await redisClient.connect();
     // await client.ping();
 
     // @TODO 클래스로 수정.

@@ -14,7 +14,7 @@ export const deleteFollowing = async (req: Request<{ id?: string }, unknown, unk
         throw new BadReqError("Could not self delete following");
     }
 
-    const following = await deleteFollowingService({ followerId: req.id, followingId }, Prisma);
+    await deleteFollowingService({ followerId: req.id, followingId }, Prisma);
     res.json({
         success: true,
         msg: "Success delete following"

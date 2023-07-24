@@ -1,10 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import rateLimit from "express-rate-limit";
 import RedisStore from "rate-limit-redis";
-import typia from "typia";
 import { conf, isProd } from "../config";
 import { getRedis } from "../db/redis";
-import { BadReqError } from "../lib/http-error";
 
 type limitOption = {
     /**
@@ -41,7 +39,7 @@ export const apiLimiterFunc = ({ time, max: _max, skip, postFix }: limitOption =
         standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
         legacyHeaders: false, // Disable the `X-RateLimit-*` headers
         ...(skip && skip.length > 0 ? { skip: (req) => skip.includes(req.ip) } : {}),
-        ...(postFix ? { keyGenerator: (req, res) => `${req.ip}:${postFix || req.path}` } : {}),
+        ...(postFix ? { keyGenerator: (req, _) => `${req.ip}:${postFix || req.path}` } : {}),
         store: new RedisStore({
             sendCommand: (...args: string[]) => getRedis().sendCommand(args)
         }),

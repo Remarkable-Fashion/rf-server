@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 
 export const getScraps = async ({ userId, cursorId, take }: { userId: number; cursorId?: number; take: number }, prisma: PrismaClient) => {
-
     const rv = await prisma.$transaction(async (tx) => {
         const totalCountsOfScraps = await tx.scraps.count({
             where: {
@@ -11,7 +10,7 @@ export const getScraps = async ({ userId, cursorId, take }: { userId: number; cu
                 }
             }
         });
-    
+
         const lastScrapedPost = await tx.scraps.findFirst({
             select: {
                 postId: true
@@ -77,7 +76,7 @@ export const getScraps = async ({ userId, cursorId, take }: { userId: number; cu
                             }
                         }
                     }
-                },
+                }
             },
             where: {
                 post: {
@@ -94,13 +93,12 @@ export const getScraps = async ({ userId, cursorId, take }: { userId: number; cu
         });
 
         const mergedScraps = scraps.map((scrap) => {
-
             let isFollow = false;
             let isFavorite = false;
-            if(scrap.post){
-                const {post} = scrap;
-                const {user, favorites, ...restPost} = post;
-                const {followers, ...restUser} = user;
+            if (scrap.post) {
+                const { post } = scrap;
+                const { user, favorites, ...restPost } = post;
+                const { followers, ...restUser } = user;
 
                 isFollow = post.user.followers.length > 0;
                 isFavorite = post.favorites.length > 0;
@@ -112,9 +110,10 @@ export const getScraps = async ({ userId, cursorId, take }: { userId: number; cu
                     user: restUser
                 };
             }
+            return undefined;
         });
 
-        return {totalCountsOfScraps, lastScrapedPost, posts: mergedScraps};
+        return { totalCountsOfScraps, lastScrapedPost, posts: mergedScraps };
     });
 
     return rv;

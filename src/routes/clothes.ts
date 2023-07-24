@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { controllerHandler } from "../lib/controller-handler";
 import { authJWT } from "../middleware/auth";
-import { upload, uploadTest } from "../middleware/upload";
+import { upload } from "../middleware/upload";
 import { createRecommendClothes } from "../domains/clothes/controller/create-recommend-clothes";
 import { getRecommendClothesByIdTop3 } from "../domains/clothes/controller/get-recommend-clothes-top3";
 import { createFavoriteClothes } from "../domains/clothes/controller/create-favorite-clothes";
@@ -18,9 +18,7 @@ clothesRouter.post("/:id/recommend/", authJWT, controllerHandler(createRecommend
 clothesRouter.post("/:id/favorite", authJWT, controllerHandler(createFavoriteClothes));
 clothesRouter.post("/:id/scrap", authJWT, controllerHandler(createScrapClothesById));
 
-clothesRouter.post("/image", authJWT, uploadTest({prefix: "clothes"}).fields([{name: "clothes" }]), controllerHandler(uploadClothesImages));
+clothesRouter.post("/image", authJWT, upload({ prefix: "clothes" }).fields([{ name: "clothes" }]), controllerHandler(uploadClothesImages));
 // clothesRouter.post("/image", authJWT, upload.fields([{name: "images" }]), controllerHandler(uploadClthesImages));
-
-
 
 export { clothesRouter };

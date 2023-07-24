@@ -14,7 +14,7 @@ export const createFollowing = async (req: Request<{ id?: string }, unknown, unk
         throw new BadReqError("Could not self following");
     }
 
-    const following = await createFollowingService({ followerId: req.id, followingId }, Prisma);
+    await createFollowingService({ followerId: req.id, followingId }, Prisma);
     res.json({
         success: true,
         msg: "Success create following"

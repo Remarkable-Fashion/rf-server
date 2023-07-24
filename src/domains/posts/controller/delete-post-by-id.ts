@@ -20,7 +20,7 @@ export const deletePostById = async (req: Request<ReqParams>, res: Response) => 
         throw new UnauthorizedError();
     }
 
-    const post = await deletePostByIdService({ id: parsedId, userId: req.id }, Prisma);
+    await deletePostByIdService({ id: parsedId, userId: req.id }, Prisma);
 
     /**
      * @todo

@@ -4,6 +4,36 @@ import Prisma from "../../../db/prisma";
 import { getMyFollowersService } from "../service/get-my-followers";
 
 const DEFAULT_TAKE = 21;
+const validateCursor = (cursor?: string) => {
+    if (!cursor) {
+        return undefined;
+    }
+    const date = Date.parse(cursor);
+
+    if (Number.isNaN(date)) {
+        throw new BadReqError("cursor should be String Date");
+    }
+
+    return cursor;
+
+    // const _cursor = cursor ? Number(cursor) : undefined;
+    // if(_cursor && _cursor < 0){
+    //     throw new BadReqError("cursor should be higher than 0")
+    // }
+
+    // return _cursor;
+};
+
+const validateTake = (take?: string) => {
+    const takeT = take ? Number(take) : DEFAULT_TAKE;
+
+    if (take && takeT < 0) {
+        throw new BadReqError("take should be higher than 0");
+    }
+
+    return takeT;
+};
+
 /**
  * @TODO
  * 1. 페이지네이션
@@ -49,34 +79,4 @@ export const getMyFollowers = async (req: Request<unknown, unknown, unknown, { c
     };
 
     res.json(data);
-};
-
-const validateCursor = (cursor?: string) => {
-    if (!cursor) {
-        return undefined;
-    }
-    const date = Date.parse(cursor);
-
-    if (Number.isNaN(date)) {
-        throw new BadReqError("cursor should be String Date");
-    }
-
-    return cursor;
-
-    // const _cursor = cursor ? Number(cursor) : undefined;
-    // if(_cursor && _cursor < 0){
-    //     throw new BadReqError("cursor should be higher than 0")
-    // }
-
-    // return _cursor;
-};
-
-const validateTake = (take?: string) => {
-    const _take = take ? Number(take) : DEFAULT_TAKE;
-
-    if (take && _take < 0) {
-        throw new BadReqError("take should be higher than 0");
-    }
-
-    return _take;
 };

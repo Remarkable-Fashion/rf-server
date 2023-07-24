@@ -7,7 +7,6 @@ import { conf } from "../config";
 import prisma from "../db/prisma";
 import { createUser } from "../domains/users/service/create-user";
 import { getUserByEmail } from "../domains/users/service/get-user-by-email";
-import { BadReqError } from "../lib/http-error";
 
 export const KakaoStrategyError = "KakaoStrategyError";
 export default () => {

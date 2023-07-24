@@ -36,7 +36,7 @@ export const getRecommendClothesByIdTop3Service = (id: number, userId: number, c
                         },
                         profile: {
                             select: {
-                                avartar: true,
+                                avartar: true
                             }
                         }
                     }
@@ -72,12 +72,13 @@ export const getRecommendClothesByIdTop3Service = (id: number, userId: number, c
         const objs: RecommendClothes[] = [];
 
         for (const { user, ...rest } of recommendClothes) {
-            if(!user){
-                throw new BadReqError("DB Error recommendClothes Should have userId")
+            if (!user) {
+                throw new BadReqError("DB Error recommendClothes Should have userId");
             }
             const { followers, ...restUser } = user;
             const isFavorite = await tx.favorites.findUnique({
                 where: {
+                    // eslint-disable-next-line camelcase
                     userId_clothesId: {
                         userId,
                         clothesId: rest.id

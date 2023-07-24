@@ -63,18 +63,22 @@ services:
         build: ./elasticsearch
         container_name: dev-es
         environment:
-        - node.name=es
-        - cluster.name=es-docker-cluster
-        - bootstrap.memory_lock=true
-        - discovery.type=single-node
-        - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+            - node.name=es
+            - cluster.name=es-docker-cluster
+            - bootstrap.memory_lock=true
+            - discovery.type=single-node
+            - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
         ulimits:
             memlock:
                 soft: -1
                 hard: -1
         ports:
-        - 9200:9200
+            - 9200:9200
+        volumes:
+            - es_data:/usr/share/elasticsearch/data
 
 networks:
     default:
         name: dev-rc-server
+volumes:
+  es_data:

@@ -1,18 +1,17 @@
 import { PrismaClient } from "@prisma/client";
 
 export const getScrapsAllService = async ({ userId, cursorId, take }: { userId: number; cursorId?: number; take: number }, prisma: PrismaClient) => {
-
     const rv = await prisma.$transaction(async (tx) => {
         const totalCountsOfScraps = await tx.scraps.count({
             where: {
-                userId,
+                userId
                 // NOT: {
                 //     postId: null
                 // }
                 // clothesId: null
             }
         });
-    
+
         const lastScrap = await tx.scraps.findFirst({
             select: {
                 postId: true
@@ -104,7 +103,7 @@ export const getScrapsAllService = async ({ userId, cursorId, take }: { userId: 
                                 name: true,
                                 profile: {
                                     select: {
-                                        avartar: true,
+                                        avartar: true
                                     }
                                 }
                             }
@@ -125,14 +124,12 @@ export const getScrapsAllService = async ({ userId, cursorId, take }: { userId: 
         });
 
         const mergedScraps = scraps.map((scrap) => {
-
             let isFollow = false;
             let isFavorite = false;
-            if(scrap.post){
-
-                const {post} = scrap;
-                const {user, favorites, ...restPost} = post;
-                const {followers, ...restUser} = user;
+            if (scrap.post) {
+                const { post } = scrap;
+                const { user, favorites, ...restPost } = post;
+                const { followers, ...restUser } = user;
 
                 isFollow = post.user.followers.length > 0;
                 isFavorite = post.favorites.length > 0;
@@ -145,14 +142,14 @@ export const getScrapsAllService = async ({ userId, cursorId, take }: { userId: 
                     createdAt: scrap.createdAt,
                     post: {
                         ...restPost,
-                        user: restUser,
+                        user: restUser
                     }
                 };
             }
 
-            if(scrap.clothes){
-                const {clothes} = scrap;
-                const {favorites, ...restClothes} = clothes;
+            if (scrap.clothes) {
+                const { clothes } = scrap;
+                const { favorites, ...restClothes } = clothes;
                 isFavorite = scrap.clothes.favorites.length > 0;
                 return {
                     type: "clothes",
@@ -165,9 +162,9 @@ export const getScrapsAllService = async ({ userId, cursorId, take }: { userId: 
                     }
                 };
             }
-            
+            return undefined;
         });
-        return {totalCountsOfScraps, lastScrap, scraps: mergedScraps};
+        return { totalCountsOfScraps, lastScrap, scraps: mergedScraps };
     });
 
     return rv;

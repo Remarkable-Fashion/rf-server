@@ -12,7 +12,7 @@ export const deleteScrap = async (req: Request<ReqParams, unknown>, res: Respons
         throw new BadReqError("No post id OR favorite id");
     }
 
-    const scrap = await deleteScrapService({ userId: Number(req.id), postId: Number(req.params.id) }, Prisma);
+    await deleteScrapService({ userId: Number(req.id), postId: Number(req.params.id) }, Prisma);
 
     res.status(200).json({
         success: true,

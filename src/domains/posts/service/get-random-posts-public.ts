@@ -42,7 +42,7 @@ export const getRandomPostsPublicService = async ({ postIds }: { postIds: number
         }
     });
 
-    const parsedPosts = posts.map( post => {
+    const parsedPosts = posts.map((post) => {
         const isFollow = false;
         const isFavorite = false;
         const isScrap = false;
@@ -51,7 +51,7 @@ export const getRandomPostsPublicService = async ({ postIds }: { postIds: number
             isFollow,
             isScrap,
             ...post
-        }
+        };
     });
 
     return parsedPosts;

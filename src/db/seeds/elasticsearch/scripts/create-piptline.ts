@@ -2,12 +2,11 @@ import { Client } from "@elastic/elasticsearch";
 // import {client as esClient} from "../../../elasticsearch";
 import { AUTO_ID_TIMESTAMP_PIPELINE, AUTO_TIMESTAMP_PIPELINE } from "../../../../domains/search/constants";
 
-const createPipeLine = async (id: string, config: {}, client: Client) => {
-
+const createPipeLine = async (id: string, config: any, client: Client) => {
     await client.ingest.putPipeline({
         id,
         body: config
-    })
+    });
 };
 
 export const createIdWithTimestampPipeline = async (client: Client) => {
@@ -57,7 +56,7 @@ export const createIdWithTimestampPipeline = async (client: Client) => {
     };
 
     await createPipeLine(AUTO_ID_TIMESTAMP_PIPELINE, config, client);
-}
+};
 
 export const createTimestampPipeline = async (client: Client) => {
     const config = {
@@ -73,4 +72,4 @@ export const createTimestampPipeline = async (client: Client) => {
     };
 
     await createPipeLine(AUTO_TIMESTAMP_PIPELINE, config, client);
-}
+};

@@ -27,9 +27,11 @@ export const getRandomPostsElasticSearchSerivce = (
                         }
                     ],
                     must: {
+                        // eslint-disable-next-line camelcase
                         function_score: {
                             functions: [
                                 {
+                                    // eslint-disable-next-line camelcase
                                     random_score: {}
                                 }
                             ]

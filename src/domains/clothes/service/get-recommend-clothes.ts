@@ -1,8 +1,11 @@
 import { ClothesCategory, PrismaClient } from "@prisma/client";
 import { BadReqError } from "../../../lib/http-error";
-export const getRecommendClothesByIdService = ({ id, userId, category, cursor, take}:{ id: number, userId: number, category: ClothesCategory, cursor?: number, take: number}, prisma: PrismaClient) => {
-    return prisma.$transaction(async (tx) => {
 
+export const getRecommendClothesByIdService = (
+    { id, userId, category, cursor, take }: { id: number; userId: number; category: ClothesCategory; cursor?: number; take: number },
+    prisma: PrismaClient
+) => {
+    return prisma.$transaction(async (tx) => {
         const countOfRecommendClothes = await tx.clothes.count({
             where: {
                 recommendedClothesId: id
@@ -45,7 +48,7 @@ export const getRecommendClothesByIdService = ({ id, userId, category, cursor, t
                         },
                         profile: {
                             select: {
-                                avartar: true,
+                                avartar: true
                             }
                         }
                     }
@@ -53,7 +56,7 @@ export const getRecommendClothesByIdService = ({ id, userId, category, cursor, t
                 favorites: {
                     select: {
                         userId: true,
-                        clothesId: true,
+                        clothesId: true
                     },
                     where: {
                         userId
@@ -62,7 +65,7 @@ export const getRecommendClothesByIdService = ({ id, userId, category, cursor, t
                 scraps: {
                     select: {
                         userId: true,
-                        clothesId: true,
+                        clothesId: true
                     },
                     where: {
                         userId
@@ -81,12 +84,12 @@ export const getRecommendClothesByIdService = ({ id, userId, category, cursor, t
                 //     }
                 // }),
                 recommendedClothesId: id,
-                category,
+                category
             },
             orderBy: [
                 {
                     id: "desc"
-                },
+                }
                 // @info 좋아요 순으로 출력
                 // {
                 //     favorites: {
@@ -99,10 +102,10 @@ export const getRecommendClothesByIdService = ({ id, userId, category, cursor, t
 
         const objs = [];
 
-        for(const clothe of clothes){
+        for (const clothe of clothes) {
             const { user, favorites, scraps, ...restClothe } = clothe;
-            if(!user){
-                throw new BadReqError("DB Error recommendClothes Should have userId")
+            if (!user) {
+                throw new BadReqError("DB Error recommendClothes Should have userId");
             }
             const { followers, ...restUser } = user;
             // const isFavorite = await tx.favorites.findUnique({
@@ -125,9 +128,7 @@ export const getRecommendClothesByIdService = ({ id, userId, category, cursor, t
             };
 
             objs.push(obj);
-
         }
-            
 
         return {
             clothes: objs,

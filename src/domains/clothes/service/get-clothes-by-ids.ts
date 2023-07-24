@@ -15,13 +15,13 @@ export const getClothesByIdsService = ({ userId, clothesIds }: { userId: number;
                 createdAt: true,
                 _count: {
                     select: {
-                        favorites: true,
+                        favorites: true
                     }
                 },
                 favorites: {
                     select: {
                         userId: true,
-                        clothesId: true,
+                        clothesId: true
                     },
                     where: {
                         userId
@@ -40,14 +40,14 @@ export const getClothesByIdsService = ({ userId, clothesIds }: { userId: number;
             where: {
                 id: {
                     in: clothesIds
-                },
+                }
             },
             orderBy: {
                 createdAt: "desc"
             }
         });
 
-        const mergedClothes = clothes.map( ({favorites, scraps, ...restClothe}) => {
+        const mergedClothes = clothes.map(({ favorites, scraps, ...restClothe }) => {
             const isFavorite = favorites.length > 0;
             const isScrap = scraps.length > 0;
 
@@ -55,9 +55,9 @@ export const getClothesByIdsService = ({ userId, clothesIds }: { userId: number;
                 isFavorite,
                 isScrap,
                 clothes: restClothe
-            }
+            };
         });
 
-        return [mergedClothes]
+        return [mergedClothes];
     });
-}
+};

@@ -7,8 +7,17 @@ type ReqParams = {
     id?: string;
 };
 
+const validateParamId = (id?: string) => {
+    const parsedId = Number(id);
+
+    if (!id || Number.isNaN(parsedId)) {
+        throw new BadReqError("Check id");
+    }
+    return parsedId;
+};
+
 /**
- * 
+ *
  * @INFO 게시글 정보보기
  */
 export const getPostById = async (req: Request<ReqParams>, res: Response) => {
@@ -20,7 +29,7 @@ export const getPostById = async (req: Request<ReqParams>, res: Response) => {
 
     const post = await getPostByIdService({ id, userId: req.id }, Prisma);
 
-    if(!post){
+    if (!post) {
         throw new NotFoundError("No post");
     }
     // const mergedPost = {
@@ -31,13 +40,4 @@ export const getPostById = async (req: Request<ReqParams>, res: Response) => {
     // };
 
     res.json(post);
-};
-
-const validateParamId = (id?: string) => {
-    const parsedId = Number(id);
-
-    if (!id || Number.isNaN(parsedId)) {
-        throw new BadReqError("Check id");
-    }
-    return parsedId;
 };

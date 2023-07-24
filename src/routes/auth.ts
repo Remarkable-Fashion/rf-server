@@ -1,4 +1,5 @@
 import { Router, type Request, type Response } from "express";
+import { UserWithRole } from "../@types/express/index";
 // import passport from "passport";
 import axios from "axios";
 import { getRedis } from "../db/redis";
@@ -7,7 +8,6 @@ import { controllerHandler } from "../lib/controller-handler";
 import { refresh, sign } from "../lib/jwt";
 import { BadReqError, UnauthorizedError } from "../lib/http-error";
 // import { authRole } from "../middleware/auth";
-import { UserWithRole } from "../@types/express";
 import { KakaoStrategyError } from "../passports/kakao-strategy";
 import { loginKakao } from "../domains/auth/controller/kakao-login";
 
