@@ -4,7 +4,7 @@ import { postSex } from "../types";
 
 type Options = {
     size: number;
-    sex?: (typeof postSex)[number];
+    sex?: typeof postSex[number];
     /**
      * @TODO Profile의 Sex와 Post의 Sex 타입 불일치. 합칠까?
      */

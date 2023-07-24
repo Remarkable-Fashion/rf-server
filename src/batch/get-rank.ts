@@ -1,13 +1,13 @@
 import * as redis from "redis";
-import { getSearchRankService } from "../domains/search/service/get-search-rank";
 import { Client } from "@elastic/elasticsearch";
+import { getSearchRankService } from "../domains/search/service/get-search-rank";
 import { RANK_SIZE, SEARCH_LOG_INDEX, SEARCH_LOG_QUERY } from "../domains/search/constants";
 import { getDateRange } from "../domains/search/get-date-range";
 
 const esURL = "http://localhost:9200";
-const redis_url = "redis://localhost:30001";
+const redisUrl = "redis://localhost:30001";
 const main = async () => {
-    const redisClient = redis.createClient({ url: redis_url });
+    const redisClient = redis.createClient({ url: redisUrl });
     await redisClient.connect();
 
     const esClient = new Client({
@@ -34,4 +34,4 @@ if (require.main === module) {
     main();
 }
 
-type Rank = { key: string; doc_count: number };
+// type Rank = { key: string; doc_count: number };

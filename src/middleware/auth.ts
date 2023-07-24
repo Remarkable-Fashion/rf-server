@@ -1,6 +1,6 @@
 import { Role } from "@prisma/client";
 import type { Request, Response, NextFunction } from "express";
-import { UnauthorizedError, BadReqError } from "../lib/http-error";
+import { UnauthorizedError } from "../lib/http-error";
 import { verify } from "../lib/jwt";
 import { UserWithRole } from "../@types/express";
 

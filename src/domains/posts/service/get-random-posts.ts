@@ -71,7 +71,7 @@ export const getRandomPostsService = async ({ userId, postIds }: { userId: numbe
 
     const parsedPosts = posts.map((post) => {
         const { user, favorites, scraps, ...restPost } = post;
-        const {followers, ...restUser} = user;
+        const { followers, ...restUser } = user;
         const isFollow = post.user.followers.length > 0;
         const isFavorite = post.favorites.length > 0;
         const isScrap = post.scraps.length > 0;
@@ -82,7 +82,7 @@ export const getRandomPostsService = async ({ userId, postIds }: { userId: numbe
             isScrap,
             user: restUser,
             ...restPost
-        }
+        };
     });
 
     return parsedPosts;

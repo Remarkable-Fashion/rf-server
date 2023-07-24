@@ -5,7 +5,7 @@ export const findSeasonsService = (prisma: PrismaClient) => {
         select: {
             id: true,
             text: true,
-            emoji: true,
+            emoji: true
         }
     });
 };

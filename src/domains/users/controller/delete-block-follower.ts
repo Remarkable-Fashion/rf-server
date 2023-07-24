@@ -13,19 +13,19 @@ export const deleteBlockUser = async (req: Request<{ id?: string }, unknown, unk
         throw new UnauthorizedError();
     }
 
-    const _blockedId = req.params.id;
+    const blockedIdT = req.params.id;
 
-    if (!_blockedId) {
+    if (!blockedIdT) {
         throw new BadReqError();
     }
 
-    const blockedId = Number(_blockedId);
+    const blockedId = Number(blockedIdT);
 
     if (req.id === blockedId) {
         throw new BadReqError("Could not self delete block");
     }
 
-    const follower = await deleteBlockUserService({ blockerId: req.id, blockedId }, Prisma);
+    await deleteBlockUserService({ blockerId: req.id, blockedId }, Prisma);
     res.json({
         success: true,
         msg: "Success delete block_user"

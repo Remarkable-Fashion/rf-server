@@ -15,11 +15,11 @@ export const uploadPostImage = async (req: Request<unknown, unknown, CreatePostB
         throw new BadReqError("There must be at least one image");
     }
 
-    await createTmpImagesService(imgUrls, Prisma)
+    await createTmpImagesService(imgUrls, Prisma);
 
     res.status(200).json({
         success: true,
         msg: "Success upload post images",
-        imgUrls: imgUrls
+        imgUrls
     });
 };

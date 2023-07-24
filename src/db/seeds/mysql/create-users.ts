@@ -2,11 +2,10 @@ import { Role, SocialType, PrismaClient } from "@prisma/client";
 import { createUser } from "../../../domains/users/service/create-user";
 
 /**
- * 
+ *
  * @info User 4명 생성
  */
 export const createUsers = async (prisma: PrismaClient) => {
-
     const userList = [
         {
             email: "dohan@test.gmail.com",
@@ -27,10 +26,13 @@ export const createUsers = async (prisma: PrismaClient) => {
             email: "abc@test.gmail.com",
             name: "abc",
             socialId: "4"
-        },
+        }
     ];
 
-    for(const user of userList){
-        const _user = await createUser({ user: { email: user.email }, meta: { role: Role.User }, social: { type: SocialType.Kakao, socialId: user.socialId } }, prisma);
+    for (const user of userList) {
+        await createUser(
+            { user: { email: user.email }, meta: { role: Role.User }, social: { type: SocialType.Kakao, socialId: user.socialId } },
+            prisma
+        );
     }
-}
+};

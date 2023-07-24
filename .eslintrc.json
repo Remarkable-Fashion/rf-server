@@ -44,7 +44,20 @@
           "varsIgnorePattern": "^_",
           "ignoreRestSiblings": true
         }
-      ]
+      ],
+      "no-underscore-dangle": [
+        "error",
+        {
+          "allow": ["_privateVar", "_id", "_source", "_client"]
+        }
+      ],
+      "camelcase": ["error", { "allow": ["doc_count"] }]
+    },
+    "settings": {
+      "import/resolver": {
+        "typescript": {} // eslint-import-resolver-typescript 추가
+      }
     }
+
   }
   

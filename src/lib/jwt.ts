@@ -10,7 +10,7 @@ const JWT_ALGORITHM = "HS256";
 const ACCESS_TOKEN_EXPIRES = "1d";
 const REFRESH_TOKEN_EXPIRES = "30d";
 
-const THIRTY_MIN = 60 * 30;
+// const THIRTY_MIN = 60 * 30;
 
 export type JwtPayload = { id: number };
 

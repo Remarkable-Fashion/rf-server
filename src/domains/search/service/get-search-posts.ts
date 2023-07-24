@@ -7,6 +7,7 @@ export const getSearchPostsService = async ({ query, size, index }: { query: str
         body: {
             size,
             query: {
+                // eslint-disable-next-line camelcase
                 multi_match: {
                     query,
                     fields: ["title", "description"]

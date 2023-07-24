@@ -2,14 +2,16 @@ import * as redis from "redis";
 import { conf } from "../config";
 import { BadReqError } from "../lib/http-error";
 
+const redisClient = redis.createClient({ url: conf().REDIS_URL });
+
 export type RedisClient = typeof redisClient;
 
-const redisClient = redis.createClient({ url: conf().REDIS_URL });
 redisClient.on("error", (err) => console.log("Redis Client Error", err));
-(async () => {
-    await redisClient.connect();
-})();
+// (async () => {
+//     await redisClient.connect();
+// })();
 
+/* eslint-disable no-use-before-define */
 export class RedisSingleton {
     private static instance: RedisSingleton;
 
@@ -56,4 +58,4 @@ export const getRedis = () => {
     return redisClient;
 };
 
-export {redisClient};
+export { redisClient };

@@ -5,8 +5,8 @@ import { createScrap } from "../domains/posts/controller/create-scrap";
 import { deleteFavorite } from "../domains/posts/controller/delete-favorite";
 import { deleteScrap } from "../domains/posts/controller/delete-scrap";
 import { controllerHandler } from "../lib/controller-handler";
-import { authJWT, authTest } from "../middleware/auth";
-import { upload, uploadTest } from "../middleware/upload";
+import { authJWT } from "../middleware/auth";
+import { upload } from "../middleware/upload";
 import { apiLimiterFunc } from "../middleware/api-rate-limit";
 import { getPostById } from "../domains/posts/controller/get-post-by-id";
 import { getRandomPosts } from "../domains/posts/controller/get-random-posts";
@@ -38,7 +38,7 @@ postRouter.get("/:id", authJWT, controllerHandler(getPostById));
 postRouter.delete("/:id", authJWT, controllerHandler(deletePostById));
 // postRouter.get("/test/:id", authTest(), controllerHandler(getPostById));
 
-postRouter.post("/image", authJWT, uploadTest({prefix: "post"}).fields([{ name: "posts" }]), controllerHandler(uploadPostImage));
+postRouter.post("/image", authJWT, upload({ prefix: "post" }).fields([{ name: "posts" }]), controllerHandler(uploadPostImage));
 // postRouter.post("/image", authJWT, upload.fields([{ name: "posts" }]), controllerHandler(uploadPostImage));
 postRouter.post("/", authJWT, controllerHandler(createPost));
 

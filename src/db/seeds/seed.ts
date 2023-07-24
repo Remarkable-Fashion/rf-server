@@ -1,9 +1,9 @@
 // import {client} from "../elasticsearch";
+import { Client } from "@elastic/elasticsearch";
 import Prisma from "../prisma";
 import { createUsers } from "./mysql/create-users";
 import { seedElasticsearch } from "./elasticsearch";
 import { createPosts } from "./mysql/create-posts";
-import { Client } from "@elastic/elasticsearch";
 
 const main = async () => {
     const client = new Client({
@@ -17,15 +17,14 @@ const main = async () => {
         await seedElasticsearch(client);
         await createUsers(Prisma);
         await createPosts(Prisma, client);
-
     } catch (error) {
         console.error(error);
     } finally {
         await client.close();
         await Prisma.$disconnect();
     }
-}
+};
 
-if(require.main === module){
+if (require.main === module) {
     main();
 }

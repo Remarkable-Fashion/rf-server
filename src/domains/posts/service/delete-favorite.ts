@@ -4,6 +4,7 @@ export const deleteFavorite = ({ userId, postId }: { userId: number; postId: num
     return prisma.favorites.delete({
         where: {
             // id: favoriteId,
+            // eslint-disable-next-line camelcase
             userId_postId: {
                 userId,
                 postId

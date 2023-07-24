@@ -17,9 +17,8 @@ export const createFavorite = async (req: Request<ReqParam, unknown>, res: Respo
     const postId = Number(req.params.id);
 
     const data = { userId: req.id, postId };
-    const favorite = await createFavoriteService(data, Prisma);
+    await createFavoriteService(data, Prisma);
 
-    
     const key = `${COUNTS_POST_LIKES_PREFIX}:${postId}`;
 
     await redisClient.incrBy(key, 1);

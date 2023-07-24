@@ -1,5 +1,5 @@
 import winston from "winston";
-import DailyRotateFile from 'winston-daily-rotate-file';
+import DailyRotateFile from "winston-daily-rotate-file";
 import moment from "moment-timezone";
 import { conf } from "./config";
 

@@ -5,7 +5,6 @@ import { BadReqError } from "../../../lib/http-error";
 import { getUserByEmail } from "../../users/service/get-user-by-email";
 import { createUser } from "../../users/service/create-user";
 import prisma from "../../../db/prisma";
-import { findUserOrCreate } from "../../users/service/find-user-or-create";
 import { createLogService } from "../../logs/service/create-log";
 
 const url = "https://kapi.kakao.com/v2/user/me";
@@ -15,6 +14,7 @@ const getKakaoAccount = async (accessToken: string) => {
         method: "POST",
         url,
         data: {
+            // eslint-disable-next-line camelcase
             property_keys: ["kakao_account.profile", "kakao_account.email"]
         },
         headers: {

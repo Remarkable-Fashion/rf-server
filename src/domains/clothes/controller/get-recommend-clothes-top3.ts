@@ -6,6 +6,27 @@ import Prisma from "../../../db/prisma";
 import { getRecommendClothesByIdTop3Service } from "../service/get-recommend-clothes-top3";
 import { validateBody } from "../../../lib/validate-body";
 
+const validateParamClothesId = (id?: string) => {
+    if (!id) {
+        throw new BadReqError("Check Params id");
+    }
+
+    const parsedId = Number(id);
+    if (Number.isNaN(parsedId)) {
+        throw new BadReqError("Params Shoud be Number");
+    }
+
+    return parsedId;
+};
+
+const validateQueryCategory = (category?: string) => {
+    if (!category) {
+        throw new BadReqError("Query string 'category' shoul be");
+    }
+
+    return validateBody(typia.createValidateEquals<ClothesCategory>())(category);
+};
+
 /**
  * @info 이 의상은 어때
  * Top 3
@@ -27,25 +48,4 @@ export const getRecommendClothesByIdTop3 = async (req: Request<{ id?: string }, 
     };
 
     res.json(data);
-};
-
-const validateParamClothesId = (id?: string) => {
-    if (!id) {
-        throw new BadReqError("Check Params id");
-    }
-
-    const parsedId = Number(id);
-    if (Number.isNaN(parsedId)) {
-        throw new BadReqError("Params Shoud be Number");
-    }
-
-    return parsedId;
-};
-
-const validateQueryCategory = (category?: string) => {
-    if (!category) {
-        throw new BadReqError("Query string 'category' shoul be");
-    }
-
-    return validateBody(typia.createValidateEquals<ClothesCategory>())(category);
 };

@@ -7,6 +7,7 @@ export const createSearchLogService = async ({ query, index, userId }: { query: 
         index,
         pipeline: AUTO_ID_TIMESTAMP_PIPELINE,
         body: {
+            // eslint-disable-next-line camelcase
             user_id: userId,
             query
         }

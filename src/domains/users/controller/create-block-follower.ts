@@ -13,19 +13,19 @@ export const createBlockUser = async (req: Request<{ id?: string }, unknown, unk
         throw new UnauthorizedError();
     }
 
-    const _blockedId = req.params.id;
+    const blockedIdT = req.params.id;
 
-    if (!_blockedId) {
+    if (!blockedIdT) {
         throw new BadReqError();
     }
 
-    const blockedId = Number(_blockedId);
+    const blockedId = Number(blockedIdT);
 
     if (blockedId === req.id) {
         throw new BadReqError("Could not self block");
     }
 
-    const follower = await createBlockUserService({ blockerId: req.id, blockedId }, Prisma);
+    await createBlockUserService({ blockerId: req.id, blockedId }, Prisma);
     res.json({
         success: true,
         msg: "Success block user"
