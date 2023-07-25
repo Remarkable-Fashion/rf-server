@@ -1,7 +1,6 @@
 import { Client } from "@elastic/elasticsearch";
 import { conf } from "../config";
 
-console.log("asdf : ", conf().ELK_DB);
 export const client = new Client({
     node: conf().ELK_DB,
     // node: "http://dev-elasticsearch:9200",
@@ -10,6 +9,11 @@ export const client = new Client({
     requestTimeout: 60000,
     sniffOnStart: true
 });
+
+client
+    .ping()
+    .then(() => console.log("ES Connected"))
+    .catch(() => console.log("ES Connect Failed !!"));
 
 if (require.main === module) {
     console.log("test");

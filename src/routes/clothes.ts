@@ -19,6 +19,5 @@ clothesRouter.post("/:id/favorite", authJWT, controllerHandler(createFavoriteClo
 clothesRouter.post("/:id/scrap", authJWT, controllerHandler(createScrapClothesById));
 
 clothesRouter.post("/image", authJWT, upload({ prefix: "clothes" }).fields([{ name: "clothes" }]), controllerHandler(uploadClothesImages));
-// clothesRouter.post("/image", authJWT, upload.fields([{name: "images" }]), controllerHandler(uploadClthesImages));
 
 export { clothesRouter };

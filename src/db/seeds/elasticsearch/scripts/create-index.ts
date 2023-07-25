@@ -23,6 +23,7 @@ export const createClothesIndex = async (client: Client) => {
     const config = {
         settings: {
             index: {
+                max_ngram_diff: 12,
                 analysis: {
                     tokenizer: {
                         nori_user_dict: {
@@ -30,6 +31,12 @@ export const createClothesIndex = async (client: Client) => {
                             decompound_mode: "mixed",
                             discard_punctuation: "false"
                         }
+                        // "ngram_tokenizer": {
+                        //     "type": "nGram",
+                        //     "min_gram": 1,
+                        //     "max_gram": 10,
+                        //     "token_chars": ["letter", "digit"]
+                        // }
                     },
                     filter: {
                         my_pos_f: {
@@ -62,6 +69,9 @@ export const createClothesIndex = async (client: Client) => {
                             tokenizer: "nori_user_dict",
                             filter: "my_pos_f"
                         }
+                        // "ngram_analyzer": {
+                        //     "tokenizer": "ngram_tokenizer"
+                        // }
                     }
                 }
             }
@@ -73,6 +83,7 @@ export const createClothesIndex = async (client: Client) => {
                 },
                 name: {
                     type: "text",
+                    analyzer: "my_analyzer",
                     fields: {
                         keyword: {
                             type: "keyword",
@@ -82,6 +93,7 @@ export const createClothesIndex = async (client: Client) => {
                 },
                 brand: {
                     type: "text",
+                    analyzer: "my_analyzer",
                     fields: {
                         keyword: {
                             type: "keyword",
@@ -163,6 +175,9 @@ export const createPostIndex = async (client: Client) => {
                 description: {
                     type: "text",
                     analyzer: "my_analyzer"
+                },
+                sex: {
+                    type: "keyword"
                 }
             }
         }
@@ -244,3 +259,15 @@ export const createSearchLogIndex = async (client: Client) => {
 
     await createIndex(SEARCH_LOG_INDEX, config, client);
 };
+
+if (require.main === module) {
+    const client = new Client({
+        node: "http://localhost:9200",
+        maxRetries: 5,
+        requestTimeout: 60000,
+        sniffOnStart: true
+    });
+    createClothesIndex(client).then(() => {
+        console.log("Success create Index");
+    });
+}

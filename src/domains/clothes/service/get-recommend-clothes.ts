@@ -2,7 +2,7 @@ import { ClothesCategory, PrismaClient } from "@prisma/client";
 import { BadReqError } from "../../../lib/http-error";
 
 export const getRecommendClothesByIdService = (
-    { id, userId, category, cursor, take }: { id: number; userId: number; category: ClothesCategory; cursor?: number; take: number },
+    { id, userId, category, cursor, take }: { id: number; userId: number; category?: ClothesCategory; cursor?: number; take: number },
     prisma: PrismaClient
 ) => {
     return prisma.$transaction(async (tx) => {

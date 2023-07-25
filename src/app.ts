@@ -10,7 +10,7 @@ import { requestLoggerMiddleware } from "./middleware/log";
 import { router } from "./routes";
 import { conf, isProd } from "./config";
 import { apiLimiterFunc } from "./middleware/api-rate-limit";
-import { getRedis } from "./db/redis";
+import { redisClient } from "./db/redis";
 
 export const startApp = () => {
     const app = express();
@@ -26,7 +26,7 @@ export const startApp = () => {
             ...(isProd
                 ? {
                       store: new RedisStore({
-                          client: getRedis()
+                          client: redisClient
                       })
                   }
                 : {})

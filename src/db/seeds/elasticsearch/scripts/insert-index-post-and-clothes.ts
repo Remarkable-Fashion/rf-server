@@ -8,6 +8,18 @@ import Prisma from "../../../prisma";
 const insertIndexPostAndClothes = async (client: Client) => {
     const posts = await getPostsAllService(Prisma);
 
+    const recommendClothes = await Prisma.clothes.findMany({
+        where: {
+            recommendedClothesId: {
+                not: null
+            }
+        }
+    });
+
+    if (recommendClothes.length > 0) {
+        await createClothesElasticSearchService({ index: CLOTHES_INDEX, clothes: recommendClothes }, client);
+    }
+
     await Promise.all(
         posts.map(async (post) => {
             await createPostElasticSearchService({ index: POSTS_INDEX, id: String(post.id), data: post }, client);
@@ -20,17 +32,10 @@ const insertIndexPostAndClothes = async (client: Client) => {
 };
 
 if (require.main === module) {
-    const client = new Client({
-        // node: conf().ELK_DB,
-        // node: "http://dev-elasticsearch:9200",
-        node: "http://localhost:9200",
-        maxRetries: 5,
-        requestTimeout: 60000,
-        sniffOnStart: true
-    });
-
-    console.log("start Inserting");
-    insertIndexPostAndClothes(client).then(() => {
-        console.log("end Inserting");
+    import("../../../elasticsearch").then(({ client }) => {
+        console.log("start Inserting");
+        insertIndexPostAndClothes(client).then(() => {
+            console.log("end Inserting");
+        });
     });
 }

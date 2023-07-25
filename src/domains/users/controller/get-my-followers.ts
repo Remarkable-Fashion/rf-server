@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { BadReqError, NotFoundError, UnauthorizedError } from "../../../lib/http-error";
+import { BadReqError, UnauthorizedError } from "../../../lib/http-error";
 import Prisma from "../../../db/prisma";
 import { getMyFollowersService } from "../service/get-my-followers";
 
@@ -49,15 +49,26 @@ export const getMyFollowers = async (req: Request<unknown, unknown, unknown, { c
 
     const [counts, oldestFollower, followers] = await getMyFollowersService({ userId: req.id, cursor, take }, Prisma);
 
-    if (!followers.length) {
-        throw new NotFoundError("Not found  followers");
-    }
-    // const lastFollowerId = followers.at(-1)?.follower.id!;
-
     let hasNext = false;
-    const nextCursor = followers.at(-1)?.createdAt;
-    if (nextCursor && oldestFollower?.createdAt) {
-        hasNext = new Date(nextCursor).getTime() > new Date(oldestFollower?.createdAt).getTime();
+    if (!followers.length) {
+        const data = {
+            nextCursor: null,
+            hasNext,
+            totalCounts: counts,
+            size: 0,
+            take,
+            cursor,
+            followers: []
+        };
+        res.json(data);
+        return;
+        // throw new NotFoundError("Not found  followers");
+    }
+
+    const lastFollower = followers[followers.length - 1];
+    const nextCursor = lastFollower.createdAt;
+    if (nextCursor && oldestFollower) {
+        hasNext = new Date(nextCursor).getTime() > new Date(oldestFollower.createdAt).getTime();
     }
 
     const data = {

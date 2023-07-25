@@ -52,7 +52,20 @@ export const getPostsByUserId = async (req: Request<{ id?: string }, unknown, un
     const take = validateQueryTake(req.query.take);
 
     const { posts, countOfPosts, lastOfPost } = await getPostsByUserIdService({ userId: id, cursor, take }, Prisma, redisClient);
-    const last = posts.at(-1)!;
+    const last = posts[posts.length - 1];
+    if (posts.length <= 0) {
+        const data = {
+            nextCursor: null,
+            hasNext: false,
+            cursor: cursor ?? 0,
+            take,
+            totalCounts: countOfPosts,
+            size: 0,
+            posts: []
+        };
+        res.json(data);
+        return;
+    }
     const data = {
         nextCursor: last.id,
         hasNext: last.id > (lastOfPost?.id ?? 0),

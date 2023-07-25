@@ -36,6 +36,19 @@ export const getMyFavorites = async (req: Request<unknown, unknown, unknown, { c
         },
         Prisma
     );
+    if (posts.length <= 0) {
+        const data = {
+            nextCursor: null,
+            hasNext: false,
+            totalCounts: totalCountsOfFavorites,
+            size: 0,
+            take,
+            cursor: cursor ?? 0,
+            posts: []
+        };
+        res.json(data);
+        return;
+    }
 
     const mergedPosts = posts.map((post) => {
         const isFollow = post.post!.user.followers.length > 0;

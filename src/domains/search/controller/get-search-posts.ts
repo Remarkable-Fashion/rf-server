@@ -36,7 +36,19 @@ export const getSearchPosts = async (req: Request<unknown, unknown, unknown, { s
 
     const ids = posts.map((post: any) => {
         return post.id;
-    });
+    }) as number[];
+
+    if (ids.length <= 0) {
+        const data = {
+            size: 0,
+            search: query,
+            take,
+            posts: []
+        };
+
+        res.json(data);
+        return;
+    }
 
     const postsT = await getRandomPostsService({ userId: req.id, postIds: ids }, Prisma);
 

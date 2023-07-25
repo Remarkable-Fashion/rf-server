@@ -77,11 +77,21 @@ export const getRandomPostsPublic = async (req: Request<unknown, unknown, unknow
 
     const elkPosts = await getRandomPostsElasticSearchSerivce({ index: POSTS_INDEX, size: take, sex, date: dateRange }, client);
 
-    const randomPosts = elkPosts.body.hits.hits.map((post: any) => {
-        return post._source;
-    });
+    const ids = elkPosts.body.hits.hits.map(({ _source: { id } }: any) => {
+        return id;
+    }) as number[];
 
-    const ids = randomPosts.map((post: any) => post.id);
+    if (ids.length <= 0) {
+        const data = {
+            size: 0,
+            // totalCounts: posts.length,
+            take,
+            sex: sex || "NONE",
+            posts: []
+        };
+        res.json(data);
+        return;
+    }
 
     const posts = await getRandomPostsPublicService({ postIds: ids }, Prisma);
 

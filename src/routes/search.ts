@@ -17,6 +17,4 @@ searchRouter.get("/rank", controllerHandler(getSearchRank));
 
 searchRouter.get("/index", controllerHandler(getIndexList));
 
-// searchRouter.post("/", controllerHandler(createSearch));
-
 export { searchRouter };

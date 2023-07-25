@@ -1,7 +1,7 @@
 // import { Users } from "@prisma/client";
 import jwt from "jsonwebtoken";
 import { conf } from "../config";
-import { getRedis } from "../db/redis";
+import { redisClient } from "../db/redis";
 import { NotFoundError } from "./http-error";
 
 export { jwt };
@@ -57,7 +57,7 @@ export const refresh = () => {
 
 export const verifyRefresh = async (token: string, userId: string) => {
     try {
-        const data = await getRedis().get(userId);
+        const data = await redisClient.get(userId);
         if (!data) {
             throw new NotFoundError("No refresh token");
         }
@@ -84,15 +84,10 @@ export const verifyRefresh = async (token: string, userId: string) => {
 };
 
 if (require.main === module) {
-    const rv1 = jwt.sign({ id: 2 }, "devjwtsecreta", {
-        algorithm: JWT_ALGORITHM,
-        expiresIn: "365d"
-    });
-    const rv2 = jwt.sign({ id: 3 }, "devjwtsecreta", {
+    const rv1 = jwt.sign({ id: 4 }, "devjwtsecreta", {
         algorithm: JWT_ALGORITHM,
         expiresIn: "365d"
     });
 
     console.log("rv :", rv1);
-    console.log("rv :", rv2);
 }

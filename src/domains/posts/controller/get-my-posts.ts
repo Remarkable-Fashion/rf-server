@@ -32,11 +32,25 @@ export const getMyposts = async (req: Request<unknown, unknown, unknown, { curso
     const cursor = validateCursor(req.query.cursor);
     const take = validateTake(req.query.take);
 
-    const [totalCountsOfPosts, lastMyPost, posts] = await getMyPostsService({ userId: id, cursor, take }, Prisma);
+    const { totalCountsOfPosts, lastMyPost, posts } = await getMyPostsService({ userId: id, cursor, take }, Prisma);
 
     const countsOfposts = posts.length;
 
-    const lastPostId = posts[posts.length - 1].id!;
+    if (countsOfposts <= 0) {
+        const data = {
+            nextCursor: null,
+            hasNext: false,
+            totalCounts: totalCountsOfPosts,
+            size: 0,
+            take,
+            cursor,
+            posts: []
+        };
+        res.json(data);
+        return;
+    }
+
+    const lastPostId = posts[posts.length - 1].id;
     const data = {
         nextCursor: lastPostId,
         hasNext: lastPostId > (lastMyPost?.id ?? 0),
