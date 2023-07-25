@@ -46,9 +46,24 @@ export const getBlockUsers = async (req: Request<unknown, unknown, unknown, { cu
     const [counts, oldestBlockedUser, blokedUsers] = await getBlockUsersService({ userId: req.id, cursor, take }, Prisma);
 
     let hasNext = false;
-    const nextCursor = blokedUsers.at(-1)?.createdAt;
-    if (nextCursor && oldestBlockedUser?.createdAt) {
-        hasNext = new Date(nextCursor).getTime() > new Date(oldestBlockedUser?.createdAt).getTime();
+    if (blokedUsers.length <= 0) {
+        const data = {
+            nextCursor: null,
+            hasNext,
+            // hasNext: lastBlockedUserId > (lastMyBlockedUser?.blockedId ?? 0),
+            totalCounts: counts,
+            size: 0,
+            take,
+            cursor,
+            blokedUsers: []
+        };
+        res.json(data);
+        return;
+    }
+    const lastBlockUser = blokedUsers[blokedUsers.length - 1];
+    const nextCursor = lastBlockUser.createdAt;
+    if (nextCursor && oldestBlockedUser) {
+        hasNext = new Date(nextCursor).getTime() > new Date(oldestBlockedUser.createdAt).getTime();
     }
 
     const data = {

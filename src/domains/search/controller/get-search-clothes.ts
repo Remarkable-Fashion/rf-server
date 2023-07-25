@@ -34,7 +34,18 @@ export const getSearchClothes = async (req: Request<unknown, unknown, unknown, {
     await createSearchLogService({ query, index: SEARCH_LOG_INDEX, userId: req.id }, client);
     const ids = clothes.map((clothe: any) => {
         return clothe.clothes_id;
-    });
+    }) as number[];
+
+    if (ids.length <= 0) {
+        const data = {
+            size: 0,
+            search: query,
+            take,
+            clothes: []
+        };
+        res.json(data);
+        return;
+    }
 
     const [clothes_] = await getClothesByIdsService({ userId: req.id, clothesIds: ids }, Prisma);
 

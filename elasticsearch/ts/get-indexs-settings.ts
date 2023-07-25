@@ -9,7 +9,7 @@ const main = async () => {
         sniffOnStart: true
     });
 
-    const indexName = "search_log";
+    const indexName = "clothes";
 
     const postsSettings = await client.indices.getSettings({index: indexName});
     const stringSettings = JSON.stringify(postsSettings.body[indexName].settings, null, 2);

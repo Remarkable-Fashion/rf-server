@@ -15,6 +15,8 @@ export const getSearchClothesService = async ({ query, size, index }: { query: s
         }
     });
 
+    console.log("result :", result);
+
     return result.body.hits.hits.map((post: any) => {
         return post._source;
     });

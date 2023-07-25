@@ -68,27 +68,27 @@ export const getRandomPosts = async (req: Request<unknown, unknown, unknown, Req
         lte: nowISOString
     };
 
-    /**
-     * @TODO 최근 6개월 총 21개
-     */
-    // const collectionName = createCollectionName(createYearMonthString(), POST_PRE_FIX);
-    // const randomPosts = await getRandomPostsMongoService(mongo.Db, collectionName, {
-    //     size: take,
-    //     sex: sex
-    // });
-
     const elkPosts = await getRandomPostsElasticSearchSerivce({ index: POSTS_INDEX, size: take, sex, date: dateRange }, client);
+    const ids = elkPosts.body.hits.hits.map(({ _source: { id } }: any) => {
+        return id;
+    }) as number[];
 
-    const randomPosts = elkPosts.body.hits.hits.map((post: any) => {
-        return post._source;
-    });
+    if (ids.length <= 0) {
+        const data = {
+            size: 0,
+            // totalCounts: posts.length,
+            take,
+            sex: sex || "NONE",
+            posts: []
+        };
+        res.json(data);
+        return;
+    }
 
-    const ids = randomPosts.map((post: any) => post.id);
     const posts = await getRandomPostsService({ userId: req.id, postIds: ids }, Prisma);
 
     const data = {
         size: posts.length,
-        // totalCounts: posts.length,
         take,
         sex: sex || "NONE",
         posts

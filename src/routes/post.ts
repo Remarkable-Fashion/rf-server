@@ -19,27 +19,18 @@ import { uploadPostImage } from "../domains/posts/controller/upload-post-image";
 
 const postRouter = Router();
 
-// postRouter.get("/:id", authJWT, controllerHandler(getPostById));
-
 postRouter.get("/", authJWT, controllerHandler(getRandomPosts));
-// postRouter.get("/test", authJWT, controllerHandler(getRandomPostsTest));
 postRouter.get("/public", apiLimiterFunc({ time: 15, max: 3, postFix: "public" }), controllerHandler(getRandomPostsPublic));
-// postRouter.get("/", authJWT, controllerHandler(getRandomPosts));
-// postRouter.get("/public", apiLimiterFunc({ time: 15, max: 3, postFix: "public" }), controllerHandler(getRandomPosts));
 
 postRouter.get("/me", authJWT, controllerHandler(getMyposts));
 
 postRouter.get("/user/:id", authJWT, controllerHandler(getPostsByUserId));
-// postRouter.get("/me/test", authTest(5), controllerHandler(getMyposts));
-// postRouter.get("/search", authJWT, controllerHandler(getTestSearchPosts));
 
 postRouter.get("/favorite", authJWT, controllerHandler(getMyFavorites));
 postRouter.get("/:id", authJWT, controllerHandler(getPostById));
 postRouter.delete("/:id", authJWT, controllerHandler(deletePostById));
-// postRouter.get("/test/:id", authTest(), controllerHandler(getPostById));
 
 postRouter.post("/image", authJWT, upload({ prefix: "post" }).fields([{ name: "posts" }]), controllerHandler(uploadPostImage));
-// postRouter.post("/image", authJWT, upload.fields([{ name: "posts" }]), controllerHandler(uploadPostImage));
 postRouter.post("/", authJWT, controllerHandler(createPost));
 
 postRouter.post("/:id/favorite", authJWT, controllerHandler(createFavorite));

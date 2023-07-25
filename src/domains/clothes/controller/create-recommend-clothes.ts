@@ -4,6 +4,9 @@ import { BadReqError, UnauthorizedError } from "../../../lib/http-error";
 import Prisma from "../../../db/prisma";
 import { NotNullCreateRecommendClothes, createRecommendClothesService } from "../service/create-recommend-clothes";
 import { validateBody } from "../../../lib/validate-body";
+import { createClothesElasticSearchService } from "../service/create-es-clothes";
+import { CLOTHES_INDEX } from "../../search/constants";
+import { client } from "../../../db/elasticsearch";
 
 const validateParamClothesId = (id?: string) => {
     if (!id) {
@@ -27,7 +30,9 @@ export const createRecommendClothes = async (req: Request<{ id?: string }, unkno
 
     const body = validateBody(typia.createValidateEquals<NotNullCreateRecommendClothes>())(req.body);
 
-    await createRecommendClothesService(clothesId, req.id, body, Prisma);
+    const clothes = await createRecommendClothesService(clothesId, req.id, body, Prisma);
+
+    await createClothesElasticSearchService({ index: CLOTHES_INDEX, clothes: [clothes] }, client);
 
     res.json({
         success: true,

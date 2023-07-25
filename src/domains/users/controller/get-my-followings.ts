@@ -45,9 +45,26 @@ export const getMyFollowings = async (req: Request<unknown, unknown, unknown, { 
 
     const [counts, oldestFollowing, followings] = await getMyFollowingsService({ userId: req.id, cursor, take }, Prisma);
     let hasNext = false;
-    const nextCursor = followings.at(-1)?.createdAt;
-    if (nextCursor && oldestFollowing?.createdAt) {
-        hasNext = new Date(nextCursor).getTime() > new Date(oldestFollowing?.createdAt).getTime();
+    if (followings.length <= 0) {
+        const data = {
+            nextCursor: null,
+            hasNext,
+            totalCounts: counts,
+            size: 0,
+            take,
+            cursor,
+            followings: []
+        };
+        res.json(data);
+        return;
+    }
+
+    const lastFollowing = followings[followings.length - 1];
+
+    const nextCursor = lastFollowing.createdAt;
+
+    if (nextCursor && oldestFollowing) {
+        hasNext = new Date(nextCursor).getTime() > new Date(oldestFollowing.createdAt).getTime();
     }
 
     const data = {

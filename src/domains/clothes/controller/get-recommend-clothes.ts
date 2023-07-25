@@ -10,7 +10,8 @@ const DEFAULT_TAKE = 21;
 
 const validateQueryCategory = (category?: string) => {
     if (!category) {
-        throw new BadReqError("Query string 'category' shoul be");
+        // throw new BadReqError("Query string 'category' shoul be");
+        return undefined;
     }
 
     return validateBody(typia.createValidateEquals<ClothesCategory>())(category);
@@ -71,11 +72,27 @@ export const getRecommendClothesById = async (
         lastRecommendAllClothes
     } = await getRecommendClothesByIdService({ id: clothesId, cursor, take, userId: req.id, category }, Prisma);
 
-    const lastRecommendClothes = recommendClothes.at(-1)!;
+    const isClothes = recommendClothes.length > 0;
+
+    if (!isClothes) {
+        const data = {
+            cursor: cursor ?? 0,
+            category,
+            take,
+            hasNext: false,
+            nextCursor: null,
+            totalCounts: countOfRecommendClothes,
+            size: recommendClothes.length,
+            clothes: recommendClothes
+        };
+        res.json(data);
+        return;
+    }
+    const lastRecommendClothes = recommendClothes[recommendClothes.length - 1];
 
     const data = {
         cursor: cursor ?? 0,
-        category,
+        category: category || "All",
         take,
         hasNext: lastRecommendClothes.id > (lastRecommendAllClothes?.id ?? 0),
         nextCursor: lastRecommendClothes.id,
