@@ -27,6 +27,13 @@ export const getRecommendClothesByIdService = (
                 // recommendedClothesId: true,
                 // userId: true,
                 name: true,
+                brand: true,
+                imageUrl: true,
+                category: true,
+                price: true,
+                color: true,
+                siteUrl: true,
+                size: true,
                 createdAt: true,
                 _count: {
                     select: {
@@ -108,14 +115,6 @@ export const getRecommendClothesByIdService = (
                 throw new BadReqError("DB Error recommendClothes Should have userId");
             }
             const { followers, ...restUser } = user;
-            // const isFavorite = await tx.favorites.findUnique({
-            //     where: {
-            //         userId_clothesId: {
-            //             userId,
-            //             clothesId: rest.id
-            //         }
-            //     }
-            // });
             const isFavorite = favorites.length > 0;
             const isScrap = scraps.length > 0;
 
@@ -123,7 +122,8 @@ export const getRecommendClothesByIdService = (
                 isFavorite: !!isFavorite,
                 isFollwoing: followers.length > 0,
                 isScrap,
-                ...restClothe,
+                clothesInfo: restClothe,
+                // ...restClothe,
                 user: restUser
             };
 
