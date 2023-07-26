@@ -1,6 +1,7 @@
-import { Router, type Request, type Response, UserWithRole } from "express";
-// import passport from "passport";
+import { Router, type Request, type Response } from "express";
 import axios from "axios";
+import type { UserWithRole } from "../@types/express";
+// import passport from "passport";
 import { redisClient } from "../db/redis";
 import { refreshJwt } from "../domains/auth/controller/refresh-jwt";
 import { controllerHandler } from "../lib/controller-handler";

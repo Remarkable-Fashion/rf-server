@@ -94,8 +94,8 @@ export const getRecommendClothesById = async (
         cursor: cursor ?? 0,
         category: category || "All",
         take,
-        hasNext: lastRecommendClothes.id > (lastRecommendAllClothes?.id ?? 0),
-        nextCursor: lastRecommendClothes.id,
+        hasNext: lastRecommendClothes.clothesInfo.id > (lastRecommendAllClothes?.id ?? 0),
+        nextCursor: lastRecommendClothes.clothesInfo.id,
         totalCounts: countOfRecommendClothes,
         size: recommendClothes.length,
         clothes: recommendClothes
