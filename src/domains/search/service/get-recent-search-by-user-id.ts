@@ -13,13 +13,13 @@ export const getRecentSearchByUserIdService = async ({ index, userId, size }: { 
                     }
                 }
             },
-            sort: [
-                {
-                    timestamp: {
-                        order: "desc"
-                    }
-                }
-            ],
+            // sort: [
+            //     {
+            //         timestamp: {
+            //             order: "desc"
+            //         }
+            //     }
+            // ],
             collapse: {
                 field: "query.keyword",
                 // eslint-disable-next-line camelcase
