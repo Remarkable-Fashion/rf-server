@@ -20,8 +20,9 @@ const validateParamClothesId = (id?: string) => {
 };
 
 const validateQueryCategory = (category?: string) => {
-    if (!category) {
-        throw new BadReqError("Query string 'category' shoul be");
+    if (category === "All" || !category) {
+        return undefined;
+        // throw new BadReqError("Query string 'category' shoul be");
     }
 
     return validateBody(typia.createValidateEquals<ClothesCategory>())(category);
@@ -39,11 +40,11 @@ export const getRecommendClothesByIdTop3 = async (req: Request<{ id?: string }, 
     const clothesId = validateParamClothesId(req.params.id);
     const category = validateQueryCategory(req.query.category);
 
-    const [recommendClothes] = await getRecommendClothesByIdTop3Service(clothesId, req.id, category, Prisma);
+    const [recommendClothes] = await getRecommendClothesByIdTop3Service({ id: clothesId, userId: req.id, category }, Prisma);
 
     const data = {
         size: recommendClothes.length,
-        category,
+        category: category || "All",
         clothes: recommendClothes
     };
 

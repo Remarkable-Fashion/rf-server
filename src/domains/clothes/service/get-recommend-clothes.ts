@@ -35,6 +35,7 @@ export const getRecommendClothesByIdService = (
                 siteUrl: true,
                 size: true,
                 createdAt: true,
+                reason: true,
                 _count: {
                     select: {
                         favorites: true
@@ -107,7 +108,7 @@ export const getRecommendClothesByIdService = (
             take
         });
 
-        const objs = [];
+        const parsedClothes = [];
 
         for (const clothe of clothes) {
             const { user, favorites, scraps, ...restClothe } = clothe;
@@ -123,15 +124,14 @@ export const getRecommendClothesByIdService = (
                 isFollwoing: followers.length > 0,
                 isScrap,
                 clothesInfo: restClothe,
-                // ...restClothe,
                 user: restUser
             };
 
-            objs.push(obj);
+            parsedClothes.push(obj);
         }
 
         return {
-            clothes: objs,
+            clothes: parsedClothes,
             countOfRecommendClothes,
             lastRecommendAllClothes
         };
