@@ -9,7 +9,7 @@ import { getRecommendClothesByIdService } from "../service/get-recommend-clothes
 const DEFAULT_TAKE = 21;
 
 const validateQueryCategory = (category?: string) => {
-    if (!category) {
+    if (category === "All" || !category) {
         // throw new BadReqError("Query string 'category' shoul be");
         return undefined;
     }

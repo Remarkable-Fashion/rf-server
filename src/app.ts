@@ -4,6 +4,7 @@ import session from "express-session";
 import flash from "connect-flash";
 import passport from "passport";
 import RedisStore from "connect-redis";
+import helmet from "helmet";
 import passportConfig from "./passports";
 import { dbErrorMiddleware, errorMiddleware } from "./middleware/error";
 import { requestLoggerMiddleware } from "./middleware/log";
@@ -14,6 +15,8 @@ import { redisClient } from "./db/redis";
 
 export const startApp = () => {
     const app = express();
+
+    app.use(helmet());
 
     app.use(cors(conf().CORS_CONFIG));
     app.use(express.json());

@@ -1,9 +1,8 @@
 import { ClothesCategory, PrismaClient } from "@prisma/client";
-import { Unarray } from "../../../lib/types";
 import { BadReqError } from "../../../lib/http-error";
 // type Unarray<T> = T extends Array<infer U> ? U : T;
 const DEFAULT_TAKE = 3;
-export const getRecommendClothesByIdTop3Service = (id: number, userId: number, category: ClothesCategory, prisma: PrismaClient) => {
+export const getRecommendClothesByIdTop3Service = (data: { id: number; userId: number; category?: ClothesCategory }, prisma: PrismaClient) => {
     return prisma.$transaction(async (tx) => {
         const recommendClothes = await tx.clothes.findMany({
             select: {
@@ -31,7 +30,7 @@ export const getRecommendClothesByIdTop3Service = (id: number, userId: number, c
                                 followingId: true
                             },
                             where: {
-                                followerId: userId
+                                followerId: data.userId
                             }
                         },
                         profile: {
@@ -43,8 +42,8 @@ export const getRecommendClothesByIdTop3Service = (id: number, userId: number, c
                 }
             },
             where: {
-                recommendedClothesId: id,
-                category
+                recommendedClothesId: data.id,
+                category: data.category
             },
             orderBy: [
                 {
@@ -59,17 +58,7 @@ export const getRecommendClothesByIdTop3Service = (id: number, userId: number, c
             take: DEFAULT_TAKE
         });
 
-        type RecommendClothesArray = Omit<Unarray<typeof recommendClothes>, "user"> & {
-            user: {
-                name?: string | null;
-            };
-        };
-        type RecommendClothes = RecommendClothesArray & {
-            isFavorite: boolean;
-            isFollowing: boolean;
-        };
-
-        const objs: RecommendClothes[] = [];
+        const objs = [];
 
         for (const { user, ...rest } of recommendClothes) {
             if (!user) {
@@ -80,16 +69,16 @@ export const getRecommendClothesByIdTop3Service = (id: number, userId: number, c
                 where: {
                     // eslint-disable-next-line camelcase
                     userId_clothesId: {
-                        userId,
+                        userId: data.userId,
                         clothesId: rest.id
                     }
                 }
             });
 
-            const obj: RecommendClothes = {
+            const obj = {
                 isFavorite: !!isFavorite,
                 isFollowing: user.followers.length > 0,
-                ...rest,
+                clothesInfo: rest,
                 user: restUser
             };
 
