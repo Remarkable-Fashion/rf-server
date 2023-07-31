@@ -14,7 +14,7 @@ const main = async () => {
     const app = startApp();
 
     app.listen(conf().PORT, () => {
-        console.log(`rc Server has opened! : ${isProd ? "prod" : "dev"}`);
+        console.log(`rc Server has opened! :${conf().PORT} ${isProd ? "prod" : "dev"}`);
     });
 };
 
