@@ -50,6 +50,10 @@ export const conf = () => {
 
     const ELK_DB = process.env.ELK_DB || "localhost:9200";
 
+    const ACCESS_KEY_ID = process.env.ACCESS_KEY_ID || "";
+    const SECRET_ACCESS_KEY = process.env.SECRET_ACCESS_KEY || "";
+    const S3_BUCKET_URL = process.env.S3_BUCKET_URL || "";
+
     return {
         PORT,
         SESSION_OPTION,
@@ -68,6 +72,9 @@ export const conf = () => {
         MONGO_DB,
         API_RATE_LIMIT_WHITE_LIST,
         LOG_DIR,
-        ELK_DB
+        ELK_DB,
+        ACCESS_KEY_ID,
+        SECRET_ACCESS_KEY,
+        S3_BUCKET_URL
     };
 };

@@ -15,7 +15,7 @@ export const updateUserProfile = async (req: Request, res: Response) => {
 
     const file = req.files as { [fieldName: string]: Express.Multer.File[] };
 
-    const avartarUrls = file.avartar && file.avartar.map((f) => `${conf().SERVER_DOMAIN}/${f.filename}`);
+    const avartarUrls = file.avartar && file.avartar.map((f) => `${conf().S3_BUCKET_URL}/${f.filename}`);
 
     console.log("avartarUrls :", avartarUrls);
 
