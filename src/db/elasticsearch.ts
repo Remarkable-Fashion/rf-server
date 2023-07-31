@@ -1,6 +1,7 @@
 import { Client } from "@opensearch-project/opensearch";
 import { conf } from "../config";
 
+console.log("conf().ELK_DB :", conf().ELK_DB);
 export const client = new Client({
     node: conf().ELK_DB,
     // auth: {

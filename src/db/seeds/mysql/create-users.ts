@@ -31,7 +31,7 @@ export const createUsers = async (prisma: PrismaClient) => {
 
     for (const user of userList) {
         await createUser(
-            { user: { email: user.email }, meta: { role: Role.User }, social: { type: SocialType.Kakao, socialId: user.socialId } },
+            { user: { email: user.email, name: user.name }, meta: { role: Role.User }, social: { type: SocialType.Kakao, socialId: user.socialId } },
             prisma
         );
     }

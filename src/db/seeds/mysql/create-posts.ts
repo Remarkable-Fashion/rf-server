@@ -17,7 +17,7 @@ export const createPosts = async (prisma: PrismaClient, client: EsClient) => {
         const range = Array.from({ length: 10 }, (_, index) => index);
 
         const resultArray = range.map(async (i) => {
-            const img = `${conf().SERVER_DOMAIN}/${i}.jpg`;
+            const img = `${conf().S3_BUCKET_URL}/${i}.jpg`;
 
             const topClothes: _Clothes2 = {
                 category: "Top",
