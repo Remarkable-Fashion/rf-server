@@ -27,8 +27,9 @@ export const createClothesIndex = async (client: EsClient) => {
                 max_ngram_diff: 12,
                 analysis: {
                     tokenizer: {
-                        nori_user_dict: {
-                            type: "nori_tokenizer",
+                        seunjeon: {
+                            type: "seunjeon_tokenizer",
+                            // type: "nori_tokenizer",
                             decompound_mode: "mixed",
                             discard_punctuation: "false"
                         }
@@ -41,7 +42,7 @@ export const createClothesIndex = async (client: EsClient) => {
                     },
                     filter: {
                         my_pos_f: {
-                            type: "nori_part_of_speech",
+                            type: "synonym",
                             stoptags: [
                                 "E",
                                 "IC",
@@ -67,7 +68,8 @@ export const createClothesIndex = async (client: EsClient) => {
                     analyzer: {
                         my_analyzer: {
                             type: "custom",
-                            tokenizer: "nori_user_dict",
+                            tokenizer: "seunjeon",
+                            // tokenizer: "nori_user_dict",
                             filter: "my_pos_f"
                         }
                         // "ngram_analyzer": {
@@ -126,15 +128,17 @@ export const createPostIndex = async (client: EsClient) => {
             index: {
                 analysis: {
                     tokenizer: {
-                        nori_user_dict: {
-                            type: "nori_tokenizer",
+                        seunjeon: {
+                            // nori_user_dict: {
+                            type: "seunjeon_tokenizer",
+                            // type: "nori_tokenizer",
                             decompound_mode: "mixed",
                             discard_punctuation: "false"
                         }
                     },
                     filter: {
                         my_pos_f: {
-                            type: "nori_part_of_speech",
+                            type: "synonym",
                             stoptags: [
                                 "E",
                                 "IC",
@@ -160,7 +164,7 @@ export const createPostIndex = async (client: EsClient) => {
                     analyzer: {
                         my_analyzer: {
                             type: "custom",
-                            tokenizer: "nori_user_dict",
+                            tokenizer: "seunjeon",
                             filter: "my_pos_f"
                         }
                     }
@@ -199,15 +203,15 @@ export const createSearchLogIndex = async (client: EsClient) => {
             index: {
                 analysis: {
                     tokenizer: {
-                        nori_user_dict: {
-                            type: "nori_tokenizer",
+                        seunjeon: {
+                            type: "seunjeon_tokenizer",
                             decompound_mode: "mixed",
                             discard_punctuation: "false"
                         }
                     },
                     filter: {
                         my_pos_f: {
-                            type: "nori_part_of_speech",
+                            type: "synonym",
                             stoptags: [
                                 "E",
                                 "IC",
@@ -233,7 +237,7 @@ export const createSearchLogIndex = async (client: EsClient) => {
                     analyzer: {
                         my_analyzer: {
                             type: "custom",
-                            tokenizer: "nori_user_dict",
+                            tokenizer: "seunjeon",
                             filter: "my_pos_f"
                         }
                     }
