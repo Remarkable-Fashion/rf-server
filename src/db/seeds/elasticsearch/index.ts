@@ -1,8 +1,9 @@
-import { Client } from "@elastic/elasticsearch";
+import { Client } from "@opensearch-project/opensearch/.";
+import { EsClient } from "../../elasticsearch";
 import { createClothesIndex, createPostIndex, createSearchLogIndex } from "./scripts/create-index";
 import { createIdWithTimestampPipeline, createTimestampPipeline } from "./scripts/create-piptline";
-// import { client } from "../../../db/elasticsearch";
-export const seedElasticsearch = async (client: Client) => {
+
+export const seedElasticsearch = async (client: EsClient) => {
     await createTimestampPipeline(client);
     await createIdWithTimestampPipeline(client);
 

@@ -1,7 +1,7 @@
-import { Client } from "@elastic/elasticsearch";
+import { EsClient } from "../../../elasticsearch";
 import { CLOTHES_INDEX, POSTS_INDEX, SEARCH_LOG_INDEX } from "../../../../domains/search/constants";
 
-const deleteIndex = async (indexName: string, client: Client) => {
+const deleteIndex = async (indexName: string, client: EsClient) => {
     const rv = await client.indices.exists({ index: indexName });
 
     if (!rv.body) {
@@ -11,7 +11,7 @@ const deleteIndex = async (indexName: string, client: Client) => {
     await client.indices.delete({ index: indexName });
 };
 
-const main = async (client: Client) => {
+const main = async (client: EsClient) => {
     await deleteIndex(POSTS_INDEX, client);
     await deleteIndex(CLOTHES_INDEX, client);
     await deleteIndex(SEARCH_LOG_INDEX, client);

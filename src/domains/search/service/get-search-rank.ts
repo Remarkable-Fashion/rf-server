@@ -1,8 +1,8 @@
-import { Client } from "@elastic/elasticsearch";
+import { EsClient } from "../../../db/elasticsearch";
 
 export const getSearchRankService = async (
     { query, index, date, size }: { query: string; index: string; date: { gte: string; lte: string }; size: number },
-    client: Client
+    client: EsClient
 ) => {
     const result = await client.search({
         index,

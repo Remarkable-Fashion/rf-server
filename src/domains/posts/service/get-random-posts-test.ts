@@ -1,9 +1,9 @@
-import { Client } from "@elastic/elasticsearch";
 import { Sex } from "@prisma/client";
+import { EsClient } from "../../../db/elasticsearch";
 
 export const getRandomPostsElasticSearchSerivce = (
     { index, size, sex, date }: { index: string; size: number; sex?: Sex; date: { gte: string; lte: string } },
-    client: Client
+    client: EsClient
 ) => {
     return client.search({
         index,

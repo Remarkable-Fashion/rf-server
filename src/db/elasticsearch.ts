@@ -1,4 +1,4 @@
-import { Client } from "@elastic/elasticsearch";
+import { Client } from "@opensearch-project/opensearch";
 import { conf } from "../config";
 
 export const client = new Client({
@@ -9,6 +9,8 @@ export const client = new Client({
     requestTimeout: 60000,
     sniffOnStart: true
 });
+
+export type EsClient = typeof client;
 
 client
     .ping()

@@ -1,5 +1,4 @@
-// import {client} from "../elasticsearch";
-import { Client } from "@elastic/elasticsearch";
+import { Client } from "@opensearch-project/opensearch";
 import Prisma from "../prisma";
 import { createUsers } from "./mysql/create-users";
 import { seedElasticsearch } from "./elasticsearch";

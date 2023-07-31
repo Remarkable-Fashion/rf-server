@@ -1,6 +1,6 @@
-import { Client } from "@elastic/elasticsearch";
 import * as redis from "redis";
 import cron from "node-cron";
+import { Client } from "@opensearch-project/opensearch";
 import { SEARCH_LOG_QUERY, SEARCH_LOG_INDEX, REDIS_SEARCH_RANK_KEY, RANK_SIZE } from "../domains/search/constants";
 import { getSearchRankService } from "../domains/search/service/get-search-rank";
 import { Rank } from "../domains/search/types";

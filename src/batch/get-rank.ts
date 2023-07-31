@@ -1,5 +1,5 @@
 import * as redis from "redis";
-import { Client } from "@elastic/elasticsearch";
+import { Client } from "@opensearch-project/opensearch";
 import { getSearchRankService } from "../domains/search/service/get-search-rank";
 import { RANK_SIZE, SEARCH_LOG_INDEX, SEARCH_LOG_QUERY } from "../domains/search/constants";
 import { getDateRange } from "../domains/search/get-date-range";
