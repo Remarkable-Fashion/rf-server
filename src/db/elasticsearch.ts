@@ -1,21 +1,21 @@
 import { Client } from "@opensearch-project/opensearch";
 import { conf } from "../config";
 
-console.log("conf().ELK_DB :", conf().ELK_DB);
+// console.log("conf().ELK_DB :", conf().ELK_DB);
 export const client = new Client({
-    node: conf().ELK_DB,
+    node: conf().ELK_DB
     // auth: {
     //     username: conf().ELK_USERNAME,
     //     password: conf().ELK_PASSWORD
     // },
     // node: "http://dev-elasticsearch:9200",
     // node: "http://localhost:9200",
-    maxRetries: 5,
-    requestTimeout: 60000,
-    sniffOnStart: true
+    // maxRetries: 5,
+    // requestTimeout: 60000,
+    // sniffOnStart: true
 });
 
-export type EsClient = typeof client;
+export type EsClient = Client;
 
 client
     .ping()
@@ -25,13 +25,12 @@ client
 if (require.main === module) {
     console.log("test");
     // eslint-disable-next-line no-shadow
-    const client = new Client({
-        node: "http://localhost:9200",
-        maxRetries: 5,
-        requestTimeout: 60000,
-        sniffOnStart: true
-    });
-    client.ping();
+    // const client = new Client({
+    //     node: "http://localhost:9200",
+    //     maxRetries: 5,
+    //     requestTimeout: 60000,
+    //     sniffOnStart: true
+    // });
 
     client.search(
         {

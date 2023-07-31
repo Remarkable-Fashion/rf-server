@@ -1,4 +1,4 @@
-import { Client } from "@opensearch-project/opensearch/.";
+// import { Client } from "@opensearch-project/opensearch/.";
 import { CLOTHES_INDEX, POSTS_INDEX, SEARCH_LOG_INDEX } from "../../../../domains/search/constants";
 import { EsClient } from "../../../elasticsearch";
 
@@ -40,37 +40,39 @@ export const createClothesIndex = async (client: EsClient) => {
                         //     "token_chars": ["letter", "digit"]
                         // }
                     },
-                    filter: {
-                        my_pos_f: {
-                            type: "synonym",
-                            stoptags: [
-                                "E",
-                                "IC",
-                                "J",
-                                "MAG",
-                                "MAJ",
-                                "MM",
-                                "SP",
-                                "SSC",
-                                "SSO",
-                                "SC",
-                                "SE",
-                                "XPN",
-                                "XSA",
-                                "XSN",
-                                "XSV",
-                                "UNA",
-                                "NA",
-                                "VSV"
-                            ]
-                        }
-                    },
+                    // filter: {
+                    //     my_pos_f: {
+                    //         type: "seunjeon_tokenizer",
+                    //         // type: "synonym",
+                    //         // tokenizer: "seunjeon_tokenizer",
+                    //         stoptags: [
+                    //             "E",
+                    //             "IC",
+                    //             "J",
+                    //             "MAG",
+                    //             "MAJ",
+                    //             "MM",
+                    //             "SP",
+                    //             "SSC",
+                    //             "SSO",
+                    //             "SC",
+                    //             "SE",
+                    //             "XPN",
+                    //             "XSA",
+                    //             "XSN",
+                    //             "XSV",
+                    //             "UNA",
+                    //             "NA",
+                    //             "VSV"
+                    //         ]
+                    //     }
+                    // },
                     analyzer: {
                         my_analyzer: {
                             type: "custom",
-                            tokenizer: "seunjeon",
+                            tokenizer: "seunjeon"
                             // tokenizer: "nori_user_dict",
-                            filter: "my_pos_f"
+                            // filter: "my_pos_f"
                         }
                         // "ngram_analyzer": {
                         //     "tokenizer": "ngram_tokenizer"
@@ -136,36 +138,38 @@ export const createPostIndex = async (client: EsClient) => {
                             discard_punctuation: "false"
                         }
                     },
-                    filter: {
-                        my_pos_f: {
-                            type: "synonym",
-                            stoptags: [
-                                "E",
-                                "IC",
-                                "J",
-                                "MAG",
-                                "MAJ",
-                                "MM",
-                                "SP",
-                                "SSC",
-                                "SSO",
-                                "SC",
-                                "SE",
-                                "XPN",
-                                "XSA",
-                                "XSN",
-                                "XSV",
-                                "UNA",
-                                "NA",
-                                "VSV"
-                            ]
-                        }
-                    },
+                    // filter: {
+                    //     my_pos_f: {
+                    //         type: "seunjeon_tokenizer",
+                    //         // type: "synonym",
+                    //         // tokenizer: "seunjeon_tokenizer",
+                    //         stoptags: [
+                    //             "E",
+                    //             "IC",
+                    //             "J",
+                    //             "MAG",
+                    //             "MAJ",
+                    //             "MM",
+                    //             "SP",
+                    //             "SSC",
+                    //             "SSO",
+                    //             "SC",
+                    //             "SE",
+                    //             "XPN",
+                    //             "XSA",
+                    //             "XSN",
+                    //             "XSV",
+                    //             "UNA",
+                    //             "NA",
+                    //             "VSV"
+                    //         ]
+                    //     }
+                    // },
                     analyzer: {
                         my_analyzer: {
                             type: "custom",
-                            tokenizer: "seunjeon",
-                            filter: "my_pos_f"
+                            tokenizer: "seunjeon"
+                            // filter: "my_pos_f"
                         }
                     }
                 }
@@ -209,36 +213,38 @@ export const createSearchLogIndex = async (client: EsClient) => {
                             discard_punctuation: "false"
                         }
                     },
-                    filter: {
-                        my_pos_f: {
-                            type: "synonym",
-                            stoptags: [
-                                "E",
-                                "IC",
-                                "J",
-                                "MAG",
-                                "MAJ",
-                                "MM",
-                                "SP",
-                                "SSC",
-                                "SSO",
-                                "SC",
-                                "SE",
-                                "XPN",
-                                "XSA",
-                                "XSN",
-                                "XSV",
-                                "UNA",
-                                "NA",
-                                "VSV"
-                            ]
-                        }
-                    },
+                    // filter: {
+                    //     my_pos_f: {
+                    //         type: "seunjeon_tokenizer",
+                    //         // type: "synonym",
+                    //         // tokenizer: "seunjeon_tokenizer",
+                    //         stoptags: [
+                    //             "E",
+                    //             "IC",
+                    //             "J",
+                    //             "MAG",
+                    //             "MAJ",
+                    //             "MM",
+                    //             "SP",
+                    //             "SSC",
+                    //             "SSO",
+                    //             "SC",
+                    //             "SE",
+                    //             "XPN",
+                    //             "XSA",
+                    //             "XSN",
+                    //             "XSV",
+                    //             "UNA",
+                    //             "NA",
+                    //             "VSV"
+                    //         ]
+                    //     }
+                    // },
                     analyzer: {
                         my_analyzer: {
                             type: "custom",
-                            tokenizer: "seunjeon",
-                            filter: "my_pos_f"
+                            tokenizer: "seunjeon"
+                            // filter: "my_pos_f"
                         }
                     }
                 }
@@ -266,13 +272,13 @@ export const createSearchLogIndex = async (client: EsClient) => {
 };
 
 if (require.main === module) {
-    const client = new Client({
-        node: "http://localhost:9200",
-        maxRetries: 5,
-        requestTimeout: 60000,
-        sniffOnStart: true
-    });
-    createClothesIndex(client).then(() => {
-        console.log("Success create Index");
-    });
+    // const client = new Client({
+    //     node: "http://localhost:9200",
+    //     maxRetries: 5,
+    //     requestTimeout: 60000,
+    //     sniffOnStart: true
+    // });
+    // createClothesIndex(client).then(() => {
+    //     console.log("Success create Index");
+    // });
 }
