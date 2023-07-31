@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { Client } from "@elastic/elasticsearch";
+import { EsClient } from "../../elasticsearch";
 import { CreatePost, _Clothes2, createPost } from "../../../domains/posts/service/create-post";
 import { conf } from "../../../config";
 import { createPostElasticSearchService } from "../../../domains/posts/service/create-post-elasticsearch";
@@ -11,7 +11,7 @@ import { createClothesElasticSearchService } from "../../../domains/clothes/serv
  * @info seed create-users 참고.
  * 유저 3명이 각각 post 10개씩 생성. (clothes 포함)
  */
-export const createPosts = async (prisma: PrismaClient, client: Client) => {
+export const createPosts = async (prisma: PrismaClient, client: EsClient) => {
     const userList = [1, 2, 3];
     for (const user of userList) {
         const range = Array.from({ length: 10 }, (_, index) => index);

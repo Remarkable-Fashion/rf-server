@@ -1,15 +1,14 @@
-import { Client } from "@elastic/elasticsearch";
-// import {client as esClient} from "../../../elasticsearch";
 import { AUTO_ID_TIMESTAMP_PIPELINE, AUTO_TIMESTAMP_PIPELINE } from "../../../../domains/search/constants";
+import { EsClient } from "../../../elasticsearch";
 
-const createPipeLine = async (id: string, config: any, client: Client) => {
+const createPipeLine = async (id: string, config: any, client: EsClient) => {
     await client.ingest.putPipeline({
         id,
         body: config
     });
 };
 
-export const createIdWithTimestampPipeline = async (client: Client) => {
+export const createIdWithTimestampPipeline = async (client: EsClient) => {
     const config = {
         description: "Creates a timestamp and id when a document is initially indexed",
         processors: [
@@ -58,7 +57,7 @@ export const createIdWithTimestampPipeline = async (client: Client) => {
     await createPipeLine(AUTO_ID_TIMESTAMP_PIPELINE, config, client);
 };
 
-export const createTimestampPipeline = async (client: Client) => {
+export const createTimestampPipeline = async (client: EsClient) => {
     const config = {
         description: "Creates a timestamp when a document is initially indexed",
         processors: [

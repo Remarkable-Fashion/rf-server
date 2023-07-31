@@ -1,8 +1,8 @@
-import { Client } from "@elastic/elasticsearch";
 import { AUTO_TIMESTAMP_PIPELINE, CLOTHES_INDEX } from "../../search/constants";
 import { CreatePostReturn } from "../../posts/service/create-post";
+import { EsClient } from "../../../db/elasticsearch";
 
-export const createClothesElasticSearchService = (data: { index: string; clothes: CreatePostReturn["clothes"] }, client: Client) => {
+export const createClothesElasticSearchService = (data: { index: string; clothes: CreatePostReturn["clothes"] }, client: EsClient) => {
     const datas = [];
     for (const clothes of data.clothes) {
         const index = { index: { _index: CLOTHES_INDEX, _id: String(clothes.id) } };

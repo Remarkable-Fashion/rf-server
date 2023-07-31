@@ -1,7 +1,8 @@
-import { Client } from "@elastic/elasticsearch";
+import { Client } from "@opensearch-project/opensearch/.";
 import { CLOTHES_INDEX, POSTS_INDEX, SEARCH_LOG_INDEX } from "../../../../domains/search/constants";
+import { EsClient } from "../../../elasticsearch";
 
-const createIndex = async (indexName: string, config: any, client: Client) => {
+const createIndex = async (indexName: string, config: any, client: EsClient) => {
     const isIndexExist = await client.indices.exists({ index: indexName });
     if (isIndexExist.body) {
         console.log(`Index already exist : ${indexName}`);
@@ -19,7 +20,7 @@ const createIndex = async (indexName: string, config: any, client: Client) => {
  * @info item 검색엔진
  */
 /* eslint-disable camelcase */
-export const createClothesIndex = async (client: Client) => {
+export const createClothesIndex = async (client: EsClient) => {
     const config = {
         settings: {
             index: {
@@ -114,7 +115,7 @@ export const createClothesIndex = async (client: Client) => {
     await createIndex(CLOTHES_INDEX, config, client);
 };
 
-export const createPostIndex = async (client: Client) => {
+export const createPostIndex = async (client: EsClient) => {
     /**
      * @info
      * @title text
@@ -187,7 +188,7 @@ export const createPostIndex = async (client: Client) => {
 };
 
 // eslint-disable-next-line camelcase
-export const createSearchLogIndex = async (client: Client) => {
+export const createSearchLogIndex = async (client: EsClient) => {
     /**
      * @info
      * @user_id integer

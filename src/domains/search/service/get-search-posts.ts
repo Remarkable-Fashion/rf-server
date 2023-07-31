@@ -1,7 +1,7 @@
-import { Client } from "@elastic/elasticsearch";
+import { EsClient } from "../../../db/elasticsearch";
 
 // const DEFAULT_INDEX = "posts";
-export const getSearchPostsService = async ({ query, size, index }: { query: string; size: number; index: string }, client: Client) => {
+export const getSearchPostsService = async ({ query, size, index }: { query: string; size: number; index: string }, client: EsClient) => {
     const result = await client.search({
         index,
         body: {

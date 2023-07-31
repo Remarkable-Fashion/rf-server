@@ -1,6 +1,6 @@
-import { Client } from "@elastic/elasticsearch";
+import { EsClient } from "../../../db/elasticsearch";
 
-export const getRecentSearchByUserIdService = async ({ index, userId, size }: { index: string; userId: number; size: number }, client: Client) => {
+export const getRecentSearchByUserIdService = async ({ index, userId, size }: { index: string; userId: number; size: number }, client: EsClient) => {
     const result = await client.search({
         index,
         body: {
