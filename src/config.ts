@@ -49,6 +49,8 @@ export const conf = () => {
     const API_RATE_LIMIT_WHITE_LIST = ["127.0.0.1"];
 
     const ELK_DB = process.env.ELK_DB || "localhost:9200";
+    const ELK_USERNAME = process.env.ELK_USERNAME || "localhost:9200";
+    const ELK_PASSWORD = process.env.ELK_PASSWORD || "localhost:9200";
 
     const ACCESS_KEY_ID = process.env.ACCESS_KEY_ID || "";
     const SECRET_ACCESS_KEY = process.env.SECRET_ACCESS_KEY || "";
@@ -75,6 +77,8 @@ export const conf = () => {
         ELK_DB,
         ACCESS_KEY_ID,
         SECRET_ACCESS_KEY,
-        S3_BUCKET_URL
+        S3_BUCKET_URL,
+        ELK_USERNAME,
+        ELK_PASSWORD
     };
 };

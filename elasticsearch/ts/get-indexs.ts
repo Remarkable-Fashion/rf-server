@@ -1,18 +1,15 @@
-import { Client } from "@elastic/elasticsearch";
+import { Client } from "@opensearch-project/opensearch";
 
 const main = async () => {
     const client = new Client({
         // node: "http://dev-elasticsearch:9200",
-        node: "http://localhost:9200",
-        maxRetries: 5,
-        requestTimeout: 60000,
-        sniffOnStart: true
+        node: "https://search-dev-rc-es1-y46sorvm5cmd3a7dnbl7uhpypq.ap-northeast-2.es.amazonaws.com"
     });
 
     const rv = await client.cat.indices({ format: "json" });
 
     console.log("rv :", rv);
-    const indexNames = rv.body.map( (a: any)=>{
+    const indexNames = rv.body.map((a: any) => {
         return a.index;
     });
 
