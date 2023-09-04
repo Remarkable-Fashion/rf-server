@@ -32,7 +32,7 @@ export const getRecommendClothesByIdService = (
                 category: true,
                 price: true,
                 color: true,
-                siteUrl: true,
+                // siteUrl: true,
                 size: true,
                 createdAt: true,
                 reason: true,

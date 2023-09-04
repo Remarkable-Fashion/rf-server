@@ -35,7 +35,7 @@ const validateTake = (take?: string) => {
     return takeT;
 };
 
-export const getBlockUsers = async (req: Request<unknown, unknown, unknown, { cursor?: string; take?: string }>, res: Response) => {
+export const getBlockUsers = async (req: Request<{ id?: string }, unknown, unknown, { cursor?: string; take?: string }>, res: Response) => {
     if (!req.id) {
         throw new UnauthorizedError();
     }
@@ -43,10 +43,12 @@ export const getBlockUsers = async (req: Request<unknown, unknown, unknown, { cu
     const cursor = validateCursor(req.query.cursor);
     const take = validateTake(req.query.take);
 
-    const [counts, oldestBlockedUser, blokedUsers] = await getBlockUsersService({ userId: req.id, cursor, take }, Prisma);
+    const userId = req.params.id === "me" ? req.id : Number(req.params.id);
+
+    const [counts, oldestBlockedUser, blockedUsers] = await getBlockUsersService({ userId, cursor, take }, Prisma);
 
     let hasNext = false;
-    if (blokedUsers.length <= 0) {
+    if (blockedUsers.length <= 0) {
         const data = {
             nextCursor: null,
             hasNext,
@@ -55,12 +57,12 @@ export const getBlockUsers = async (req: Request<unknown, unknown, unknown, { cu
             size: 0,
             take,
             cursor,
-            blokedUsers: []
+            blockedUsers: []
         };
         res.json(data);
         return;
     }
-    const lastBlockUser = blokedUsers[blokedUsers.length - 1];
+    const lastBlockUser = blockedUsers[blockedUsers.length - 1];
     const nextCursor = lastBlockUser.createdAt;
     if (nextCursor && oldestBlockedUser) {
         hasNext = new Date(nextCursor).getTime() > new Date(oldestBlockedUser.createdAt).getTime();
@@ -71,10 +73,10 @@ export const getBlockUsers = async (req: Request<unknown, unknown, unknown, { cu
         hasNext,
         // hasNext: lastBlockedUserId > (lastMyBlockedUser?.blockedId ?? 0),
         totalCounts: counts,
-        size: blokedUsers.length,
+        size: blockedUsers.length,
         take,
         cursor,
-        blokedUsers: blokedUsers.map((blokedUser) => {
+        blockedUsers: blockedUsers.map((blokedUser) => {
             return {
                 user: blokedUser.blocked,
                 createdAt: blokedUser.createdAt

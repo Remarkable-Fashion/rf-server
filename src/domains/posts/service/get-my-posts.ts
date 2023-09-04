@@ -23,7 +23,7 @@ export const getMyPostsService = async (data: { userId: number; take: number; cu
         const posts = await tx.posts.findMany({
             select: {
                 id: true,
-                title: true,
+                // title: true,
                 isPublic: true,
                 images: {
                     select: {
@@ -57,21 +57,29 @@ export const getMyPostsService = async (data: { userId: number; take: number; cu
                 }
             },
             where: {
+                ...(data.cursor && {
+                    id: {
+                        lt: data.cursor
+                    }
+                }),
+                // id: {
+                //     lte: data.cursor
+                // },
                 userId: data.userId,
                 deletedAt: null
                 // AND: {}
             },
-            orderBy: {
-                createdAt: "desc"
-                // id: "desc"
-            },
-            take: data.take,
-            ...(data.cursor && {
-                cursor: {
-                    id: data.cursor
-                },
-                skip: 1
-            })
+            orderBy: [
+                // {createdAt: "desc"},
+                { id: "desc" } // id가 높을수록 최신이니깐
+            ],
+            take: data.take
+            // ...(data.cursor && {
+            //     cursor: {
+            //         id: data.cursor
+            //     },
+            //     skip: 1
+            // })
         });
 
         const parsedPosts = posts.map((post) => {

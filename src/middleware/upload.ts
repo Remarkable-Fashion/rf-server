@@ -3,6 +3,7 @@ import { S3Client } from "@aws-sdk/client-s3";
 import multerS3 from "multer-s3";
 import path from "path";
 import { conf } from "../config";
+import { BadReqError } from "../lib/http-error";
 
 const { MAX_FILE_SIZE, MAX_FILES, ACCESS_KEY_ID, SECRET_ACCESS_KEY } = conf();
 
@@ -54,6 +55,8 @@ export const upload = ({ prefix }: { prefix?: string } = {}) =>
         storage: multerS3({
             s3,
             bucket: "dev-rc-1",
+            acl: "public-read",
+            contentType: multerS3.AUTO_CONTENT_TYPE,
             key(req, file, callback) {
                 const ext = path.extname(file.originalname); // 확장자 추출
 
@@ -71,11 +74,14 @@ export const upload = ({ prefix }: { prefix?: string } = {}) =>
             }
         }),
         fileFilter: (req, file, cb) => {
-            if (file.mimetype === "image/png" || file.mimetype === "image/jpg" || file.mimetype === "image/jpeg") {
+            const allowMimeType = ["image/png", "image/jpg", "image/jpeg", "image/*"];
+            // if (file.mimetype === "image/png" || file.mimetype === "image/jpg" || file.mimetype === "image/jpeg") {
+            if (allowMimeType.includes(file.mimetype)) {
                 return cb(null, true);
             }
 
-            return cb(null, false);
+            return cb(new BadReqError(`You should image/png | image/jpg | image/jpeg, : ${file.mimetype}`));
+            // return cb(null, false);
         },
         limits: {
             fileSize: MAX_FILE_SIZE, // 600kb

@@ -48,32 +48,4 @@ export const deletePostByIdService = async (data: { id: number; userId: number }
     });
 
     return rv;
-    // return prisma.users.update({
-    //     where: {
-    //         id: data.userId
-    //     },
-    //     data: {
-    //         posts: {
-    //             update: {
-    //                 where: {
-    //                     id: data.id
-    //                 },
-    //                 data: {
-    //                     deletedAt: new Date()
-    //                 }
-    //             }
-    //         }
-    //     }
-    // })
-    // return prisma.posts.update({
-    //     data: {
-    //         deletedAt: new Date(),
-    //     },
-    //     where: {
-    //         id: data.id,
-    //     },
-    //     include: {
-    //         user: true
-    //     }
-    // });
 };

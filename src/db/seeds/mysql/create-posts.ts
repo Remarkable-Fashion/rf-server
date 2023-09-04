@@ -22,13 +22,15 @@ export const createPosts = async (prisma: PrismaClient, client: EsClient) => {
             const topClothes: _Clothes2 = {
                 category: "Top",
                 name: `top-${user}-${i}`,
-                price: 100
+                price: 100,
+                likeCount: 0
             };
 
             const bottomClothes: _Clothes2 = {
                 category: "Bottom",
                 name: `bottom-${user}-${i}`,
-                price: 100
+                price: 100,
+                likeCount: 0
             };
 
             const data: CreatePost = {

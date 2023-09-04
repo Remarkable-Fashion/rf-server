@@ -8,6 +8,8 @@ export const getUserById = async (req: Request, res: Response) => {
         throw new UnauthorizedError();
     }
 
-    const user = await getUserWithProfileByIdService({ id: req.id }, Prisma);
+    const id = req.params.id === "me" ? req.id : Number(req.params.id);
+
+    const user = await getUserWithProfileByIdService({ id }, Prisma);
     res.json(user);
 };

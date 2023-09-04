@@ -35,7 +35,7 @@ const validateTake = (take?: string) => {
     return takeT;
 };
 
-export const getMyFollowings = async (req: Request<unknown, unknown, unknown, { cursor?: string; take?: string }>, res: Response) => {
+export const getMyFollowings = async (req: Request<{ id?: string }, unknown, unknown, { cursor?: string; take?: string }>, res: Response) => {
     if (!req.id) {
         throw new UnauthorizedError();
     }
@@ -43,7 +43,9 @@ export const getMyFollowings = async (req: Request<unknown, unknown, unknown, { 
     const cursor = validateCursor(req.query.cursor);
     const take = validateTake(req.query.take);
 
-    const [counts, oldestFollowing, followings] = await getMyFollowingsService({ userId: req.id, cursor, take }, Prisma);
+    const userId = req.params.id === "me" ? req.id : Number(req.params.id);
+
+    const [counts, oldestFollowing, followings] = await getMyFollowingsService({ userId, cursor, take }, Prisma);
     let hasNext = false;
     if (followings.length <= 0) {
         const data = {

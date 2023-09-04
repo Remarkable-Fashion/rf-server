@@ -5,9 +5,9 @@ export const getPostByIdService = async (data: { id: number; userId: number }, p
         const post = await tx.posts.findFirst({
             select: {
                 id: true,
-                title: true,
+                // title: true,
                 description: true,
-                place: true,
+                // place: true,
                 // styles: true,
                 styles: {
                     select: {

@@ -41,5 +41,9 @@ export const createPost = async (req: Request<unknown, unknown, CreatePostBody>,
     }
     // await createPostMongoService({ postId: postId, ..._post }, mongo.Db, collectionName);
 
-    res.status(200).json(post);
+    res.status(200).json({
+        success: true,
+        msg: "Success create post"
+        // post: post
+    });
 };

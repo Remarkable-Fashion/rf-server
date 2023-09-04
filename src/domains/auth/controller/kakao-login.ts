@@ -58,6 +58,10 @@ export const loginKakao = async (req: Request, res: Response, next: NextFunction
         role: user.meta!.role,
         type: SocialType.Kakao,
         profile: user.profile!,
+        followerCount: 0,
+        followingCount: 0,
+        postCount: 0,
+        scrapCount: 0,
         accessToken
     };
 

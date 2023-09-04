@@ -16,11 +16,14 @@ import { getMyFavorites } from "../domains/posts/controller/get-my-favorites";
 import { deletePostById } from "../domains/posts/controller/delete-post-by-id";
 import { getPostsByUserId } from "../domains/posts/controller/get-post-by-user-id";
 import { uploadPostImage } from "../domains/posts/controller/upload-post-image";
+import { updatePostStatus } from "../domains/posts/controller/update-post-status";
 
 const postRouter = Router();
 
 postRouter.get("/", authJWT, controllerHandler(getRandomPosts));
 postRouter.get("/public", apiLimiterFunc({ time: 15, max: 3, postFix: "public" }), controllerHandler(getRandomPostsPublic));
+
+postRouter.patch("/:id/status", authJWT, controllerHandler(updatePostStatus));
 
 postRouter.get("/me", authJWT, controllerHandler(getMyposts));
 
