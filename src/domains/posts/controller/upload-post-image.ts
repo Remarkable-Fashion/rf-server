@@ -9,7 +9,7 @@ export const uploadPostImage = async (req: Request<unknown, unknown, CreatePostB
     if (!req.id) {
         throw new UnauthorizedError("Check your user");
     }
-    const imgUrls = (req.files as { [fieldName: string]: Express.Multer.File[] }).posts.map((f) => `${conf().S3_BUCKET_URL}/${f.filename}`);
+    const imgUrls = (req.files as { [fieldName: string]: Express.Multer.File[] }).posts.map((f) => `${conf().S3_BUCKET_URL}/${f.filename || f.key}`);
 
     if (!imgUrls || imgUrls.length < 1) {
         throw new BadReqError("There must be at least one image");

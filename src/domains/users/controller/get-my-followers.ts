@@ -39,15 +39,15 @@ const validateTake = (take?: string) => {
  * 1. 페이지네이션
  * 2. 팔로잉 팔로워 수 제한?
  */
-export const getMyFollowers = async (req: Request<unknown, unknown, unknown, { cursor?: string; take?: string }>, res: Response) => {
+export const getMyFollowers = async (req: Request<{ id?: string }, unknown, unknown, { cursor?: string; take?: string }>, res: Response) => {
     if (!req.id) {
         throw new UnauthorizedError();
     }
 
     const cursor = validateCursor(req.query.cursor);
     const take = validateTake(req.query.take);
-
-    const [counts, oldestFollower, followers] = await getMyFollowersService({ userId: req.id, cursor, take }, Prisma);
+    const userId = req.params.id === "me" ? req.id : Number(req.params.id);
+    const [counts, oldestFollower, followers] = await getMyFollowersService({ userId, cursor, take }, Prisma);
 
     let hasNext = false;
     if (!followers.length) {

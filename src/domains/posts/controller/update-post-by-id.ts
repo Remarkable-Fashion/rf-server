@@ -1,13 +1,13 @@
 import type { Request, Response } from "express";
 import { BadReqError, UnauthorizedError } from "../../../lib/http-error";
 import Prisma from "../../../db/prisma";
-import { deletePostByIdService } from "../service/delete-post-by-id";
+import { updatePostByIdService } from "../service/update-post-by-id";
 
 type ReqParams = {
     id?: string;
 };
 
-export const deletePostById = async (req: Request<ReqParams>, res: Response) => {
+export const updatePostById = async (req: Request<ReqParams>, res: Response) => {
     const { id } = req.params;
 
     const parsedId = Number(id);
@@ -20,10 +20,10 @@ export const deletePostById = async (req: Request<ReqParams>, res: Response) => 
         throw new UnauthorizedError();
     }
 
-    await deletePostByIdService({ id: parsedId, userId: req.id }, Prisma);
+    await updatePostByIdService({ postId: parsedId }, Prisma);
 
     res.json({
         success: true,
-        msg: "Success delete post"
+        msg: "Success update post"
     });
 };

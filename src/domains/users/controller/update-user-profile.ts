@@ -15,17 +15,25 @@ export const updateUserProfile = async (req: Request, res: Response) => {
 
     const file = req.files as { [fieldName: string]: Express.Multer.File[] };
 
-    const avartarUrls = file.avartar && file.avartar.map((f) => `${conf().S3_BUCKET_URL}/${f.filename}`);
-
-    console.log("avartarUrls :", avartarUrls);
+    const avartarUrls = file && file.avartar && file.avartar.map((f) => `${conf().S3_BUCKET_URL}/${f.filename || f.key}`);
 
     if (avartarUrls && avartarUrls.length !== 1) {
         throw new BadReqError("There must be one image");
     }
 
-    const data = validateBody(TSON.createValidateEquals<UpdateProfile>())(req.body);
+    const bbody = {
+        ...req.body,
+        ...(req.body.height && {
+            height: Number(req.body.height)
+        }),
+        ...(req.body.weight && {
+            weight: Number(req.body.weight)
+        })
+    };
 
-    const { user } = await updateUserProfileService(
+    const data = validateBody(TSON.createValidateEquals<UpdateProfile>())(bbody);
+
+    await updateUserProfileService(
         userId,
         {
             ...data,
@@ -36,5 +44,8 @@ export const updateUserProfile = async (req: Request, res: Response) => {
         },
         Prisma
     );
-    res.json(user);
+    res.json({
+        success: true,
+        msg: "Success update user profile"
+    });
 };

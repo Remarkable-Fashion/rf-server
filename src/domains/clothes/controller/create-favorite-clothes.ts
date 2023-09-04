@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { BadReqError, UnauthorizedError } from "../../../lib/http-error";
 import Prisma from "../../../db/prisma";
 import { createFavoirteClothesService } from "../service/create-favorite-clothes";
+import { redisClient } from "../../../db/redis";
+import { COUNTS_CLOTHES_LIKES_PREFIX } from "../../../constants";
 
 const validateParamClothesId = (id?: string) => {
     if (!id) {
@@ -25,9 +27,12 @@ export const createFavoriteClothes = async (req: Request<{ id?: string }, unknow
 
     await createFavoirteClothesService(clothesId, req.id, Prisma);
 
+    const key = `${COUNTS_CLOTHES_LIKES_PREFIX}:${clothesId}`;
+
+    await redisClient.incrBy(key, 1);
+
     res.json({
         success: true,
-        msg: "Success create favorite"
+        msg: "Success create clothes favorite"
     });
-    // res.json({ clothes: recommendClothes });
 };

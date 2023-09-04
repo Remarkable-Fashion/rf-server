@@ -3,9 +3,10 @@ import { BadReqError } from "../../../lib/http-error";
 import { client } from "../../../db/elasticsearch";
 import { getSearchPostsService } from "../service/get-search-posts";
 import { createSearchLogService } from "../service/create-search-log";
-import { POSTS_INDEX, SEARCH_LOG_INDEX } from "../constants";
+import { POSTS_INDEX, RECENT_SEARCH_SIZE, SEARCH_LOG_INDEX } from "../constants";
 import Prisma from "../../../db/prisma";
 import { getRandomPostsService } from "../../posts/service/get-random-posts";
+import { redisClient } from "../../../db/redis";
 
 const validateTake = (take?: string) => {
     if (!take) {
@@ -31,6 +32,10 @@ export const getSearchPosts = async (req: Request<unknown, unknown, unknown, { s
     }
     const take = validateTake(req.query.take);
     const posts = await getSearchPostsService({ query, size: take, index: POSTS_INDEX }, client);
+
+    const redisSearch = `${SEARCH_LOG_INDEX}:${req.id}`;
+    await redisClient.lPush(redisSearch, query);
+    await redisClient.lTrim(redisSearch, RECENT_SEARCH_SIZE - 10, RECENT_SEARCH_SIZE - 1);
 
     await createSearchLogService({ query, index: SEARCH_LOG_INDEX, userId: req.id }, client);
 

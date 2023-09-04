@@ -22,7 +22,7 @@ export const getPostsAllService = async (prisma: PrismaClient) => {
                     }
                 }
             },
-            title: true,
+            // title: true,
             description: true,
             clothes: {
                 select: {
@@ -33,8 +33,8 @@ export const getPostsAllService = async (prisma: PrismaClient) => {
                     price: true,
                     color: true,
                     size: true,
-                    imageUrl: true,
-                    siteUrl: true
+                    imageUrl: true
+                    // siteUrl: true
                 }
             },
             tpos: {

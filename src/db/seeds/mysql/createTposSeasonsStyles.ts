@@ -31,11 +31,11 @@ export const createTposSeasonsStyles = async (prisma: PrismaClient = new PrismaC
         {
             text: "Daily",
             emoji: "🚶‍♂️"
-        },
-        {
-            text: "Etc",
-            emoji: "😴"
         }
+        // {
+        //     text: "Etc",
+        //     emoji: "😴"
+        // }
     ];
     const tpos = await prisma.tpos.createMany({
         data: tpoList,
@@ -58,11 +58,11 @@ export const createTposSeasonsStyles = async (prisma: PrismaClient = new PrismaC
         {
             text: "Winter",
             emoji: "⛷"
-        },
-        {
-            text: "Etc",
-            emoji: "😴"
         }
+        // {
+        //     text: "Etc",
+        //     emoji: "😴"
+        // }
     ];
 
     const seasons = await prisma.seasons.createMany({
@@ -86,11 +86,11 @@ export const createTposSeasonsStyles = async (prisma: PrismaClient = new PrismaC
         {
             text: "Street",
             emoji: "🛣️"
-        },
-        {
-            text: "Etc",
-            emoji: "😴"
         }
+        // {
+        //     text: "Etc",
+        //     emoji: "😴"
+        // }
     ];
     const styles = await prisma.styles.createMany({
         data: styleList,

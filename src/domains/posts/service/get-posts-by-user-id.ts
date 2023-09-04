@@ -3,7 +3,7 @@ import { RedisClient } from "../../../db/redis";
 import { COUNTS_POST_LIKES_PREFIX } from "../../../constants";
 
 export const getPostsByUserIdService = (
-    { userId, cursor, take }: { userId: number; cursor?: number; take: number },
+    { myId, userId, cursor, take }: { myId: number; userId: number; cursor?: number; take: number },
     prisma: PrismaClient,
     redis: RedisClient
 ) => {
@@ -30,7 +30,7 @@ export const getPostsByUserIdService = (
         const posts = await tx.posts.findMany({
             select: {
                 id: true,
-                title: true,
+                // title: true,
                 isPublic: true,
                 images: {
                     select: {
@@ -38,7 +38,16 @@ export const getPostsByUserIdService = (
                     }
                 },
                 createdAt: true,
-                deletedAt: true
+                deletedAt: true,
+                scraps: {
+                    select: {
+                        userId: true,
+                        clothesId: true
+                    },
+                    where: {
+                        userId: myId
+                    }
+                }
                 // _count: {
                 //     select: {
                 //         favorites: true
@@ -66,11 +75,13 @@ export const getPostsByUserIdService = (
             posts.map(async (post) => {
                 const key = `${COUNTS_POST_LIKES_PREFIX}:${post.id}`;
                 const likeCounts = await redis.get(key);
+                const isScrap = post.scraps.length > 0;
 
                 return {
                     _count: {
                         favorites: likeCounts ? Number(likeCounts) : 0
                     },
+                    isScrap,
                     ...post
                 };
             })

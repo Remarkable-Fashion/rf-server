@@ -7,7 +7,9 @@ type ReqParam = {
 };
 
 export const uploadClothesImages = async (req: Request<ReqParam, unknown>, res: Response) => {
-    const imgUrls = (req.files as { [fieldName: string]: Express.Multer.File[] }).clothes.map((f) => `${conf().S3_BUCKET_URL}/${f.filename}`);
+    const imgUrls = (req.files as { [fieldName: string]: Express.Multer.File[] }).clothes.map(
+        (f) => `${conf().S3_BUCKET_URL}/${f.filename || f.key}`
+    );
 
     if (!imgUrls || imgUrls.length < 1) {
         throw new BadReqError("There must be at least one image");

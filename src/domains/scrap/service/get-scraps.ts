@@ -33,7 +33,7 @@ export const getScraps = async ({ userId, cursorId, take }: { userId: number; cu
                 post: {
                     select: {
                         id: true,
-                        title: true,
+                        // title: true,
                         isPublic: true,
                         createdAt: true,
                         images: {

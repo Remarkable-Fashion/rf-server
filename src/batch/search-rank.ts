@@ -8,8 +8,10 @@ import { getDateRange } from "../domains/search/get-date-range";
 
 const CRON_EXPRESSION = "*/5 * * * *"; // 5분
 
-const redisURL = "redis://localhost:30001";
-const esURL = "http://localhost:9200";
+// const redisURL = "redis://localhost:30001";
+const redisURL = process.env.REDIS_URL;
+// const esURL = "http://localhost:9200";
+const esURL = process.env.ELK_DB;
 
 const rankingChanges = (currentRanking: Rank[], previousRanking: Rank[]) => {
     return currentRanking.map((currentItem, currentIndex) => {
@@ -48,10 +50,10 @@ const main = async () => {
     await redisClient.connect();
 
     const esClient = new Client({
-        node: esURL,
-        maxRetries: 5,
-        requestTimeout: 60_000,
-        sniffOnStart: true
+        node: esURL
+        // maxRetries: 5,
+        // requestTimeout: 60_000,
+        // sniffOnStart: true
     });
 
     try {

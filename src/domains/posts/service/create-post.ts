@@ -41,6 +41,8 @@ export type CreatePostBody = {
     // styles?: Style[];
     isPublic?: boolean;
     sex?: typeof postSex[number];
+    height?: number;
+    weight?: number;
     // sex?: Sex;
 };
 export type CreatePost = CreatePostBody & { userId: number };
@@ -49,7 +51,7 @@ type PromiseType<T extends Promise<any>> = T extends Promise<infer U> ? U : neve
 // type CreatePostReturn = ;
 
 export const createPost = async (
-    { userId, title, description, imgUrls, clothes, tpos, seasons, styles, isPublic, sex }: CreatePost,
+    { userId, description, height, weight, imgUrls, clothes, tpos, seasons, styles, isPublic, sex }: CreatePost,
     prisma: PrismaClient
 ) => {
     const isClosthes = clothes && clothes.length > 0;
@@ -64,6 +66,8 @@ export const createPost = async (
                     url: true
                 }
             },
+            height: true,
+            weight: true,
             user: {
                 select: {
                     id: true,
@@ -75,7 +79,7 @@ export const createPost = async (
                     }
                 }
             },
-            title: true,
+            // title: true,
             description: true,
             clothes: {
                 select: {
@@ -86,8 +90,8 @@ export const createPost = async (
                     price: true,
                     color: true,
                     size: true,
-                    imageUrl: true,
-                    siteUrl: true
+                    imageUrl: true
+                    // siteUrl: true
                 }
             },
             tpos: {
@@ -102,7 +106,8 @@ export const createPost = async (
         },
         data: {
             userId,
-            title,
+            ...(height && { height }),
+            ...(weight && { weight }),
             description,
             ...(tpos && {
                 tpos: {
@@ -111,15 +116,6 @@ export const createPost = async (
                     }
                 }
             }),
-            // ...(tpos && {
-            //     tpos: {
-            //         createMany: {
-            //             data: {
-            //                 tpoId: []
-            //             }
-            //         }
-            //     }
-            // }),
             ...(seasons && {
                 seasons: {
                     createMany: {

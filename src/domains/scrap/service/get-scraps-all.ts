@@ -31,7 +31,7 @@ export const getScrapsAllService = async ({ userId, cursorId, take }: { userId: 
                 post: {
                     select: {
                         id: true,
-                        title: true,
+                        // title: true,
                         isPublic: true,
                         createdAt: true,
                         images: {
@@ -81,7 +81,7 @@ export const getScrapsAllService = async ({ userId, cursorId, take }: { userId: 
                         id: true,
                         name: true,
                         imageUrl: true,
-                        siteUrl: true,
+                        // siteUrl: true,
                         createdAt: true,
                         _count: {
                             select: {

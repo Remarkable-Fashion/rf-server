@@ -23,7 +23,7 @@ export const getMyFavoritesService = ({ userId, cursor, take }: { userId: number
             post: {
                 select: {
                     id: true,
-                    title: true,
+                    // title: true,
                     isPublic: true,
                     createdAt: true,
                     deletedAt: true,

@@ -1,11 +1,15 @@
 import type { Request, Response } from "express";
 import { client } from "../../../db/elasticsearch";
 import { getRecentSearchByUserIdService } from "../service/get-recent-search-by-user-id";
-import { SEARCH_LOG_INDEX } from "../constants";
+import { RECENT_SEARCH_SIZE, SEARCH_LOG_INDEX } from "../constants";
+import { redisClient } from "../../../db/redis";
 
-const SIZE = 10;
+// const SIZE = 10;
 export const getRecentSearchByUserId = async (req: Request<unknown, unknown, unknown, { search?: string; size?: string }>, res: Response) => {
-    const rv = await getRecentSearchByUserIdService({ index: SEARCH_LOG_INDEX, userId: req.id, size: SIZE }, client);
+    const rv = await getRecentSearchByUserIdService({ index: SEARCH_LOG_INDEX, userId: req.id, size: RECENT_SEARCH_SIZE }, client);
+
+    const redisSearch = `${SEARCH_LOG_INDEX}:${req.id}`;
+    await redisClient.lRange(redisSearch, RECENT_SEARCH_SIZE - 10, RECENT_SEARCH_SIZE - 1);
 
     // console.log("rv ", rv.body.hits.hits);
     const logs = rv.body.hits.hits.map((log: any) => {

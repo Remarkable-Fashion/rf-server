@@ -28,6 +28,11 @@ model Users {
   phoneNumber   String? @map("phone_number") @db.VarChar(20)
   phoneVerified Boolean @default(false) @map("phone_verified")
 
+  followerCount  Int @default(0) @map("follower_count") @db.UnsignedInt
+  followingCount Int @default(0) @map("following_count") @db.UnsignedInt
+  postCount      Int @default(0) @map("post_count") @db.UnsignedInt
+  scrapCount     Int @default(0) @map("scrap_count") @db.UnsignedInt
+
   favorites Favorites[]
   scraps    Scraps[]
   posts     Posts[]
@@ -118,10 +123,12 @@ model Socials {
 }
 
 model Posts {
-  id          Int     @id @default(autoincrement()) @db.UnsignedInt
-  title       String  @db.VarChar(50)
-  description String  @db.VarChar(200)
-  place       String? @db.VarChar(50)
+  id          Int    @id @default(autoincrement()) @db.UnsignedInt
+  // title       String  @db.VarChar(50)
+  description String @db.VarChar(200)
+  // place       String? @db.VarChar(50)
+  height      Int?   @db.UnsignedInt
+  weight      Int?   @db.UnsignedInt
 
   tpos    PostTpos[]
   seasons PostSeasons[]
@@ -129,6 +136,8 @@ model Posts {
 
   sex      String? @db.VarChar(10)
   isPublic Boolean @default(true) @map("is_public")
+
+  likeCount Int @default(0) @map("like_count") @db.UnsignedInt
 
   user   Users @relation(fields: [userId], references: [id])
   userId Int   @map("user_id") @db.UnsignedInt
@@ -167,7 +176,9 @@ model Clothes {
   brand    String?         @db.VarChar(20)
   reason   String?         @db.VarChar(50)
   imageUrl String?         @map("image_url") @db.VarChar(500)
-  siteUrl  String?         @map("site_url") @db.VarChar(500)
+  // siteUrl  String?         @map("site_url") @db.VarChar(500)
+
+  likeCount Int @default(0) @map("like_count") @db.UnsignedInt
 
   post   Posts? @relation(fields: [postId], references: [id])
   postId Int?   @map("post_id") @db.UnsignedInt
@@ -225,7 +236,7 @@ model Scraps {
 
 model Tpos {
   id        Int        @id @default(autoincrement()) @db.UnsignedInt
-  text      Tpo        @unique @default(Etc)
+  text      Tpo        @unique @default(Daily)
   emoji     String?
   createdAt DateTime   @default(now()) @map("created_at")
   deletedAt DateTime?  @map("deleted_at")
@@ -250,7 +261,7 @@ model PostTpos {
 
 model Seasons {
   id          Int           @id @default(autoincrement()) @db.UnsignedInt
-  text        Season        @unique @default(Etc)
+  text        Season        @unique @default(Spring)
   emoji       String?
   createdAt   DateTime      @default(now()) @map("created_at")
   deletedAt   DateTime?     @map("deleted_at")
@@ -275,7 +286,7 @@ model PostSeasons {
 
 model Styles {
   id         Int          @id @default(autoincrement()) @db.UnsignedInt
-  text       Style        @unique @default(Etc)
+  text       Style        @unique @default(Dandy)
   emoji      String?
   createdAt  DateTime     @default(now()) @map("created_at")
   deletedAt  DateTime?    @map("deleted_at")
@@ -309,20 +320,20 @@ enum ClothesCategory {
   Top
   Bottom
   Acc
-  Shoe
+  Shoes
 }
 
 enum Role {
   SuperAdmin
   Admin
   User
-  Etc
+  // Etc
 }
 
 enum SocialType {
   Google
   Kakao
-  Etc
+  // Etc
 }
 
 enum Tpo {
@@ -333,7 +344,7 @@ enum Tpo {
   Campus
   Work
   Daily
-  Etc
+  // Etc
 }
 
 enum Season {
@@ -341,7 +352,7 @@ enum Season {
   Summer
   Fall
   Winter
-  Etc
+  // Etc
 }
 
 enum Style {
@@ -349,7 +360,7 @@ enum Style {
   Dandy
   Street
   Retro
-  Etc
+  // Etc
 }
 
 enum Sex {
