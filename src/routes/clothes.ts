@@ -12,6 +12,8 @@ import { deleteFavoriteClothes } from "../domains/clothes/controller/delete-favo
 
 const clothesRouter = Router();
 
+clothesRouter.get("/:id/recommend/test", authJWT, controllerHandler(getRecommendClothesByIdTop3));
+
 clothesRouter.get("/:id/recommend/top", authJWT, controllerHandler(getRecommendClothesByIdTop3));
 clothesRouter.get("/:id/recommend/", authJWT, controllerHandler(getRecommendClothesById));
 clothesRouter.post("/:id/recommend/", authJWT, controllerHandler(createRecommendClothes));

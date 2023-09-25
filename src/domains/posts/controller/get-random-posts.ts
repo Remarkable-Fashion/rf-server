@@ -3,8 +3,8 @@ import typia from "typia";
 import { postSex } from "../types";
 import { BadReqError } from "../../../lib/http-error";
 import Prisma from "../../../db/prisma";
-import { getRandomPostsService } from "../service/get-random-posts";
-import { getRandomPostsElasticSearchSerivce } from "../service/get-random-posts-test";
+import { getPostsByIdsService } from "../service/get-random-posts";
+import { getRandomPostsElasticSearchSerivce } from "../service/get-random-posts-elasticsearch";
 import { client } from "../../../db/elasticsearch";
 import { POSTS_INDEX } from "../../search/constants";
 
@@ -13,10 +13,13 @@ const DEFAULT_SIZE = 21;
 type ReqQuery = {
     take?: string;
     sex?: string;
+    order?: string;
+    height?: string;
+    weight?: string;
 };
 
 type ReqType = {
-    sex?: typeof postSex[number];
+    sex?: typeof postSex[number] | "All";
 };
 
 const validateQueryTake = (take?: string) => {
@@ -43,6 +46,10 @@ const validateQuerySex = (sex?: string) => {
         throw new BadReqError("Check your 'sex' query, should be 'Male' or 'Female'");
     }
 
+    if(result.data.sex === "All"){
+        return;
+    }
+
     return result.data.sex;
 };
 
@@ -55,9 +62,52 @@ function getPastDateISOString(days: number, now?: Date) {
     return isoString;
 }
 
+const validateOrder = (order?: string ) => {
+    if (!order){
+        return;
+    }
+    if(order !== "best" && order !== "recent"){
+        throw new BadReqError("order must be best or recent");
+    }
+
+    return order;
+};
+
+const validateHeight = (height?: string) => {
+
+    if(!height) {
+        return;
+    }
+    const result = Number(height);
+
+    if(Number.isNaN(result)){
+        throw new BadReqError("height must be number");
+    }
+
+    return [result - 5, result + 5];
+};
+
+const validateWeight = (weight?: string) => {
+
+    if(!weight) {
+        return;
+    }
+    const result = Number(weight);
+
+    if(Number.isNaN(result)){
+        throw new BadReqError("weight must be number");
+    }
+
+    return [result - 5, result + 5];
+};
+
+
 export const getRandomPosts = async (req: Request<unknown, unknown, unknown, ReqQuery>, res: Response) => {
     const take = validateQueryTake(req.query.take);
     const sex = validateQuerySex(req.query.sex);
+    const order = validateOrder(req.query.order);
+    const heights = validateHeight(req.query.height);
+    const weights = validateWeight(req.query.weight);
 
     const now = new Date();
     const thirtyDaysAgoISOString = getPastDateISOString(30, now);
@@ -68,7 +118,8 @@ export const getRandomPosts = async (req: Request<unknown, unknown, unknown, Req
         lte: nowISOString
     };
 
-    const elkPosts = await getRandomPostsElasticSearchSerivce({ index: POSTS_INDEX, size: take, sex, date: dateRange }, client);
+    const elkPosts = await getRandomPostsElasticSearchSerivce({ index: POSTS_INDEX, size: take, sex, date: dateRange, order, heights, weights }, client);
+
     const ids = elkPosts.body.hits.hits.map(({ _source: { id } }: any) => {
         return id;
     }) as number[];
@@ -78,21 +129,24 @@ export const getRandomPosts = async (req: Request<unknown, unknown, unknown, Req
             size: 0,
             // totalCounts: posts.length,
             take,
-            sex: sex || "NONE",
+            sex: sex || "ALL",
             posts: []
         };
         res.json(data);
         return;
     }
 
-    const posts = await getRandomPostsService({ userId: req.id, postIds: ids }, Prisma);
+    const posts = await getPostsByIdsService({ userId: req.id, postIds: ids, order }, Prisma);
 
     const data = {
         size: posts.length,
         take,
-        sex: sex || "NONE",
-        posts
+        sex: sex || "ALL",
+        new_posts: elkPosts.body.hits.hits.map((e: any) => e._source),
+        posts: posts
     };
 
     res.json(data);
 };
+
+

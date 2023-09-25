@@ -4,7 +4,7 @@ import { postSex } from "../types";
 import { BadReqError } from "../../../lib/http-error";
 import Prisma from "../../../db/prisma";
 import { getRandomPostsPublicService } from "../service/get-random-posts-public";
-import { getRandomPostsElasticSearchSerivce } from "../service/get-random-posts-test";
+import { getRandomPostsElasticSearchSerivce } from "../service/get-random-posts-elasticsearch";
 import { client } from "../../../db/elasticsearch";
 import { POSTS_INDEX } from "../../search/constants";
 

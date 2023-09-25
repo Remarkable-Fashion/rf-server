@@ -24,13 +24,72 @@ const validateSize = (size?: string) => {
 
     return parsedSize;
 };
-export const getSearchClothes = async (req: Request<unknown, unknown, unknown, { search?: string; take?: string }>, res: Response) => {
+
+const validatePriceRange = (price?: unknown) => {
+    if(!price){
+        return;
+    }
+
+    if(!Array.isArray(price)){
+        throw new BadReqError("price는 배열이어야 합니다.");
+    }
+    const priceRange = (price as string[]).map( p => {
+        const rv = Number(p);
+
+        if (Number.isNaN(rv)) {
+            throw new BadReqError("'price' should be Number");
+        }
+
+        return rv;
+
+    });
+
+    priceRange.sort();
+
+    if(priceRange.length !== 2){
+        throw new BadReqError("price max, min이 필요합니다.");
+    }
+
+    return priceRange;
+}
+
+const validateColor = (color?: string | string[]) => {
+    if(!color) {
+        return [];
+    }
+
+    if(!Array.isArray(color)){
+        return [color];
+    }
+
+    return color;
+}
+
+const validateSex = (sex?: string) => {
+    if(!sex){
+        return;
+    }
+    if(sex !== "Male" && sex !== "Female"){
+        throw new BadReqError("sex must be Male or Female");
+    }
+
+    return sex;
+}
+
+/**
+ * @TODO order와 cursor, posts 참고.
+ */
+export const getSearchClothes = async (req: Request<unknown, unknown, unknown, { search?: string; take?: string; priceRange?: string[]; color?: string; sex?: string }>, res: Response) => {
     const query = req.query.search;
     if (!query) {
         throw new BadReqError("No 'Search' query string");
     }
     const take = validateSize(req.query.take);
-    const clothes = await getSearchClothesService({ query, size: take, index: CLOTHES_INDEX }, client);
+    const priceRange = validatePriceRange(req.query.priceRange);
+    const colors = validateColor(req.query.color);
+    const sex = validateSex(req.query.sex);
+
+    const clothes = await getSearchClothesService({ query, size: take, index: CLOTHES_INDEX, priceRange, colors, sex }, client);
 
     const redisSearch = `${SEARCH_LOG_INDEX}:${req.id}`;
     await redisClient.lPush(redisSearch, query);
@@ -38,7 +97,8 @@ export const getSearchClothes = async (req: Request<unknown, unknown, unknown, {
 
     await createSearchLogService({ query, index: SEARCH_LOG_INDEX, userId: req.id }, client);
     const ids = clothes.map((clothe: any) => {
-        return clothe.clothes_id;
+        return clothe.id;
+        // return clothe.clothes_id;
     }) as number[];
 
     if (ids.length <= 0) {

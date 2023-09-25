@@ -5,6 +5,9 @@ export const getPostByIdService = async (data: { id: number; userId: number }, p
         const post = await tx.posts.findFirst({
             select: {
                 id: true,
+                sex: true,
+                height: true,
+                weight: true,
                 // title: true,
                 description: true,
                 // place: true,
@@ -20,6 +23,29 @@ export const getPostByIdService = async (data: { id: number; userId: number }, p
                         }
                     }
                 },
+                tpos: {
+                    select: {
+                        tpoId: true,
+                        tpo: {
+                            select: {
+                                text: true,
+                                emoji: true
+                            }
+                        }
+                    }
+                },
+                seasons: {
+                    select: {
+                        seasonId: true,
+                        season: {
+                            select: {
+                                text: true,
+                                emoji: true
+                            }
+                        }
+                    }
+                },
+                // seasons: {},
                 createdAt: true,
                 deletedAt: true,
                 user: {
@@ -91,7 +117,7 @@ export const getPostByIdService = async (data: { id: number; userId: number }, p
             return undefined;
         }
 
-        const { user, clothes, favorites, scraps, styles, ...restPost } = post;
+        const { user, clothes, favorites, scraps, styles, tpos, seasons, ...restPost } = post;
 
         const { followers, ...restUser } = user;
 
@@ -100,9 +126,23 @@ export const getPostByIdService = async (data: { id: number; userId: number }, p
         const isScrap = scraps.length > 0;
         const parsedStyles = styles.map((style) => {
             return {
-                stylesId: style.stylesId,
+                id: style.stylesId,
                 text: style.styles.text,
                 emoji: style.styles.emoji
+            };
+        });
+        const parsedTpos = tpos.map((tpo) => {
+            return {
+                id: tpo.tpoId,
+                text: tpo.tpo.text,
+                emoji: tpo.tpo.emoji
+            };
+        });
+        const parsedSeasons = seasons.map((season) => {
+            return {
+                id: season.seasonId,
+                text: season.season.text,
+                emoji: season.season.emoji
             };
         });
 
@@ -112,6 +152,8 @@ export const getPostByIdService = async (data: { id: number; userId: number }, p
             isScrap,
             ...restPost,
             styles: parsedStyles,
+            tpos: parsedTpos,
+            seasons: parsedSeasons,
             user: restUser,
             clothes
         };

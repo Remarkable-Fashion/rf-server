@@ -1,76 +1,77 @@
-// import type { Request, Response } from "express";
-// import Prisma from "../../../db/prisma";
-// import { BadReqError } from "../../../lib/http-error";
-// import { getMyFavoritesService } from "../service/get-my-favorites";
+import type { Request, Response } from "express";
+import Prisma from "../../../db/prisma";
+import { getMyFollowingPostsService } from "../service/get-my-following-posts";
+import { BadReqError } from "../../../lib/http-error";
 
-// const DEFAULT_TAKE = 21;
+const DEFAULT_TAKE = 21;
 
-// const validateCursor = (cursor?: string) => {
-//     const cursorT = cursor ? Number(cursor) : undefined;
-//     if (cursorT && cursorT < 0) {
-//         throw new BadReqError("cursor should be higher than 0");
-//     }
+function isValidDate(dateString: string) {
+    // Date 객체 생성
+    const date = new Date(dateString);
+    
+    // 생성된 Date 객체가 유효한지 확인
+    return !isNaN(date.getTime());
+}
 
-//     return cursorT;
-// };
+const validateCursor = (cursor?: string) => {
+    if(!cursor){
+        return;
+    }
 
-// const validateTake = (take?: string) => {
-//     const takeT = take ? Number(take) : DEFAULT_TAKE;
+    if(!isValidDate(cursor)){
+        throw new BadReqError("cursor should be ISO 8601 format");
+    }
 
-//     if (take && takeT < 0) {
-//         throw new BadReqError("take should be higher than 0");
-//     }
+    return new Date(cursor);
+};
 
-//     return takeT;
-// };
+const validateTake = (take?: string) => {
+    const takeT = take ? Number(take) : DEFAULT_TAKE;
 
-// export const getMyFollowingPosts = async (req: Request<unknown, unknown, unknown, { cursor?: string; take?: string }>, res: Response) => {
-//     const cursor = validateCursor(req.query.cursor);
-//     const take = validateTake(req.query.take);
+    if (take && takeT < 0) {
+        throw new BadReqError("take should be higher than 0");
+    }
 
-//     const [totalCountsOfFavorites, lastMyFavorite, posts] = await getMyFavoritesService(
-//         {
-//             userId: req.id,
-//             cursor,
-//             take
-//         },
-//         Prisma
-//     );
-//     if (posts.length <= 0) {
-//         const data = {
-//             nextCursor: null,
-//             hasNext: false,
-//             totalCounts: totalCountsOfFavorites,
-//             size: 0,
-//             take,
-//             cursor: cursor ?? 0,
-//             posts: []
-//         };
-//         res.json(data);
-//         return;
-//     }
+    return takeT;
+};
 
-//     const mergedPosts = posts.map((post) => {
-//         const isFollow = post.post!.user.followers.length > 0;
-//         const isFavorite = post.post!.favorites.length > 0;
+export const getMyFollowingPosts = async (req: Request<unknown, unknown, unknown, { cursor?: string; take?: string }>, res: Response) => {
+    const cursor = validateCursor(req.query.cursor);
+    const take = validateTake(req.query.take);
 
-//         return {
-//             isFavorite,
-//             isFollow,
-//             ...post
-//         };
-//     });
+    const {posts, lastMyFollowingPost} = await getMyFollowingPostsService(
+        {
+            userId: req.id,
+            lastCreatedAt: cursor,
+            take
+        },
+        Prisma
+    );
 
-//     const lastPostId = posts[posts.length - 1].id!;
-//     const data = {
-//         nextCursor: lastPostId,
-//         hasNext: lastPostId > (lastMyFavorite?.id ?? 0),
-//         totalCounts: totalCountsOfFavorites,
-//         size: posts.length,
-//         take,
-//         cursor: cursor ?? 0,
-//         posts: mergedPosts
-//     };
+    if(posts.length <=0) {
 
-//     res.status(200).json(data);
-// };
+        const data = {
+            nextCursor: null,
+            hasNext: false,
+            cursor,
+            take,
+            posts: []
+        }
+        res.json(data);
+        return;
+    }
+
+    const hasNext = lastMyFollowingPost?.id !== posts[posts.length - 1].id;
+
+    const data = {
+        nextCusror: posts[posts.length - 1].createdAt,
+        size: posts.length,
+        hasNext,
+        cursor,
+        take,
+        posts,
+        // lastMyFollowingPost
+    };
+
+    res.status(200).json(data);
+};

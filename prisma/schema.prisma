@@ -152,6 +152,8 @@ model Posts {
   updatedAt DateTime? @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
 
+  @@index([createdAt])
+  @@index([likeCount, createdAt])
   @@map("posts")
 }
 
@@ -169,6 +171,7 @@ model Images {
 model Clothes {
   id       Int             @id @default(autoincrement()) @db.UnsignedInt
   category ClothesCategory
+  sex      Sex?
   name     String          @db.VarChar(50)
   price    Int?            @db.UnsignedInt
   color    String?         @db.VarChar(50)
@@ -186,7 +189,10 @@ model Clothes {
   user   Users? @relation(fields: [userId], references: [id])
   userId Int?   @map("user_id") @db.UnsignedInt
 
-  createdAt            DateTime    @default(now()) @map("created_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
   favorites            Favorites[]
   scraps               Scraps[]
   recommendedClothesId Int?        @map("recommended_clothes_id") @db.UnsignedInt

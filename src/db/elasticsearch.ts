@@ -4,15 +4,6 @@ import { conf } from "../config";
 // console.log("conf().ELK_DB :", conf().ELK_DB);
 export const client = new Client({
     node: conf().ELK_DB
-    // auth: {
-    //     username: conf().ELK_USERNAME,
-    //     password: conf().ELK_PASSWORD
-    // },
-    // node: "http://dev-elasticsearch:9200",
-    // node: "http://localhost:9200",
-    // maxRetries: 5,
-    // requestTimeout: 60000,
-    // sniffOnStart: true
 });
 
 export type EsClient = Client;
@@ -34,7 +25,7 @@ if (require.main === module) {
 
     client.search(
         {
-            index: "search_log",
+            index: "posts",
             body: {
                 size: 1,
                 sort: [

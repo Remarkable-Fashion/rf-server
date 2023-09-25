@@ -31,8 +31,8 @@ export const getRandomPostsPublicService = async ({ postIds }: { postIds: number
             id: {
                 in: postIds
             },
-            isPublic: true,
-            deletedAt: null
+            // isPublic: true,
+            // deletedAt: null
             // deletedAt: {
             //     not: null
             // }
