@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import Prisma from "../../../db/prisma";
 import { BadReqError } from "../../../lib/http-error";
-import { COUNTS_CLOTHES_LIKES_PREFIX } from "../../../constants";
+import { COUNTS_CLOTHES_LIKES_PREFIX, COUNTS_CLOTHE_LIKES_STREAM } from "../../../constants";
 import { redisClient } from "../../../db/redis";
 import { deleteFavoriteClothesService } from "../service/delete-favorite-clothes";
 
@@ -18,7 +18,8 @@ export const deleteFavoriteClothes = async (req: Request<ReqParams, unknown>, re
 
     const key = `${COUNTS_CLOTHES_LIKES_PREFIX}:${clothesId}`;
 
-    await redisClient.decrBy(key, 1);
+    // await redisClient.decrBy(key, 1);
+    await redisClient.multi().decrBy(key, 1).XADD(COUNTS_CLOTHE_LIKES_STREAM, "*", {clothe_id: String(clothesId)}).exec();
 
     res.json({
         success: true,

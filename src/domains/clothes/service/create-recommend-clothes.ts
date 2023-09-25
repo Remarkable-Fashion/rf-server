@@ -1,10 +1,9 @@
-import { PrismaClient, Clothes } from "@prisma/client";
+import { PrismaClient, Clothes, Sex } from "@prisma/client";
 import { NotNull } from "../../../lib/types";
 
-export type CreateRecommendClothes = Omit<Clothes, "id" | "userId" | "clothesId" | "createdAt" | "postId" | "recommendedClothesId">;
+export type CreateRecommendClothes = Omit<Clothes, "id" | "userId" | "clothesId" | "createdAt" | "updatedAt" | "deletedAt" | "postId" | "recommendedClothesId" | "likeCount">;
 
-export type NotNullCreateRecommendClothes = NotNull<CreateRecommendClothes>;
-// export type _CreateRecommendClothes = ExcludeNullAndPartial<CreateRecommendClothes>;
+export type NotNullCreateRecommendClothes = NotNull<CreateRecommendClothes> & {sex?: Sex};
 export const createRecommendClothesService = (clothesId: number, userId: number, data: NotNullCreateRecommendClothes, prisma: PrismaClient) => {
     return prisma.clothes.create({
         data: {

@@ -12,7 +12,6 @@ export const updateUser = async (req: Request, res: Response) => {
     }
 
     const body = Object.keys(req.body);
-    console.log("aa :", body);
     if (!body.length) {
         throw new BadReqError("Check your body");
     }

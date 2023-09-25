@@ -10,8 +10,8 @@ export const seedElasticsearch = async (client: EsClient) => {
     await createTimestampPipeline(client);
     await createIdWithTimestampPipeline(client);
 
-    await createPostIndex(client);
-    await createClothesIndex(client);
+    // await createPostIndex(client);
+    // await createClothesIndex(client);
     await createSearchLogIndex(client);
 };
 

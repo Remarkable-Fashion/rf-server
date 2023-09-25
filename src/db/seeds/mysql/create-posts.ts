@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { EsClient } from "../../elasticsearch";
-import { CreatePost, _Clothes2, createPost } from "../../../domains/posts/service/create-post";
+import { CreatePost, _Clothes, createPost } from "../../../domains/posts/service/create-post";
 import { conf } from "../../../config";
 import { createPostElasticSearchService } from "../../../domains/posts/service/create-post-elasticsearch";
 import { CLOTHES_INDEX, POSTS_INDEX } from "../../../domains/search/constants";
@@ -19,26 +19,27 @@ export const createPosts = async (prisma: PrismaClient, client: EsClient) => {
         const resultArray = range.map(async (i) => {
             const img = `${conf().S3_BUCKET_URL}/${i}.jpg`;
 
-            const topClothes: _Clothes2 = {
+            const topClothes: _Clothes = {
                 category: "Top",
                 name: `top-${user}-${i}`,
                 price: 100,
-                likeCount: 0
+                // likeCount: 0
             };
 
-            const bottomClothes: _Clothes2 = {
+            const bottomClothes: _Clothes = {
                 category: "Bottom",
                 name: `bottom-${user}-${i}`,
                 price: 100,
-                likeCount: 0
+                // likeCount: 0
             };
 
             const data: CreatePost = {
                 userId: user,
-                title: `여름-${i}`,
+                // title: `여름-${i}`,
                 description: `여름 테스트 ${i}`,
                 imgUrls: [img],
                 tpos: [1, 2],
+                // tpos: ["Occean", "Work"],
                 seasons: [1, 2],
                 styles: [1, 2],
                 isPublic: true,

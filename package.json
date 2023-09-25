@@ -22,7 +22,10 @@
         "db:push": "npx prisma db push",
         "seed": "dotenv -e ./.env ts-node ./src/db/seeds/seed.ts",
         "seed:dev": "dotenv -e ./.env.dev ts-node ./src/db/seeds/seed.ts",
-        "cron": "node ./dist/cron.js"
+        "batch:count": "dotenv -e .env pm2 start ./dist/batch/clothe-like-count.js",
+        "batch:post": "dotenv -e .env pm2 start ./dist/batch/post-like-count.js",
+        "batch:rank": "dotenv -e .env pm2 start ./dist/batch/search-rank.js",
+        "batch": "npm run batch:count && npm run batch:post && npm run batch:rank"
     },
     "lint-staged": {
         "src/**/*.ts": [
@@ -65,6 +68,7 @@
         "lint-staged": "^13.0.3",
         "prettier": "^2.7.1",
         "prisma": "^4.16.2",
+        "prisma-markdown": "^0.6.0",
         "ts-node": "^10.9.1",
         "ttypescript": "^1.5.15",
         "typescript": "^4.8.4"

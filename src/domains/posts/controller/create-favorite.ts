@@ -3,7 +3,7 @@ import Prisma from "../../../db/prisma";
 import { createFavorite as createFavoriteService } from "../service/create-favorite";
 import { BadReqError } from "../../../lib/http-error";
 import { redisClient } from "../../../db/redis";
-import { COUNTS_POST_LIKES_PREFIX } from "../../../constants";
+import { COUNTS_POST_LIKES_PREFIX, COUNTS_POST_LIKES_STREAM } from "../../../constants";
 
 type ReqParam = {
     id?: string;
@@ -21,7 +21,13 @@ export const createFavorite = async (req: Request<ReqParam, unknown>, res: Respo
 
     const key = `${COUNTS_POST_LIKES_PREFIX}:${postId}`;
 
-    await redisClient.incrBy(key, 1);
+    await redisClient.multi().incrBy(key, 1).XADD(COUNTS_POST_LIKES_STREAM, "*", {post_id: req.params.id}).exec();
+
+    // redisClient.executeIsolated
+    // redisClient.lock
+
+    // await redisClient.incrBy(key, 1);
+    // await redisClient.XADD("likes:stream", "*", {post_id: req.params.id})
 
     res.status(200).json({
         success: true,

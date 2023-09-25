@@ -1,11 +1,11 @@
 import type { Request, Response } from "express";
 import { BadReqError } from "../../../lib/http-error";
 import { client } from "../../../db/elasticsearch";
-import { getSearchPostsService } from "../service/get-search-posts";
+import { getSearchPostsService, ORDER, Order } from "../service/get-search-posts";
 import { createSearchLogService } from "../service/create-search-log";
 import { POSTS_INDEX, RECENT_SEARCH_SIZE, SEARCH_LOG_INDEX } from "../constants";
 import Prisma from "../../../db/prisma";
-import { getRandomPostsService } from "../../posts/service/get-random-posts";
+import { getPostsByIdsService } from "../../posts/service/get-random-posts";
 import { redisClient } from "../../../db/redis";
 
 const validateTake = (take?: string) => {
@@ -25,13 +25,61 @@ const validateTake = (take?: string) => {
     return parsedTake;
 };
 
-export const getSearchPosts = async (req: Request<unknown, unknown, unknown, { search?: string; take?: string }>, res: Response) => {
+const validateSex = (sex?: string) => {
+    if(!sex){
+        return;
+    }
+    if(sex !== "Male" && sex !== "Female"){
+        throw new BadReqError("Sex must be Male or Female");
+    }
+    return sex;
+};
+
+// const ORDER = ["recent", "best"] as const;
+
+const validateOrder = (order?: string) => {
+    if(!order){
+        return "recent";
+    }
+    if(!ORDER.includes(order as any)){
+        throw new BadReqError("order must be recent or best");
+    }
+    return order as Order;
+}
+
+const isNumber = (str: string) => {
+    const num = Number(str);
+
+    if(Number.isNaN(num)){
+        throw new BadReqError(`cursor must be number : ${num}`);
+    }
+    return num;
+}
+
+const validateCursor = (cursor?: string | string[]) => {
+    if(!cursor) {
+        return [];
+    }
+
+    if(Array.isArray(cursor)){
+        return cursor.map(isNumber);
+    }
+
+    return [isNumber(cursor)];
+}
+
+export const getSearchPosts = async (req: Request<unknown, unknown, unknown, { search?: string; take?: string; sex?: string; order?: string; cursor?: string }>, res: Response) => {
     const query = req.query.search;
     if (!query) {
         throw new BadReqError("No 'Search' query string");
     }
     const take = validateTake(req.query.take);
-    const posts = await getSearchPostsService({ query, size: take, index: POSTS_INDEX }, client);
+    const sex = validateSex(req.query.sex);
+    const order = validateOrder(req.query.order);
+    const cursor = validateCursor(req.query.cursor);
+    console.log("cursor :", cursor);
+
+    const {posts, hasNext, sort} = await getSearchPostsService({ query, size: take, sex, index: POSTS_INDEX, order, next: cursor }, client);
 
     const redisSearch = `${SEARCH_LOG_INDEX}:${req.id}`;
     await redisClient.lPush(redisSearch, query);
@@ -45,6 +93,8 @@ export const getSearchPosts = async (req: Request<unknown, unknown, unknown, { s
 
     if (ids.length <= 0) {
         const data = {
+            cursor,
+            hasNext: false,
             size: 0,
             search: query,
             take,
@@ -55,9 +105,12 @@ export const getSearchPosts = async (req: Request<unknown, unknown, unknown, { s
         return;
     }
 
-    const postsT = await getRandomPostsService({ userId: req.id, postIds: ids }, Prisma);
+    const postsT = await getPostsByIdsService({ userId: req.id, postIds: ids, order }, Prisma);
 
     const data = {
+        cursor,
+        nextCursor: sort,
+        hasNext,
         size: postsT.length,
         search: query,
         take,

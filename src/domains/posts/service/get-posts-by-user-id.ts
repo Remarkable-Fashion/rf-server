@@ -27,6 +27,15 @@ export const getPostsByUserIdService = (
             }
         });
 
+        const follow = await tx.follows.findUnique({
+            where: {
+                followerId_followingId: {
+                    followerId: myId,
+                    followingId: userId
+                }
+            }
+        });
+
         const posts = await tx.posts.findMany({
             select: {
                 id: true,
@@ -47,7 +56,20 @@ export const getPostsByUserIdService = (
                     where: {
                         userId: myId
                     }
-                }
+                },
+                // user: {
+                //     select: {
+                //         followers: {
+                //             select: {
+                //                 followerId: true,
+                //                 followingId: true
+                //             },
+                //             where: {
+                //                 followerId: userId
+                //             }
+                //         }
+                //     }
+                // }
                 // _count: {
                 //     select: {
                 //         favorites: true
@@ -76,12 +98,14 @@ export const getPostsByUserIdService = (
                 const key = `${COUNTS_POST_LIKES_PREFIX}:${post.id}`;
                 const likeCounts = await redis.get(key);
                 const isScrap = post.scraps.length > 0;
+                // const isFollow = user.followers.length > 0;
 
                 return {
                     _count: {
                         favorites: likeCounts ? Number(likeCounts) : 0
                     },
                     isScrap,
+                    isFollow: !!follow,
                     ...post
                 };
             })
