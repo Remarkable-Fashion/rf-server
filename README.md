@@ -10,6 +10,8 @@ Docker, Docker-Compose
 
 Cloudflare DNS
 
+EC2 Cloudfront S3 Opensearch RDS DMS ElastiCache
+
 ## 실행 방법
 
 ### 도커
@@ -29,7 +31,11 @@ $ docker-compose up --build -d
 
 ### 배치
 
-1. rank : pm2 start ./src/batch/search-rank.ts 
+`npm run batch`
+
+1. post like count
+2. clothes like count
+3. search rank
 
 ## 실행 환경 분리
 
