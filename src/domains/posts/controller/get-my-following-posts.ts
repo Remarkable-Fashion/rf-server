@@ -51,7 +51,7 @@ export const getMyFollowingPosts = async (req: Request<unknown, unknown, unknown
     if(posts.length <=0) {
 
         const data = {
-            nextCursor: null,
+            nextFollowingCursor: null,
             hasNext: false,
             cursor,
             take,
@@ -64,7 +64,7 @@ export const getMyFollowingPosts = async (req: Request<unknown, unknown, unknown
     const hasNext = lastMyFollowingPost?.id !== posts[posts.length - 1].id;
 
     const data = {
-        nextCusror: posts[posts.length - 1].createdAt,
+        nextFollowingCursor: posts[posts.length - 1].createdAt,
         size: posts.length,
         hasNext,
         cursor,

@@ -315,10 +315,16 @@ model PostStyles {
 }
 
 model tmpImages {
-  id  Int    @id @default(autoincrement()) @db.UnsignedInt
-  url String @db.VarChar(500)
+  id   Int       @id @default(autoincrement()) @db.UnsignedInt
+  url  String    @db.VarChar(500)
+  type ImageType @default(Post)
 
   @@map("tmp_images")
+}
+
+enum ImageType {
+  Post
+  Clothes
 }
 
 enum ClothesCategory {

@@ -1,7 +1,7 @@
-import { PrismaClient } from "@prisma/client";
+import { ImageType, PrismaClient } from "@prisma/client";
 
-export const createTmpImagesService = (urls: string[], prisma: PrismaClient) => {
+export const createTmpImagesService = (urls: string[], type: ImageType, prisma: PrismaClient) => {
     return prisma.tmpImages.createMany({
-        data: urls.map((url) => ({ url }))
+        data: urls.map((url) => ({ url, type: type }))
     });
 };

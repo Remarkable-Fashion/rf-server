@@ -54,7 +54,11 @@ export const conf = () => {
 
     const ACCESS_KEY_ID = process.env.ACCESS_KEY_ID || "";
     const SECRET_ACCESS_KEY = process.env.SECRET_ACCESS_KEY || "";
+    /**
+     * @Deprecated Use COLUD_FRONT_URL
+     */
     const S3_BUCKET_URL = process.env.S3_BUCKET_URL || "";
+    const COLUD_FRONT_URL = process.env.COLUD_FRONT_URL || "";
 
     return {
         PORT,
@@ -78,6 +82,7 @@ export const conf = () => {
         ACCESS_KEY_ID,
         SECRET_ACCESS_KEY,
         S3_BUCKET_URL,
+        COLUD_FRONT_URL,
         ELK_USERNAME,
         ELK_PASSWORD
     };
