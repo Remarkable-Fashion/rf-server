@@ -20,6 +20,7 @@ import { updatePostStatus } from "../domains/posts/controller/update-post-status
 import { createPostReport } from "../domains/posts/controller/create-post-report";
 import { updatePostById } from "../domains/posts/controller/update-post-by-id";
 import { getMyFollowingPosts } from "../domains/posts/controller/get-my-following-posts";
+import { testFcm } from "../domains/posts/controller/test-fcm";
 
 const postRouter = Router();
 
@@ -48,5 +49,7 @@ postRouter.delete("/:id/favorite", authJWT, controllerHandler(deleteFavorite));
 
 postRouter.post("/:id/scrap", authJWT, controllerHandler(createScrap));
 postRouter.delete("/:id/scrap", authJWT, controllerHandler(deleteScrap));
+
+postRouter.post("/fcm", authJWT, controllerHandler(testFcm));
 
 export { postRouter };

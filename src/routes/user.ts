@@ -12,12 +12,17 @@ import { getMyFollowers } from "../domains/users/controller/get-my-followers";
 import { deleteBlockUser } from "../domains/users/controller/delete-block-follower";
 import { getBlockUsers } from "../domains/users/controller/get-block-users";
 import { deleteFollower } from "../domains/users/controller/delete-follower";
+import { updateFcmToken } from "../domains/users/controller/update-fcm-token";
+import { deleteUser } from "../domains/users/controller/delete-user";
 
 const userRouter = Router();
 
 // userRouter.get("/me", authJWT, controllerHandler(getUserById));
 // userRouter.patch("/me", authJWT, controllerHandler(updateUser));
 userRouter.patch("/me/profile", authJWT, upload().fields([{ name: "avartar" }]), controllerHandler(updateUserProfile));
+userRouter.patch("/me/fcm", authJWT, controllerHandler(updateFcmToken));
+
+userRouter.delete("/me", authJWT, controllerHandler(deleteUser));
 
 // userRouter.get("/following/:id", authJWT, controllerHandler(checkFollowing));
 // userRouter.get("/following", authJWT, controllerHandler(getMyFollowings));
