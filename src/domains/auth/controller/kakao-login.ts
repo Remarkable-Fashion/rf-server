@@ -6,8 +6,10 @@ import { getUserByEmail } from "../../users/service/get-user-by-email";
 import { createUser } from "../../users/service/create-user";
 import prisma from "../../../db/prisma";
 import { createLogService } from "../../logs/service/create-log";
+import { createFcmTokenService } from "../../users/service/create-fcm-token";
 
 const url = "https://kapi.kakao.com/v2/user/me";
+const USER_CREATED = "USER_CREATED";
 
 const getKakaoAccount = async (accessToken: string) => {
     const result = await axios({
@@ -27,6 +29,7 @@ const getKakaoAccount = async (accessToken: string) => {
 
 export const loginKakao = async (req: Request, res: Response, next: NextFunction) => {
     const accessToken = req.query.accessToken as string;
+    const fcmToken = req.query.fcmToken as string;
 
     if (!accessToken) {
         throw new BadReqError("No accessToken");
@@ -44,9 +47,32 @@ export const loginKakao = async (req: Request, res: Response, next: NextFunction
     let user = await getUserByEmail({ email, type: SocialType.Kakao, socialId }, prisma);
 
     if (!user) {
-        const USER_CREATED = "USER_CREATED";
-        user = await createUser({ user: { email }, meta: { role: Role.User }, social: { type: SocialType.Kakao, socialId } }, prisma);
+        if (!fcmToken) {
+            throw new BadReqError("No fcmToken");
+        }
+        
+        const createdUser = await createUser({ user: { email }, meta: { role: Role.User }, social: { type: SocialType.Kakao, socialId }, fcmToken }, prisma);
+
+        user = {
+            ...createdUser,
+            deletedAt: null
+        }
         await createLogService({ usersId: user.id, message: USER_CREATED }, prisma);
+    }
+
+    /**
+     * @info 기존에 탈퇴한 유저라면?
+     */
+
+    if(user.deletedAt){
+        throw new BadReqError("기존에 탈퇴한 회원입니다. 운영자에게 문의주세요.");
+    }
+
+    if(!user.token){
+        if (!fcmToken) {
+            throw new BadReqError("No fcmToken");
+        }
+        await createFcmTokenService({token: fcmToken, userId: user.id}, prisma);
     }
 
     // const user = await findUserOrCreate({ user: { email }, meta: { role: Role.User }, social: { type: SocialType.Kakao, socialId } }, prisma);

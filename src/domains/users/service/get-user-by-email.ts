@@ -11,6 +11,7 @@ export const getUserByEmail = ({ email, type, socialId }: { email: string; type:
                     role: true
                 }
             },
+            token: true,
             socials: {
                 where: {
                     type,
@@ -21,7 +22,8 @@ export const getUserByEmail = ({ email, type, socialId }: { email: string; type:
                     socialId: true
                 }
             },
-            profile: true
+            profile: true,
+            deletedAt: true,
         },
         where: { email }
     });

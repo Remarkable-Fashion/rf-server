@@ -49,10 +49,28 @@ model Users {
   logs Logs[]
 
   createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
   // recommendClothes Clothes[] @map("recommend_clothes")
   Clothes   Clothes[]
+  token     FcmToken?
 
   @@map("users")
+}
+
+model FcmToken {
+  id    Int    @id @default(autoincrement()) @db.UnsignedInt
+  token String
+  // userId Users? @relation(fields: [usersId], references: [id])
+
+  userId Int?   @unique @db.UnsignedInt
+  User   Users? @relation(fields: [userId], references: [id])
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("fcm_tokens")
 }
 
 model Follows {

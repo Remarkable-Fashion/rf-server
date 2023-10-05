@@ -1,7 +1,7 @@
 import { Role, SocialType, type PrismaClient } from "@prisma/client";
 
 export const createUser = (
-    data: { user: { name?: string; email: string }; social: { type: SocialType; socialId: string }; meta: { role: Role } },
+    data: { user: { name?: string; email: string }; social: { type: SocialType; socialId: string }; meta: { role: Role }, fcmToken?: string },
     prisma: PrismaClient
 ) => {
     return prisma.users.create({
@@ -15,7 +15,15 @@ export const createUser = (
             },
             profile: {
                 create: {}
-            }
+            },
+            ...(data.fcmToken && {
+                token: {
+                    create: {
+                        token: data.fcmToken
+                    }
+                }
+            }),
+            
         },
         select: {
             id: true,
@@ -32,7 +40,8 @@ export const createUser = (
                     socialId: true
                 }
             },
-            profile: true
+            profile: true,
+            token: true,
         }
     });
 };
