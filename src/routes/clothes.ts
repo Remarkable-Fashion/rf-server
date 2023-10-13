@@ -9,6 +9,7 @@ import { createScrapClothesById } from "../domains/clothes/controller/create-scr
 import { uploadClothesImages } from "../domains/clothes/controller/upload-clothes-image";
 import { getRecommendClothesById } from "../domains/clothes/controller/get-recommend-clothes";
 import { deleteFavoriteClothes } from "../domains/clothes/controller/delete-favorite-clothes";
+import { updateRecommendClothes } from "../domains/clothes/controller/update-recommend-clothes";
 
 const clothesRouter = Router();
 
@@ -17,6 +18,8 @@ clothesRouter.get("/:id/recommend/test", authJWT, controllerHandler(getRecommend
 clothesRouter.get("/:id/recommend/top", authJWT, controllerHandler(getRecommendClothesByIdTop3));
 clothesRouter.get("/:id/recommend/", authJWT, controllerHandler(getRecommendClothesById));
 clothesRouter.post("/:id/recommend/", authJWT, controllerHandler(createRecommendClothes));
+
+clothesRouter.patch("/:id", authJWT, controllerHandler(updateRecommendClothes));
 
 clothesRouter.post("/:id/favorite", authJWT, controllerHandler(createFavoriteClothes));
 clothesRouter.delete("/:id/favorite", authJWT, controllerHandler(deleteFavoriteClothes));

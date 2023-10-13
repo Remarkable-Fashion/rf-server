@@ -49,11 +49,14 @@ export const createPosts = async (prisma: PrismaClient, client: EsClient) => {
 
             const post = await createPost(data, prisma);
 
-            await createPostElasticSearchService({ index: POSTS_INDEX, id: String(post.id), data: post }, client);
+            /**
+             * @INFO AWS DMS (cdc) 동기화 사용으로 직접 insert 불필요.
+             */
+            // await createPostElasticSearchService({ index: POSTS_INDEX, id: String(post.id), data: post }, client);
 
-            if (post.clothes.length > 0) {
-                await createClothesElasticSearchService({ index: CLOTHES_INDEX, clothes: post.clothes }, client);
-            }
+            // if (post.clothes.length > 0) {
+            //     await createClothesElasticSearchService({ index: CLOTHES_INDEX, clothes: post.clothes }, client);
+            // }
         });
 
         await Promise.all(resultArray);

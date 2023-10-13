@@ -16,7 +16,7 @@ type ReqQuery = {
 };
 
 type ReqType = {
-    sex?: typeof postSex[number];
+    sex?: typeof postSex[number] | "All";
 };
 
 const validateQueryTake = (take?: string) => {
@@ -42,6 +42,10 @@ const validateQuerySex = (sex?: string) => {
 
     if (!result.success) {
         throw new BadReqError("Check your 'sex' query, should be 'Male' or 'Female'");
+    }
+
+    if(result.data.sex === "All"){
+        return;
     }
 
     return result.data.sex;

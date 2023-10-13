@@ -2,11 +2,9 @@ import { Request, Response } from "express";
 import typia from "typia";
 import { BadReqError, UnauthorizedError } from "../../../lib/http-error";
 import Prisma from "../../../db/prisma";
-import { NotNullCreateRecommendClothes, createRecommendClothesService } from "../service/create-recommend-clothes";
+import { NotNullCreateRecommendClothes } from "../service/create-recommend-clothes";
 import { validateBody } from "../../../lib/validate-body";
-import { createClothesElasticSearchService } from "../service/create-es-clothes";
-import { CLOTHES_INDEX } from "../../search/constants";
-import { client } from "../../../db/elasticsearch";
+import { UpdateRecommendClothes, updateRecommendClothesService } from "../service/update-recommend-clothes";
 
 const validateParamClothesId = (id?: string) => {
     if (!id) {
@@ -21,22 +19,22 @@ const validateParamClothesId = (id?: string) => {
     return parsedId;
 };
 
-export const createRecommendClothes = async (req: Request<{ id?: string }, unknown, unknown>, res: Response) => {
+export const updateRecommendClothes = async (req: Request<{ id?: string }, unknown, unknown>, res: Response) => {
     if (!req.id) {
         throw new UnauthorizedError();
     }
 
     const clothesId = validateParamClothesId(req.params.id);
 
-    const body = validateBody(typia.createValidateEquals<NotNullCreateRecommendClothes>())(req.body);
+    const body = validateBody(typia.createValidateEquals<UpdateRecommendClothes>())(req.body);
 
-    const clothes = await createRecommendClothesService(clothesId, req.id, body, Prisma);
+    const clothes = await updateRecommendClothesService(clothesId, req.id, body, Prisma);
 
     // await createClothesElasticSearchService({ index: CLOTHES_INDEX, clothes: [clothes] }, client);
 
     res.json({
         success: true,
-        msg: "Success create clothes"
+        msg: "Success update clothes"
     });
     // res.json({ clothes: recommendClothes });
 };

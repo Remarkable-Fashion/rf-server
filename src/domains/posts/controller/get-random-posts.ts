@@ -110,7 +110,7 @@ export const getRandomPosts = async (req: Request<unknown, unknown, unknown, Req
     const weights = validateWeight(req.query.weight);
 
     const now = new Date();
-    const thirtyDaysAgoISOString = getPastDateISOString(30, now);
+    const thirtyDaysAgoISOString = getPastDateISOString(30 * 6, now);
     const nowISOString = now.toISOString().slice(0, -5);
 
     const dateRange = {
