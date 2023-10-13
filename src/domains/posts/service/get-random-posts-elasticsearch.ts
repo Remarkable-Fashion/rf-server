@@ -28,11 +28,11 @@ export const getRandomPostsElasticSearchSerivce = (
             }
         });
     } else {
-        sort.push({
-            "created_at": {
-                order: "desc"
-            }
-        });
+        // sort.push({
+        //     "created_at": {
+        //         order: "desc"
+        //     }
+        // });
     }
 
     const filterQueries: Record<string, any>[] = [

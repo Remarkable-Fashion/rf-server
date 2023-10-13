@@ -17,7 +17,7 @@ export type UpdatePostBody = {
 // seasons?: string[];
 // styles?: string[];
 
-function arraysAreEqual(arr1: number[], arr2: number[]) {
+function arraysAreEqual<T extends number | string>(arr1: T[], arr2: T[]) {
     // 먼저 배열의 길이를 체크합니다.
     if (arr1.length !== arr2.length) {
       return false;
@@ -35,7 +35,7 @@ function arraysAreEqual(arr1: number[], arr2: number[]) {
   
     return true;
 }
-function compareArrays(original: number[], newArr: number[]) {
+function compareArrays<T extends number | string>(original: T[], newArr: T[]) {
     // 겹치는 것 찾기 (Intersection)
     const intersected = original.filter(value => newArr.includes(value));
   
@@ -54,7 +54,7 @@ function compareArrays(original: number[], newArr: number[]) {
 
 export const updatePostByIdService = ({ postId, data }: { postId: number, data: UpdatePostBody }, prisma: PrismaClient) => {
 
-    const {tpos, seasons, styles, ...rest} = data;
+    const {tpos, seasons, styles, imgUrls, ...rest} = data;
     return prisma.$transaction(async (tx) => {
         const post = await tx.posts.findFirst({
             where: {
@@ -65,6 +65,41 @@ export const updatePostByIdService = ({ postId, data }: { postId: number, data: 
 
         if(!post){
             throw new BadReqError("이미 삭제된 post");
+        }
+
+        if(imgUrls?.length) {
+            const images = await tx.images.findMany({
+                select: {
+                    id: true,
+                    url: true,
+                },
+                where: {
+                    postId,
+                }
+            });
+            // const imageIds = images.map(({id}) => id);
+            const imageUrls = images.map(({url}) => url);
+
+            if(!arraysAreEqual(imgUrls, imageUrls)){
+                const {removed, added} = compareArrays(imageUrls, imgUrls);
+                await tx.images.deleteMany({
+                    where: {
+                        postId: postId,
+                        url: {
+                            in: removed
+                        }
+                        // tpoId: {
+                        //     in: removed
+                        // }
+                    }
+                });
+                await tx.images.createMany({
+                    data: added.map((url) => ({
+                        postId: postId,
+                        url
+                    }))
+                })
+            }
         }
 
         if(tpos){

@@ -25,7 +25,8 @@
         "batch:count": "dotenv -e .env pm2 start ./dist/batch/clothe-like-count.js",
         "batch:post": "dotenv -e .env pm2 start ./dist/batch/post-like-count.js",
         "batch:rank": "dotenv -e .env pm2 start ./dist/batch/search-rank.js",
-        "batch": "npm run batch:count && npm run batch:post && npm run batch:rank"
+        "batch:cdc": "dotenv -e .env pm2 start ./dist/batch/create-post-for-cdc.js",
+        "batch": "npm run batch:count && npm run batch:post && npm run batch:rank &&npm run batch:cdc"
     },
     "lint-staged": {
         "src/**/*.ts": [

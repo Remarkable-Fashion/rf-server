@@ -14,6 +14,7 @@ import { getBlockUsers } from "../domains/users/controller/get-block-users";
 import { deleteFollower } from "../domains/users/controller/delete-follower";
 import { updateFcmToken } from "../domains/users/controller/update-fcm-token";
 import { deleteUser } from "../domains/users/controller/delete-user";
+import { restoreUser } from "../domains/users/controller/restore-user";
 
 const userRouter = Router();
 
@@ -21,6 +22,8 @@ const userRouter = Router();
 // userRouter.patch("/me", authJWT, controllerHandler(updateUser));
 userRouter.patch("/me/profile", authJWT, upload().fields([{ name: "avartar" }]), controllerHandler(updateUserProfile));
 userRouter.patch("/me/fcm", authJWT, controllerHandler(updateFcmToken));
+
+userRouter.patch("/restore/:id", controllerHandler(restoreUser));
 
 userRouter.delete("/me", authJWT, controllerHandler(deleteUser));
 

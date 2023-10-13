@@ -16,19 +16,19 @@ const insertIndexPostAndClothes = async (client: EsClient) => {
         }
     });
 
-    if (recommendClothes.length > 0) {
-        await createClothesElasticSearchService({ index: CLOTHES_INDEX, clothes: recommendClothes }, client);
-    }
+    // if (recommendClothes.length > 0) {
+    //     await createClothesElasticSearchService({ index: CLOTHES_INDEX, clothes: recommendClothes }, client);
+    // }
 
-    await Promise.all(
-        posts.map(async (post) => {
-            await createPostElasticSearchService({ index: POSTS_INDEX, id: String(post.id), data: post }, client);
+    // await Promise.all(
+    //     posts.map(async (post) => {
+    //         await createPostElasticSearchService({ index: POSTS_INDEX, id: String(post.id), data: post }, client);
 
-            if (post.clothes.length) {
-                await createClothesElasticSearchService({ index: CLOTHES_INDEX, clothes: post.clothes }, client);
-            }
-        })
-    );
+    //         if (post.clothes.length) {
+    //             await createClothesElasticSearchService({ index: CLOTHES_INDEX, clothes: post.clothes }, client);
+    //         }
+    //     })
+    // );
 };
 
 if (require.main === module) {
