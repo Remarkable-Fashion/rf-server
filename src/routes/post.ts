@@ -21,6 +21,7 @@ import { createPostReport } from "../domains/posts/controller/create-post-report
 import { updatePostById } from "../domains/posts/controller/update-post-by-id";
 import { getMyFollowingPosts } from "../domains/posts/controller/get-my-following-posts";
 import { testFcm } from "../domains/posts/controller/test-fcm";
+import { getPostByIdForDeeplink } from "../domains/posts/controller/get-post-by-id-for-deeplink";
 
 const postRouter = Router();
 
@@ -38,6 +39,8 @@ postRouter.get("/user/:id", authJWT, controllerHandler(getPostsByUserId));
 
 postRouter.get("/favorite", authJWT, controllerHandler(getMyFavorites));
 postRouter.get("/:id", authJWT, controllerHandler(getPostById));
+
+postRouter.get("/:id/deeplink", controllerHandler(getPostByIdForDeeplink));
 postRouter.delete("/:id", authJWT, controllerHandler(deletePostById));
 
 postRouter.post("/image", authJWT, upload({ prefix: "post" }).fields([{ name: "posts" }]), controllerHandler(uploadPostImage));
