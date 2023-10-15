@@ -16,3 +16,6 @@ dev-dbdata
 
 images
 dev-images
+
+go-batch
+*.out

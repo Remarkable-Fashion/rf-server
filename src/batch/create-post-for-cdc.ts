@@ -1,7 +1,7 @@
 import prisma from "../db/prisma";
 import cron from "node-cron";
 
-const CRON_EXPRESSION = "* */2 * * *"; // 5분
+const CRON_EXPRESSION = "* */2 * * *"; // every 2 hours
 /**
  * @info AWS dms가 mysql binlog를 불러오는데 binlog의 유지기간이 24시간이다.
  * 때문에 24시간 후 비어있는 빈로그를 찾으려는 dms가 오류로 멈추게 되는 것을 방지한다.
