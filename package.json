@@ -6,7 +6,7 @@
     "types": "dist/index.d.ts",
     "scripts": {
         "prepare": "husky install",
-        "build": "npx ttsc",
+        "build": "ttsc",
         "start": "node dist/index.js",
         "start:dev": "node dist/index.js",
         "start:w": "nodemon --watch src/** --ext ts,json --ignore src/**/*.spec.ts --exec ts-node ./src/index.ts",
@@ -26,7 +26,8 @@
         "batch:post": "dotenv -e .env pm2 start ./dist/batch/post-like-count.js",
         "batch:rank": "dotenv -e .env pm2 start ./dist/batch/search-rank.js",
         "batch:cdc": "dotenv -e .env pm2 start ./dist/batch/create-post-for-cdc.js",
-        "batch": "npm run batch:count && npm run batch:post && npm run batch:rank &&npm run batch:cdc"
+        "batch:cdc:go": "pm2 start ./src/batch/go/go-batch",
+        "batch": "npm run batch:count && npm run batch:post && npm run batch:rank &&npm run batch:cdc:go"
     },
     "lint-staged": {
         "src/**/*.ts": [
