@@ -73,3 +73,7 @@ dotenv -e .env.dev ts-node ./src/db/seeds/seed.ts // seed
 # ERD
 
 ![Mysql ERD](./prisma-erd.svg)
+
+# Architecure Diagram
+
+![AWS Architecture Diagram](./aws_archi.png)
