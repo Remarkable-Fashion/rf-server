@@ -76,4 +76,5 @@ dotenv -e .env.dev ts-node ./src/db/seeds/seed.ts // seed
 
 # Architecure Diagram
 
-![AWS Architecture Diagram](./aws_archi.png)
+![AWS Architecture Diagram](https://github.com/Remarkable-Fashion/rf-server/assets/50390565/fe444a76-7828-4b30-9e84-6068644b5271)
+
