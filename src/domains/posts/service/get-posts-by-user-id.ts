@@ -57,6 +57,7 @@ export const getPostsByUserIdService = (
                         userId: myId
                     }
                 },
+                likeCount: true,
                 // user: {
                 //     select: {
                 //         followers: {
@@ -95,14 +96,15 @@ export const getPostsByUserIdService = (
          */
         const postsWithLikes = await Promise.all(
             posts.map(async (post) => {
-                const key = `${COUNTS_POST_LIKES_PREFIX}:${post.id}`;
-                const likeCounts = await redis.get(key);
+                // const key = `${COUNTS_POST_LIKES_PREFIX}:${post.id}`;
+                // const likeCounts = await redis.get(key);
+                const likeCounts = post.likeCount;
                 const isScrap = post.scraps.length > 0;
                 // const isFollow = user.followers.length > 0;
 
                 return {
                     _count: {
-                        favorites: likeCounts ? Number(likeCounts) : 0
+                        favorites: likeCounts
                     },
                     isScrap,
                     isFollow: !!follow,

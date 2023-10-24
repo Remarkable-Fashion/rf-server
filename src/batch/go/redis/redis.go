@@ -39,5 +39,5 @@ func ExampleClient() {
 	// key2 does not exist
 }
 func main() {
-
+	fmt.Println("test")
 }

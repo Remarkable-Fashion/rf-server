@@ -2,94 +2,94 @@
 package main
 
 import (
+	"context"
 	"database/sql"
-	"fmt"
 	"log"
+	"net/url"
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
+
+	myp "go-batch/batch"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
+
+	// "github.com/opensearch-project/opensearch-go/v2"
+
+	opensearch "github.com/opensearch-project/opensearch-go/v2"
+	"github.com/redis/go-redis/v9"
 	"github.com/robfig/cron"
 )
 
-const (
-	CronSpec = "* */2 * * *" // 2시간 마다
-	// CronSpec = "*/5 * * * * *" // 5초마다
-)
-
-func selectQuery(db *sql.DB) {
-
-	// 트랜잭션 시작
-
-	tx, err := db.Begin()
-	if err != nil {
-		log.Fatal("트랜잭션 시작 실패:", err)
-	}
-	defer tx.Rollback()
-
-	userId := 2
-	// 포스트 추가 쿼리
-	var result sql.Result
-	result, err = tx.Exec("INSERT INTO posts (user_id, description, is_public) VALUES (?, ?, ?)", userId, "dms 정지 방지 golang", false)
-	if err != nil {
-		log.Fatal("포스트 추가 쿼리 실패:", err)
-	}
-
-	postID, err := result.LastInsertId()
-	if err != nil {
-		log.Fatal("포스트 ID 가져오기 실패:", err)
-	}
-	// tx.ExecContext()
-	// postID, err := result.
-
-	// 옷 추가 쿼리
-	_, err = tx.Exec("INSERT INTO clothes (post_id, category, name, price, deleted_at) VALUES (?, ?, ?, ?, ?)", postID, "Top", "dms 정지 방지 golang", 100, time.Now())
-	if err != nil {
-		log.Fatal("옷 추가 쿼리 실패:", err)
-	}
-
-	// 트랜잭션 커밋
-	err = tx.Commit()
-	if err != nil {
-		log.Fatal("트랜잭션 커밋 실패:", err)
-	}
-
-	fmt.Println("쿼리 실행 완료")
-
-}
-
 func main() {
+	logger := log.New(os.Stdout, "CRON: ", log.LstdFlags)
 	pid := os.Getpid()
-	fmt.Printf("현재 프로세스 ID(PID): %d\n", pid)
+	logger.Printf("현재 프로세스 ID(PID): %d\n", pid)
 
 	err := godotenv.Load("/home/ubuntu/rf-server/src/batch/go/.env")
 	if err != nil {
-		fmt.Println("Error loading .env file")
+		logger.Println("Error loading .env file")
 		os.Exit(1)
 	}
 
 	dataSourceName := os.Getenv("DATABASE")
+	redisURL := os.Getenv("REDIS_URL")
+	elkURL := os.Getenv("ELK_DB")
 
 	// MySQL 데이터베이스 연결
 	db, err := sql.Open("mysql", dataSourceName)
 	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
+		logger.Fatalf("Failed to connect to database: %v", err)
 	}
 	defer db.Close()
 
 	// MySQL 데이터베이스 연결 테스트
 	err = db.Ping()
 	if err != nil {
-		log.Fatalf("Database ping failed: %v", err)
+		logger.Fatalf("Database ping failed: %v", err)
+	}
+	logger.Println("mysql : connected")
+
+	redisurll, err := url.Parse(redisURL)
+	if err != nil {
+		logger.Fatalf("failed to parse: %v", err)
 	}
 
-	c := cron.New()
-	c.AddFunc("@every 2h", func() {
-		selectQuery(db)
+	// Redis 연결
+	redis := redis.NewClient(&redis.Options{
+		Addr:     redisurll.Host,
+		Password: "",
+		DB:       0,
 	})
+
+	// Redis 연결 테스트
+	ctx := context.Background()
+	pong, err := redis.Ping(ctx).Result()
+	if err != nil {
+		logger.Fatalf("Redis ping failed: %v", err)
+	}
+	logger.Println("redis :", pong)
+
+	// ES 연결
+	esClient, err := opensearch.NewClient(opensearch.Config{
+		Addresses: []string{elkURL},
+	})
+	if err != nil {
+		logger.Fatalf("Opensearch failed: %v", err)
+	}
+	logger.Println("Opensearch connected")
+
+	// 크론 실행
+	c := cron.New()
+	go createCron(c, "@every 2h", func(logger *log.Logger) {
+		myp.InsertPostsForAwsCdc(db, logger)
+	}, logger)
+
+	go createCron(c, "@every 5m", func(logger *log.Logger) {
+		// dateRange := date.GetDateRange(time.Now())
+		myp.GenerateCurrentRanking(esClient, redis, logger, ctx)
+	}, logger)
 
 	c.Start()
 	sigCh := make(chan os.Signal, 1)
@@ -99,11 +99,13 @@ func main() {
 	c.Stop()
 }
 
-func PrintData() {
-	t := time.Now().Format("2006-01-02T15:04:05-07:00")
-	// t := time.Now().Format("2023-07-31 15:12:35.324")
-	fmt.Println(t)
-	// Data++
+func createCron(c *cron.Cron, cronSpec string, cb func(*log.Logger), logger *log.Logger) {
+	err := c.AddFunc(cronSpec, func() {
+		cb(logger)
+	})
+	if err != nil {
+		logger.Println("Failed to create cron job:", err)
+	}
 }
 
 // 데이터 조회 예제
