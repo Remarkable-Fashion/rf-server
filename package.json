@@ -22,12 +22,12 @@
         "db:push": "npx prisma db push",
         "seed": "dotenv -e ./.env ts-node ./src/db/seeds/seed.ts",
         "seed:dev": "dotenv -e ./.env.dev ts-node ./src/db/seeds/seed.ts",
-        "batch:count": "dotenv -e .env pm2 start ./dist/batch/clothe-like-count.js",
+        "batch:count:legacy": "dotenv -e .env pm2 start ./dist/batch/clothe-like-count.js",
         "batch:post:legacy": "dotenv -e .env pm2 start ./dist/batch/post-like-count.js",
         "batch:rank:legacy": "dotenv -e .env pm2 start ./dist/batch/search-rank.js",
         "batch:cdc:legacy": "dotenv -e .env pm2 start ./dist/batch/create-post-for-cdc.js",
         "batch:go": "pm2 start ./src/batch/go/go-batch",
-        "batch": "npm run batch:count && npm run batch:go"
+        "batch": "npm run batch:go"
     },
     "lint-staged": {
         "src/**/*.ts": [
