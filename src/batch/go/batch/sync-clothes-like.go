@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"log"
 	"strconv"
+	"time"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -23,21 +24,27 @@ func SyncClothesLikeCount(db *sql.DB, redisClient *redis.Client, logger *log.Log
 		xReadResp, err := redisClient.XRead(ctx, &redis.XReadArgs{
 			Streams: []string{COUNTS_CLOTHES_LIKES_STREAM, id},
 			Count:   DEFAULT_COUNT,
+			Block:   1000 * time.Millisecond, // 1초 동안 대기
 		}).Result()
 
-		if err != nil {
-			logger.Fatal(err)
+		if err != nil && err.Error() != "redis: nil" {
+			logger.Fatal("err :", err)
 			return
 		}
 
 		if len(xReadResp) == 0 {
-			break
+			return
 		}
 
 		messages := xReadResp[0].Messages
 		clothesIds := make([]string, len(messages))
 		for i, msg := range messages {
 			clothesIds[i] = msg.Values["clothe_id"].(string)
+		}
+
+		if len(clothesIds) <= 0 {
+			logger.Println("clothesIds가 없어 종료합니다.")
+			return
 		}
 
 		clothesIdsWithPrefix := make([]string, len(messages))

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"log"
 	"strconv"
+	"time"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -23,21 +24,27 @@ func SyncPostsLikeCount(db *sql.DB, redisClient *redis.Client, logger *log.Logge
 		xReadResp, err := redisClient.XRead(ctx, &redis.XReadArgs{
 			Streams: []string{COUNTS_POST_LIKES_STREAM, id},
 			Count:   DEFAULT_COUNT,
+			Block:   1000 * time.Millisecond, // 1초 동안 대기
 		}).Result()
 
-		if err != nil {
+		if err != nil && err.Error() != "redis: nil" {
 			logger.Fatal(err)
 			return
 		}
 
 		if len(xReadResp) == 0 {
-			break
+			return
 		}
 
 		messages := xReadResp[0].Messages
 		postIds := make([]string, len(messages))
 		for i, msg := range messages {
 			postIds[i] = msg.Values["post_id"].(string)
+		}
+
+		if len(postIds) <= 0 {
+			logger.Println("postIds가 없어 종료합니다.")
+			return
 		}
 
 		postIdsWithPrefix := make([]string, len(messages))
