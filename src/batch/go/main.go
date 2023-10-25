@@ -101,6 +101,12 @@ func main() {
 		logger.Println("[Sync post like count] Complete!")
 	}, logger)
 
+	go createCron(c, "@every 5m", func(logger *log.Logger) {
+		logger.Println("[Sync clothes like count] Start!")
+		myp.SyncClothesLikeCount(db, redis, logger, ctx)
+		logger.Println("[Sync clothes like count] Complete!")
+	}, logger)
+
 	c.Start()
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)

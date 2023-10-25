@@ -12,7 +12,7 @@ import (
 const (
 	COUNTS_POST_LIKES_STREAM = "likes.post.stream"
 	DEFAULT_COUNT            = 100
-	PREFIX                   = "likes:post:"
+	POST_PREFIX              = "likes:post:"
 )
 
 func SyncPostsLikeCount(db *sql.DB, redisClient *redis.Client, logger *log.Logger, ctx context.Context) {
@@ -42,7 +42,7 @@ func SyncPostsLikeCount(db *sql.DB, redisClient *redis.Client, logger *log.Logge
 
 		postIdsWithPrefix := make([]string, len(messages))
 		for i, msg := range messages {
-			postIdsWithPrefix[i] = PREFIX + msg.Values["post_id"].(string)
+			postIdsWithPrefix[i] = POST_PREFIX + msg.Values["post_id"].(string)
 		}
 
 		likeCounts, err := redisClient.MGet(ctx, postIdsWithPrefix...).Result()
