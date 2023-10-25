@@ -42,5 +42,5 @@ func InsertPostsForAwsCdc(db *sql.DB, logger *log.Logger) {
 	if err != nil {
 		logger.Fatal("트랜잭션 커밋 실패:", err)
 	}
-	logger.Println("쿼리 실행 완료")
+	// logger.Println("쿼리 실행 완료")
 }

@@ -83,12 +83,22 @@ func main() {
 	// 크론 실행
 	c := cron.New()
 	go createCron(c, "@every 2h", func(logger *log.Logger) {
+		logger.Println("[Inserting Post for aws cdc] Start!")
 		myp.InsertPostsForAwsCdc(db, logger)
+		logger.Println("[Inserting Post for aws cdc] Complete!")
 	}, logger)
 
 	go createCron(c, "@every 5m", func(logger *log.Logger) {
 		// dateRange := date.GetDateRange(time.Now())
+		logger.Println("[Generating rank] Start!")
 		myp.GenerateCurrentRanking(esClient, redis, logger, ctx)
+		logger.Println("[Generating rank] Complete!")
+	}, logger)
+
+	go createCron(c, "@every 5m", func(logger *log.Logger) {
+		logger.Println("[Sync post like count] Start!")
+		myp.SyncPostsLikeCount(db, redis, logger, ctx)
+		logger.Println("[Sync post like count] Complete!")
 	}, logger)
 
 	c.Start()

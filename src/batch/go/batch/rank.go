@@ -157,7 +157,7 @@ func GenerateCurrentRanking(client *opensearch.Client, redis *redis.Client, logg
 		logger.Println("Error saving data to Redis:", err)
 		return
 	}
-	logger.Println("Data saved to Redis successfully")
+	// logger.Println("Data saved to Redis successfully")
 }
 
 func main() {
