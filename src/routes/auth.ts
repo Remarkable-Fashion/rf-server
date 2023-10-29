@@ -13,7 +13,7 @@ import { loginKakao } from "../domains/auth/controller/kakao-login";
 
 const REFRESH_TOKEN_EXPIRES = 60 * 60 * 24 * 14; // 2주
 function setCookieAndRedirect() {
-    return (req: Request, res: Response) => {
+    return async (req: Request, res: Response) => {
         if (!req.id) {
             // if (!req.user) {
             throw new UnauthorizedError("No User");
@@ -24,7 +24,7 @@ function setCookieAndRedirect() {
         const accessToken = sign(user);
         // const accessToken = sign(req.user);
         const refreshToken = refresh();
-        redisClient.SET(String(req.id), refreshToken, { EX: REFRESH_TOKEN_EXPIRES });
+        await redisClient.SET(String(req.id), refreshToken, { EX: REFRESH_TOKEN_EXPIRES });
 
         res.setHeader("x-auth-cookie", accessToken);
         res.setHeader("x-auth-cookie-refresh", refreshToken);

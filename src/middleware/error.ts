@@ -1,15 +1,9 @@
 import type { Request, Response, NextFunction } from "express";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { logger } from "../logger";
 import { HttpError } from "../lib/http-error";
 
 export const dbErrorMiddleware = (err: unknown, req: Request, res: Response, next: NextFunction) => {
     if (err instanceof PrismaClientKnownRequestError) {
-        // console.log("err :", err);
-        // console.log("err :", err.message);
-        // console.log("err :", err.stack);
-        // console.log("err.code :", err.code);
-        // console.log("err.meta :", err.meta);
         res.status(400);
         switch (err.code) {
             case "P2002":
@@ -41,7 +35,6 @@ export const dbErrorMiddleware = (err: unknown, req: Request, res: Response, nex
                 break;
         }
 
-        logger.error({ req, res });
         // res.status(400);
     } else {
         next(err);
@@ -49,9 +42,6 @@ export const dbErrorMiddleware = (err: unknown, req: Request, res: Response, nex
 };
 
 export const errorMiddleware = (err: any, req: Request, res: Response, _next: NextFunction) => {
-    logger.error({ req, res });
-    console.log("error :", err);
-    // res.status(500);
 
     if (err instanceof HttpError) {
         res.status(err.status);

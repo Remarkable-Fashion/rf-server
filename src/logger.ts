@@ -18,10 +18,22 @@ function getRequestLogFormatter() {
         })
     );
 }
+function levelFilter(level: string) {
+    return winston.format((info) => {
+        if (info.level === level) {
+            return info;
+        }
+        return false;
+    })();
+}
 
 const transportsInfo = new DailyRotateFile({
     level: "info",
     filename: `${conf().LOG_DIR}/%DATE%.log`,
+    format: winston.format.combine(
+        levelFilter('info'), // Only allow error level messages
+        getRequestLogFormatter()
+    ),
     // filename: 'application-%DATE%.log',
     datePattern: "YYYY-MM-DD",
     zippedArchive: true,
