@@ -7,13 +7,9 @@ import { getRandomPostsPublicService } from "../service/get-random-posts-public"
 import { getRandomPostsElasticSearchSerivce } from "../service/get-random-posts-elasticsearch";
 import { client } from "../../../db/elasticsearch";
 import { POSTS_INDEX } from "../../search/constants";
-import { redisClient, RedisClient } from "../../../db/redis";
-import { PrismaClient } from "@prisma/client";
-
-const CACHE_POST_PREFIX = "cache:post:";
-const CACHE_POST_EXPIRE = 3600; // 60 * 60 초
-
-const DEFAULT_SIZE = 21;
+import { redisClient } from "../../../db/redis";
+import { DEFAULT_SEX, DEFAULT_SIZE, CACHE_POST_PREFIX, CACHE_POST_EXPIRE } from "../const";
+import { CachePosts } from  "../cache-posts";
 
 type ReqQuery = {
     take?: string;
@@ -25,8 +21,8 @@ type ReqType = {
 };
 
 type UnwrapPromise<T> = T extends Promise<infer U> ? U : T;
-    type PostArray = UnwrapPromise<ReturnType<typeof getRandomPostsPublicService>>;
-    type Posts = PostArray[number];
+type PostArray = UnwrapPromise<ReturnType<typeof getRandomPostsPublicService>>;
+type Posts = PostArray[number];
 
 const validateQueryTake = (take?: string) => {
     if (!take) {
@@ -53,7 +49,7 @@ const validateQuerySex = (sex?: string) => {
         throw new BadReqError("Check your 'sex' query, should be 'Male' or 'Female'");
     }
 
-    if(result.data.sex === "All"){
+    if (result.data.sex === "All") {
         return;
     }
 
@@ -93,61 +89,24 @@ export const getRandomPostsPublic = async (req: Request<unknown, unknown, unknow
             size: 0,
             // totalCounts: posts.length,
             take,
-            sex: sex || "NONE",
+            sex: sex || DEFAULT_SEX,
             posts: []
         };
         res.json(data);
         return;
     }
 
-    
-    const postMap = new Map<number, Posts | null>();
-    ids.forEach(id => {
-        postMap.set(id, null);
-    });
-
-    await getCachedPosts(ids, postMap, redisClient);
-    await setPostCache(postMap, redisClient, Prisma)
-
-
-    const posts = Array.from(postMap.values());
+    const cachePosts = new CachePosts<typeof getRandomPostsPublicService>(ids, redisClient);
+    await cachePosts.init();
+    await cachePosts.setCache(getRandomPostsPublicService, Prisma);
+    const posts = cachePosts.getPosts();
 
     const data = {
         size: posts.length,
         take,
-        sex: sex || "NONE",
+        sex: sex || DEFAULT_SEX,
         posts: posts
     };
 
     res.json(data);
 };
-
-
-const getCachedPosts = async (ids: number[], map: Map<number, Posts | null>, redisClient: RedisClient) => {
-    const prefixIds = ids.map(id => CACHE_POST_PREFIX + id);
-    const cachedPosts = await redisClient.MGET(prefixIds);
-
-    
-
-    for(const [index, post] of cachedPosts.entries()){
-        if(post !== null) {
-            map.set(ids[index], JSON.parse(post))
-            await redisClient.expire(prefixIds[index], CACHE_POST_EXPIRE);
-        } 
-    }
-}
-
-const setPostCache = async (postMap: Map<number, Posts | null>, redisClient: RedisClient, prisma: PrismaClient) => {
-    const cacheMissedIds = Array.from(postMap).filter(([key, value]) => value === null).map(([key]) => key);
-
-    if(cacheMissedIds.length > 0){
-        const posts = await getRandomPostsPublicService({ postIds: cacheMissedIds }, prisma);
-
-        for(const post of posts) {
-            await redisClient.setEx(CACHE_POST_PREFIX + post.id, CACHE_POST_EXPIRE, JSON.stringify(post));
-        }
-        posts.forEach(post => {
-            postMap.set(post.id, post);
-        });
-    }
-}

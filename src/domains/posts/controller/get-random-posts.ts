@@ -7,8 +7,11 @@ import { getPostsByIdsService } from "../service/get-random-posts";
 import { getRandomPostsElasticSearchSerivce } from "../service/get-random-posts-elasticsearch";
 import { client } from "../../../db/elasticsearch";
 import { POSTS_INDEX } from "../../search/constants";
+import { CachePosts } from  "../cache-posts";
+import { redisClient } from "../../../db/redis";
+import { DEFAULT_SEX, DEFAULT_SIZE, CACHE_POST_PREFIX, CACHE_POST_EXPIRE } from "../const";
 
-const DEFAULT_SIZE = 21;
+// const DEFAULT_SIZE = 21;
 
 type ReqQuery = {
     take?: string;
@@ -46,7 +49,7 @@ const validateQuerySex = (sex?: string) => {
         throw new BadReqError("Check your 'sex' query, should be 'Male' or 'Female'");
     }
 
-    if(result.data.sex === "All"){
+    if (result.data.sex === "All") {
         return;
     }
 
@@ -62,11 +65,11 @@ function getPastDateISOString(days: number, now?: Date) {
     return isoString;
 }
 
-const validateOrder = (order?: string ) => {
-    if (!order){
+const validateOrder = (order?: string) => {
+    if (!order) {
         return;
     }
-    if(order !== "best" && order !== "recent"){
+    if (order !== "best" && order !== "recent") {
         throw new BadReqError("order must be best or recent");
     }
 
@@ -74,13 +77,12 @@ const validateOrder = (order?: string ) => {
 };
 
 const validateHeight = (height?: string) => {
-
-    if(!height) {
+    if (!height) {
         return;
     }
     const result = Number(height);
 
-    if(Number.isNaN(result)){
+    if (Number.isNaN(result)) {
         throw new BadReqError("height must be number");
     }
 
@@ -88,19 +90,17 @@ const validateHeight = (height?: string) => {
 };
 
 const validateWeight = (weight?: string) => {
-
-    if(!weight) {
+    if (!weight) {
         return;
     }
     const result = Number(weight);
 
-    if(Number.isNaN(result)){
+    if (Number.isNaN(result)) {
         throw new BadReqError("weight must be number");
     }
 
     return [result - 5, result + 5];
 };
-
 
 export const getRandomPosts = async (req: Request<unknown, unknown, unknown, ReqQuery>, res: Response) => {
     const take = validateQueryTake(req.query.take);
@@ -118,7 +118,10 @@ export const getRandomPosts = async (req: Request<unknown, unknown, unknown, Req
         lte: nowISOString
     };
 
-    const elkPosts = await getRandomPostsElasticSearchSerivce({ index: POSTS_INDEX, size: take, sex, date: dateRange, order, heights, weights }, client);
+    const elkPosts = await getRandomPostsElasticSearchSerivce(
+        { index: POSTS_INDEX, size: take, sex, date: dateRange, order, heights, weights },
+        client
+    );
 
     const ids = elkPosts.body.hits.hits.map(({ _source: { id } }: any) => {
         return id;
@@ -129,24 +132,32 @@ export const getRandomPosts = async (req: Request<unknown, unknown, unknown, Req
             size: 0,
             // totalCounts: posts.length,
             take,
-            sex: sex || "ALL",
+            sex: sex || DEFAULT_SEX,
             posts: []
         };
         res.json(data);
         return;
     }
 
+    /**
+     * @TODO 게시글 리스트를 가져올 때 좋아요, 스크랩, 팔로우와 같은
+     * 유저 행동에 대한 결과를 같이 가져와서 캐싱하는데 문제가 있다.
+     * 분리하자
+     */
+
+    // const cachePosts = new CachePosts<typeof getPostsByIdsService>(ids, redisClient);
+    // await cachePosts.init();
+    // await cachePosts.setCache(getPostsByIdsService, Prisma);
+    // const posts = cachePosts.getPosts();
     const posts = await getPostsByIdsService({ userId: req.id, postIds: ids, order }, Prisma);
 
     const data = {
         size: posts.length,
         take,
-        sex: sex || "ALL",
-        new_posts: elkPosts.body.hits.hits.map((e: any) => e._source),
+        sex: sex || DEFAULT_SEX,
+        // new_posts: elkPosts.body.hits.hits.map((e: any) => e._source),
         posts: posts
     };
 
     res.json(data);
 };
-
-
