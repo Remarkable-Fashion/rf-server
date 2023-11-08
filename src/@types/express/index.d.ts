@@ -4,7 +4,7 @@ import { Profile, Role, SocialType, Users } from "@prisma/client";
 export {};
 
 type RoleList = keyof typeof Role;
-export type UserWithRole = Omit<Users, "createdAt" | "deletedAt" | "updatedAt" | "phoneNumber" | "phoneVerified"> & { role: RoleList } & { type: SocialType; profile: Profile };
+export type UserWithRole = Omit<Users, "createdAt" | "deletedAt" | "updatedAt" | "phoneNumber" | "phoneVerified"> & { role: RoleList } & { type: SocialType; profile: Profile; token: Record<string, any> };
 
 declare global {
     namespace Express {
@@ -12,7 +12,8 @@ declare global {
         interface AuthInfo {}
         export interface Request {
             id: number;
-            kakaoToken?: string;
+            // kakaoToken?: string;
+            token: Record<string, any>;
         }
         export interface User extends UserWithRole {
             // export interface User extends Users, Pick<Roles, "role"> {

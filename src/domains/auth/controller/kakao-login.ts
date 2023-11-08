@@ -28,6 +28,7 @@ const getKakaoAccount = async (accessToken: string) => {
 };
 
 export const loginKakao = async (req: Request, res: Response, next: NextFunction) => {
+    console.log("### IN loginKakao Modile APP");
     const accessToken = req.query.accessToken as string;
     const fcmToken = req.query.fcmToken as string;
 
@@ -45,18 +46,21 @@ export const loginKakao = async (req: Request, res: Response, next: NextFunction
     }
 
     let user = await getUserByEmail({ email, type: SocialType.Kakao, socialId }, prisma);
-
+    console.log("user :", user);
     if (!user) {
         if (!fcmToken) {
             throw new BadReqError("No fcmToken");
         }
-        
-        const createdUser = await createUser({ user: { email }, meta: { role: Role.User }, social: { type: SocialType.Kakao, socialId }, fcmToken }, prisma);
+
+        const createdUser = await createUser(
+            { user: { email }, meta: { role: Role.User }, social: { type: SocialType.Kakao, socialId }, fcmToken },
+            prisma
+        );
 
         user = {
             ...createdUser,
             deletedAt: null
-        }
+        };
         await createLogService({ usersId: user.id, message: USER_CREATED }, prisma);
     }
 
@@ -64,15 +68,15 @@ export const loginKakao = async (req: Request, res: Response, next: NextFunction
      * @info 기존에 탈퇴한 유저라면?
      */
 
-    if(user.deletedAt){
+    if (user.deletedAt) {
         throw new BadReqError("기존에 탈퇴한 회원입니다. 운영자에게 문의주세요.");
     }
 
-    if(!user.token){
+    if (!user.token) {
         if (!fcmToken) {
             throw new BadReqError("No fcmToken");
         }
-        await createFcmTokenService({token: fcmToken, userId: user.id}, prisma);
+        await createFcmTokenService({ token: fcmToken, userId: user.id }, prisma);
     }
 
     // const user = await findUserOrCreate({ user: { email }, meta: { role: Role.User }, social: { type: SocialType.Kakao, socialId } }, prisma);
@@ -88,11 +92,15 @@ export const loginKakao = async (req: Request, res: Response, next: NextFunction
         followingCount: 0,
         postCount: 0,
         scrapCount: 0,
-        accessToken
+        accessToken,
+        token: {
+            kakao: accessToken
+        }
     };
 
     req.user = data;
-    req.kakaoToken = accessToken;
+    req.token = req.token || {};
+    req.token.kakao = accessToken;
 
     req.id = data.id;
 

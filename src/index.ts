@@ -1,3 +1,4 @@
+import "module-alias/register";
 import { RedisSingleton } from "./db/redis";
 import { startApp } from "./app";
 import { conf, isProd } from "./config";

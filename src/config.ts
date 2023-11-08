@@ -1,3 +1,4 @@
+import type session from "express-session";
 import path from "path";
 
 export const isProd = process.env.NODE_ENV === "production";
@@ -6,14 +7,15 @@ export const conf = () => {
 
     const COOKIE_MAX_AGE = 1000 * 60 * 60 * 24 * 14; // 30일
 
-    const SESSION_OPTION = {
+    const SESSION_OPTION: session.SessionOptions = {
         secret: process.env.SESSION_SECRET || "sesecret",
         saveUninitialized: false,
         resave: false,
         cookie: {
             maxAge: COOKIE_MAX_AGE,
-            secure: false,
-            httpOnly: true
+            secure: true,
+            httpOnly: true,
+            sameSite: "none"
         }
     };
 
@@ -37,10 +39,28 @@ export const conf = () => {
         origin: CLIENT_DOMAIN,
         credentials: true,
     };
-    const KAKAO_CONFIG = {
+    const KAKAO_LOGIN_CONFIG = {
         clientID: process.env.KAKAO_CLIENT_ID || "",
         clientSecret: "",
         callbackURL: process.env.KAKAO_CALLBACK_URL || "http://localhost:3000/kakao/callback"
+    };
+
+    const KAKAO_CONNECT_CONFIG = {
+        clientID: process.env.KAKAO_CLIENT_ID || "",
+        clientSecret: "",
+        callbackURL: process.env.KAKAO_CONNECT_CALLBACK_URL || "http://localhost:3000/kakao/callback"
+    };
+
+    const GOOGLE_LOGIN_CONFIG = {
+        clientID: process.env.GOOGLE_CLIENT_ID || "",
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+        callbackURL: process.env.GOOGLE_CALLBACK_URL || "http://localhost:3000/google/callback"
+    };
+
+    const GOOGLE_CONNECT_CONFIG = {
+        clientID: process.env.GOOGLE_CLIENT_ID || "",
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+        callbackURL: process.env.GOOGLE_CONNECT_CALLBACK_URL || "http://localhost:3000/google/callback"
     };
 
     const RATELIMIT_WINDOW = Number(process.env.RATELIMIT_WINDOW) || 15 * 60 * 1000; // 15분
@@ -71,7 +91,10 @@ export const conf = () => {
         REDIS_URL,
         CLIENT_DOMAIN,
         SERVER_DOMAIN,
-        KAKAO_CONFIG,
+        KAKAO_LOGIN_CONFIG,
+        KAKAO_CONNECT_CONFIG,
+        GOOGLE_LOGIN_CONFIG,
+        GOOGLE_CONNECT_CONFIG,
         RATELIMIT_WINDOW,
         RATELIMIT_MAX,
         IMAGES_DIR_PATH,

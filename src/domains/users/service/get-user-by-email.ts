@@ -13,17 +13,13 @@ export const getUserByEmail = ({ email, type, socialId }: { email: string; type:
             },
             token: true,
             socials: {
-                where: {
-                    type,
-                    socialId
-                },
                 select: {
                     type: true,
                     socialId: true
                 }
             },
             profile: true,
-            deletedAt: true,
+            deletedAt: true
         },
         where: { email }
     });

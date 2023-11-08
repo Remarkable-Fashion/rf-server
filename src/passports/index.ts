@@ -3,6 +3,7 @@ import passport from "passport";
 import { UserWithRole } from "../@types/express";
 import { NotFoundError } from "../lib/http-error";
 import kakao from "./kakao-strategy";
+import google from "./google-strategy";
 
 export default () => {
     passport.serializeUser((user: UserWithRole, done) => {
@@ -16,4 +17,5 @@ export default () => {
     });
 
     kakao();
+    google();
 };

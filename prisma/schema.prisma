@@ -10,310 +10,275 @@ datasource db {
 }
 
 model Logs {
-  id      Int    @id @default(autoincrement()) @db.UnsignedInt
-  message String @db.VarChar(100)
-
-  Users   Users? @relation(fields: [usersId], references: [id])
-  usersId Int?   @db.UnsignedInt
-
+  id        Int      @id @default(autoincrement()) @db.UnsignedInt
+  message   String   @db.VarChar(100)
+  usersId   Int?     @db.UnsignedInt
   createdAt DateTime @default(now()) @map("created_at")
+  Users     Users?   @relation(fields: [usersId], references: [id])
 
+  @@index([usersId], map: "logs_usersId_fkey")
   @@map("logs")
 }
 
 model Users {
-  id            Int     @id @default(autoincrement()) @db.UnsignedInt
-  email         String  @unique
-  name          String?
-  phoneNumber   String? @map("phone_number") @db.VarChar(20)
-  phoneVerified Boolean @default(false) @map("phone_verified")
-
-  followerCount  Int @default(0) @map("follower_count") @db.UnsignedInt
-  followingCount Int @default(0) @map("following_count") @db.UnsignedInt
-  postCount      Int @default(0) @map("post_count") @db.UnsignedInt
-  scrapCount     Int @default(0) @map("scrap_count") @db.UnsignedInt
-
-  favorites Favorites[]
-  scraps    Scraps[]
-  posts     Posts[]
-  meta      UserMetas?
-  profile   Profile?
-  socials   Socials[]
-
-  followers Follows[] @relation("following")
-  following Follows[] @relation("follower")
-
-  blocked   Block[] @relation("blockedBy")
-  blockedBy Block[] @relation("blocked")
-
-  logs Logs[]
-
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime? @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
-  // recommendClothes Clothes[] @map("recommend_clothes")
-  Clothes   Clothes[]
-  token     FcmToken?
+  id             Int         @id @default(autoincrement()) @db.UnsignedInt
+  email          String      @unique
+  name           String?
+  createdAt      DateTime    @default(now()) @map("created_at")
+  phoneNumber    String?     @map("phone_number") @db.VarChar(20)
+  phoneVerified  Boolean     @default(false) @map("phone_verified")
+  followerCount  Int         @default(0) @map("follower_count") @db.UnsignedInt
+  followingCount Int         @default(0) @map("following_count") @db.UnsignedInt
+  postCount      Int         @default(0) @map("post_count") @db.UnsignedInt
+  scrapCount     Int         @default(0) @map("scrap_count") @db.UnsignedInt
+  deletedAt      DateTime?   @map("deleted_at")
+  updatedAt      DateTime?   @map("updated_at")
+  blockedBy      Block[]     @relation("blocked")
+  blocked        Block[]     @relation("blockedBy")
+  Clothes        Clothes[]
+  favorites      Favorites[]
+  token          FcmToken?
+  following      Follows[]   @relation("follower")
+  followers      Follows[]   @relation("following")
+  logs           Logs[]
+  posts          Posts[]
+  profile        Profile?
+  scraps         Scraps[]
+  socials        Socials[]
+  meta           UserMetas?
 
   @@map("users")
 }
 
 model FcmToken {
-  id    Int    @id @default(autoincrement()) @db.UnsignedInt
-  token String
-  // userId Users? @relation(fields: [usersId], references: [id])
-
-  userId Int?   @unique @db.UnsignedInt
-  User   Users? @relation(fields: [userId], references: [id])
-
+  id        Int       @id @default(autoincrement()) @db.UnsignedInt
+  token     String
+  userId    Int?      @unique @db.UnsignedInt
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
+  User      Users?    @relation(fields: [userId], references: [id])
 
   @@map("fcm_tokens")
 }
 
 model Follows {
-  follower    Users @relation("follower", fields: [followerId], references: [id])
-  followerId  Int   @map("follower_id") @db.UnsignedInt
-  following   Users @relation("following", fields: [followingId], references: [id])
-  followingId Int   @map("following_id") @db.UnsignedInt
-
-  createdAt DateTime @default(now()) @map("created_at")
+  followerId  Int      @map("follower_id") @db.UnsignedInt
+  followingId Int      @map("following_id") @db.UnsignedInt
+  createdAt   DateTime @default(now()) @map("created_at")
+  follower    Users    @relation("follower", fields: [followerId], references: [id])
+  following   Users    @relation("following", fields: [followingId], references: [id])
 
   @@id([followerId, followingId])
+  @@index([followingId], map: "follows_following_id_fkey")
   @@map("follows")
 }
 
 model Block {
-  blocker   Users @relation("blockedBy", fields: [blockerId], references: [id])
-  blockerId Int   @map("blocker_id") @db.UnsignedInt
-  blocked   Users @relation("blocked", fields: [blockedId], references: [id])
-  blockedId Int   @map("block_id") @db.UnsignedInt
-
+  blockerId Int      @map("blocker_id") @db.UnsignedInt
+  blockedId Int      @map("block_id") @db.UnsignedInt
   createdAt DateTime @default(now()) @map("created_at")
+  blocked   Users    @relation("blocked", fields: [blockedId], references: [id])
+  blocker   Users    @relation("blockedBy", fields: [blockerId], references: [id])
 
   @@id([blockerId, blockedId])
+  @@index([blockedId], map: "blocks_block_id_fkey")
   @@map("blocks")
 }
 
 model Profile {
-  id Int @id @default(autoincrement()) @db.UnsignedInt
-
+  id           Int      @id @default(autoincrement()) @db.UnsignedInt
   sex          Sex?
   height       Int?
   weight       Int?
   introduction String?
+  userId       Int      @unique @map("user_id") @db.UnsignedInt
   avartar      String?
-
-  user   Users @relation(fields: [userId], references: [id])
-  userId Int   @unique @map("user_id") @db.UnsignedInt
-
-  createdAt DateTime @default(now()) @map("created_at")
+  createdAt    DateTime @default(now()) @map("created_at")
+  user         Users    @relation(fields: [userId], references: [id])
 
   @@map("profiles")
 }
 
 model UserMetas {
-  id   Int  @id @default(autoincrement()) @db.UnsignedInt
-  role Role @default(User)
-
-  user    Users @relation(fields: [usersId], references: [id])
-  usersId Int   @unique @map("user_id") @db.UnsignedInt
-
+  id        Int      @id @default(autoincrement()) @db.UnsignedInt
+  role      Role     @default(User)
+  usersId   Int      @unique @map("user_id") @db.UnsignedInt
   createdAt DateTime @default(now()) @map("created_at")
+  user      Users    @relation(fields: [usersId], references: [id])
 
   @@map("user_metas")
 }
 
 model Socials {
-  id       Int        @id @default(autoincrement()) @db.UnsignedInt
-  type     SocialType
-  socialId String     @map("social_id")
-
-  user   Users @relation(fields: [userId], references: [id])
-  userId Int   @unique @map("user_id") @db.UnsignedInt
-
-  createdAt DateTime @default(now()) @map("created_at")
+  id        Int        @id @default(autoincrement()) @db.UnsignedInt
+  type      SocialType
+  socialId  String     @map("social_id")
+  userId    Int        @map("user_id") @db.UnsignedInt
+  createdAt DateTime   @default(now()) @map("created_at")
+  user      Users      @relation(fields: [userId], references: [id])
 
   @@unique([type, socialId])
   @@map("socials")
 }
 
 model Posts {
-  id          Int    @id @default(autoincrement()) @db.UnsignedInt
-  // title       String  @db.VarChar(50)
-  description String @db.VarChar(200)
-  // place       String? @db.VarChar(50)
-  height      Int?   @db.UnsignedInt
-  weight      Int?   @db.UnsignedInt
-
-  tpos    PostTpos[]
-  seasons PostSeasons[]
-  styles  PostStyles[]
-
-  sex      String? @db.VarChar(10)
-  isPublic Boolean @default(true) @map("is_public")
-
-  likeCount Int @default(0) @map("like_count") @db.UnsignedInt
-
-  user   Users @relation(fields: [userId], references: [id])
-  userId Int   @map("user_id") @db.UnsignedInt
-
-  favorites Favorites[]
-  scraps    Scraps[]
-
-  images  Images[]
-  clothes Clothes[]
-
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime? @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
+  id          Int           @id @default(autoincrement()) @db.UnsignedInt
+  description String        @db.VarChar(200)
+  userId      Int           @map("user_id") @db.UnsignedInt
+  isPublic    Boolean       @default(true) @map("is_public")
+  sex         String?       @db.VarChar(10)
+  createdAt   DateTime      @default(now()) @map("created_at")
+  deletedAt   DateTime?     @map("deleted_at")
+  updatedAt   DateTime?     @map("updated_at")
+  height      Int?          @db.UnsignedInt
+  weight      Int?          @db.UnsignedInt
+  likeCount   Int           @default(0) @map("like_count") @db.UnsignedInt
+  clothes     Clothes[]
+  favorites   Favorites[]
+  images      Images[]
+  seasons     PostSeasons[]
+  styles      PostStyles[]
+  tpos        PostTpos[]
+  user        Users         @relation(fields: [userId], references: [id])
+  scraps      Scraps[]
 
   @@index([createdAt])
   @@index([likeCount, createdAt])
+  @@index([userId], map: "posts_user_id_fkey")
   @@map("posts")
 }
 
 model Images {
-  id     Int    @id @default(autoincrement()) @db.UnsignedInt
-  url    String @db.VarChar(500)
-  post   Posts  @relation(fields: [postId], references: [id])
-  postId Int    @map("post_id") @db.UnsignedInt
-
+  id        Int      @id @default(autoincrement()) @db.UnsignedInt
+  url       String   @db.VarChar(500)
+  postId    Int      @map("post_id") @db.UnsignedInt
   createdAt DateTime @default(now()) @map("created_at")
+  post      Posts    @relation(fields: [postId], references: [id])
 
+  @@index([postId], map: "images_post_id_fkey")
   @@map("images")
 }
 
 model Clothes {
-  id       Int             @id @default(autoincrement()) @db.UnsignedInt
-  category ClothesCategory
-  sex      Sex?
-  name     String          @db.VarChar(50)
-  price    Int?            @db.UnsignedInt
-  color    String?         @db.VarChar(50)
-  size     String?         @db.VarChar(10)
-  brand    String?         @db.VarChar(20)
-  reason   String?         @db.VarChar(50)
-  imageUrl String?         @map("image_url") @db.VarChar(500)
-  // siteUrl  String?         @map("site_url") @db.VarChar(500)
-
-  likeCount Int @default(0) @map("like_count") @db.UnsignedInt
-
-  post   Posts? @relation(fields: [postId], references: [id])
-  postId Int?   @map("post_id") @db.UnsignedInt
-
-  user   Users? @relation(fields: [userId], references: [id])
-  userId Int?   @map("user_id") @db.UnsignedInt
-
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime? @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
-
+  id                   Int             @id @default(autoincrement()) @db.UnsignedInt
+  category             ClothesCategory
+  name                 String          @db.VarChar(50)
+  price                Int?            @db.UnsignedInt
+  color                String?         @db.VarChar(50)
+  size                 String?         @db.VarChar(10)
+  imageUrl             String?         @map("image_url") @db.VarChar(500)
+  postId               Int?            @map("post_id") @db.UnsignedInt
+  brand                String?         @db.VarChar(20)
+  createdAt            DateTime        @default(now()) @map("created_at")
+  reason               String?         @db.VarChar(50)
+  recommendedClothesId Int?            @map("recommended_clothes_id") @db.UnsignedInt
+  userId               Int?            @map("user_id") @db.UnsignedInt
+  likeCount            Int             @default(0) @map("like_count") @db.UnsignedInt
+  deletedAt            DateTime?       @map("deleted_at")
+  updatedAt            DateTime?       @map("updated_at")
+  sex                  Sex?
+  post                 Posts?          @relation(fields: [postId], references: [id])
+  recommendedClothes   Clothes?        @relation("RecommendClothes", fields: [recommendedClothesId], references: [id])
+  recommendClothes     Clothes[]       @relation("RecommendClothes")
+  user                 Users?          @relation(fields: [userId], references: [id])
   favorites            Favorites[]
   scraps               Scraps[]
-  recommendedClothesId Int?        @map("recommended_clothes_id") @db.UnsignedInt
-  recommendedClothes   Clothes?    @relation("RecommendClothes", fields: [recommendedClothesId], references: [id])
-  recommendClothes     Clothes[]   @relation("RecommendClothes")
 
+  @@index([postId], map: "clothes_post_id_fkey")
+  @@index([recommendedClothesId], map: "clothes_recommended_clothes_id_fkey")
+  @@index([userId], map: "clothes_user_id_fkey")
   @@map("clothes")
 }
 
 model Favorites {
-  id Int @id @default(autoincrement()) @db.UnsignedInt
-
-  user   Users @relation(fields: [userId], references: [id])
-  userId Int   @map("user_id") @db.UnsignedInt
-
-  post   Posts? @relation(fields: [postId], references: [id])
-  postId Int?   @map("post_id") @db.UnsignedInt
-
-  clothes   Clothes? @relation(fields: [clothesId], references: [id])
-  clothesId Int?     @map("clothes_id") @db.UnsignedInt
-
+  id        Int      @id @default(autoincrement()) @db.UnsignedInt
+  userId    Int      @map("user_id") @db.UnsignedInt
+  postId    Int?     @map("post_id") @db.UnsignedInt
   createdAt DateTime @default(now()) @map("created_at")
+  clothesId Int?     @map("clothes_id") @db.UnsignedInt
+  clothes   Clothes? @relation(fields: [clothesId], references: [id])
+  post      Posts?   @relation(fields: [postId], references: [id])
+  user      Users    @relation(fields: [userId], references: [id])
 
   @@unique([userId, postId])
   @@unique([userId, clothesId])
+  @@index([clothesId], map: "favorites_clothes_id_fkey")
+  @@index([postId], map: "favorites_post_id_fkey")
   @@map("favorites")
 }
 
 model Scraps {
-  id Int @id @default(autoincrement()) @db.UnsignedInt
-
-  user   Users @relation(fields: [userId], references: [id])
-  userId Int   @map("user_id") @db.UnsignedInt
-
-  post   Posts? @relation(fields: [postId], references: [id])
-  postId Int?   @map("post_id") @db.UnsignedInt
-
-  clothes   Clothes? @relation(fields: [clothesId], references: [id])
-  clothesId Int?     @map("clothes_id") @db.UnsignedInt
-
+  id        Int      @id @default(autoincrement()) @db.UnsignedInt
+  userId    Int      @map("user_id") @db.UnsignedInt
+  postId    Int?     @map("post_id") @db.UnsignedInt
   createdAt DateTime @default(now()) @map("created_at")
+  clothesId Int?     @map("clothes_id") @db.UnsignedInt
+  clothes   Clothes? @relation(fields: [clothesId], references: [id])
+  post      Posts?   @relation(fields: [postId], references: [id])
+  user      Users    @relation(fields: [userId], references: [id])
 
   @@unique([userId, postId])
   @@unique([userId, clothesId])
+  @@index([clothesId], map: "scraps_clothes_id_fkey")
+  @@index([postId], map: "scraps_post_id_fkey")
   @@map("scraps")
 }
 
 model Tpos {
   id        Int        @id @default(autoincrement()) @db.UnsignedInt
-  text      Tpo        @unique @default(Daily)
-  emoji     String?
   createdAt DateTime   @default(now()) @map("created_at")
   deletedAt DateTime?  @map("deleted_at")
+  emoji     String?
+  text      Tpo        @unique @default(Daily)
   PostTpos  PostTpos[]
 
   @@map("tpos")
 }
 
 model PostTpos {
-  Posts   Posts @relation(fields: [postsId], references: [id])
-  postsId Int   @map("post_id") @db.UnsignedInt
-
-  tpo   Tpos @relation(fields: [tpoId], references: [id])
-  tpoId Int  @map("tpo_id") @db.UnsignedInt
-
+  postsId   Int       @map("post_id") @db.UnsignedInt
+  tpoId     Int       @map("tpo_id") @db.UnsignedInt
   createdAt DateTime  @default(now()) @map("created_at")
   deletedAt DateTime? @map("deleted_at")
+  Posts     Posts     @relation(fields: [postsId], references: [id])
+  tpo       Tpos      @relation(fields: [tpoId], references: [id])
 
   @@id([postsId, tpoId])
+  @@index([tpoId], map: "post_tpos_tpo_id_fkey")
   @@map("post_tpos")
 }
 
 model Seasons {
   id          Int           @id @default(autoincrement()) @db.UnsignedInt
-  text        Season        @unique @default(Spring)
-  emoji       String?
   createdAt   DateTime      @default(now()) @map("created_at")
   deletedAt   DateTime?     @map("deleted_at")
+  emoji       String?
+  text        Season        @unique @default(Spring)
   PostSeasons PostSeasons[]
 
   @@map("seasons")
 }
 
 model PostSeasons {
-  Posts   Posts @relation(fields: [postsId], references: [id])
-  postsId Int   @map("post_id") @db.UnsignedInt
-
-  season   Seasons @relation(fields: [seasonId], references: [id])
-  seasonId Int     @map("season_id") @db.UnsignedInt
-
+  postsId   Int       @map("post_id") @db.UnsignedInt
+  seasonId  Int       @map("season_id") @db.UnsignedInt
   createdAt DateTime  @default(now()) @map("created_at")
   deletedAt DateTime? @map("deleted_at")
+  Posts     Posts     @relation(fields: [postsId], references: [id])
+  season    Seasons   @relation(fields: [seasonId], references: [id])
 
   @@id([postsId, seasonId])
+  @@index([seasonId], map: "post_seasons_season_id_fkey")
   @@map("post_seasons")
 }
 
 model Styles {
   id         Int          @id @default(autoincrement()) @db.UnsignedInt
-  text       Style        @unique @default(Dandy)
-  emoji      String?
   createdAt  DateTime     @default(now()) @map("created_at")
   deletedAt  DateTime?    @map("deleted_at")
+  emoji      String?
+  text       Style        @unique @default(Dandy)
   PostStyles PostStyles[]
 
   @@map("styles")
@@ -322,13 +287,13 @@ model Styles {
 model PostStyles {
   createdAt DateTime  @default(now()) @map("created_at")
   deletedAt DateTime? @map("deleted_at")
-  Posts     Posts     @relation(fields: [postsId], references: [id])
   postsId   Int       @db.UnsignedInt
-
-  styles   Styles @relation(fields: [stylesId], references: [id])
-  stylesId Int    @map("styles_id") @db.UnsignedInt
+  stylesId  Int       @map("styles_id") @db.UnsignedInt
+  Posts     Posts     @relation(fields: [postsId], references: [id])
+  styles    Styles    @relation(fields: [stylesId], references: [id])
 
   @@id([postsId, stylesId])
+  @@index([stylesId], map: "post_styles_styles_id_fkey")
   @@map("post_styles")
 }
 
@@ -357,13 +322,11 @@ enum Role {
   SuperAdmin
   Admin
   User
-  // Etc
 }
 
 enum SocialType {
   Google
   Kakao
-  // Etc
 }
 
 enum Tpo {
@@ -374,7 +337,6 @@ enum Tpo {
   Campus
   Work
   Daily
-  // Etc
 }
 
 enum Season {
@@ -382,7 +344,6 @@ enum Season {
   Summer
   Fall
   Winter
-  // Etc
 }
 
 enum Style {
@@ -390,7 +351,6 @@ enum Style {
   Dandy
   Street
   Retro
-  // Etc
 }
 
 enum Sex {

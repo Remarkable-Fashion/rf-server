@@ -1,7 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import { getPostsByIdsService } from "./get-random-posts";
 
-export const getRandomPostsPublicService = async ({ postIds }: { postIds: number[] }, prisma: PrismaClient): ReturnType<typeof getPostsByIdsService> => {
+export const getRandomPostsPublicService = async (
+    { postIds }: { postIds: number[] },
+    prisma: PrismaClient
+): ReturnType<typeof getPostsByIdsService> => {
     const posts = await prisma.posts.findMany({
         select: {
             id: true,
