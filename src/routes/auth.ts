@@ -1,7 +1,6 @@
 import { Router, type Request, type Response } from "express";
 import axios from "axios";
 import type { UserWithRole } from "../@types/express";
-// import passport from "passport";
 import { RedisSingleton } from "../db/redis";
 import { refreshJwt } from "../domains/auth/controller/refresh-jwt";
 import { controllerHandler } from "../lib/controller-handler";
@@ -64,24 +63,6 @@ function setCookieAndRedirectWeb() {
 
 const authRouter = Router();
 
-// authRouter.get(
-//     "/sign-test",
-//     async (req, res) => {
-//         req.user = { id: 1, name: "test", email: "test@gmail.com", role: "Admin", type: "Kakao" } as unknown as UserWithRole;
-
-//         const accessToken = sign(req.user);
-//         const refreshToken = refresh();
-//         (await RedisSingleton.getClient()).SET(String(req.user.id), refreshToken, { EX: REFRESH_TOKEN_EXPIRES });
-
-//         res.setHeader("x-auth-cookie", accessToken);
-//         res.setHeader("x-auth-cookie-refresh", refreshToken);
-
-//         res.status(204).send("ok");
-//         // next();
-//     }
-//     // setCookieAndRedirect()
-// );
-
 authRouter.get("/refresh", controllerHandler(refreshJwt));
 
 authRouter.get("/kakao", controllerHandler(loginKakao), setCookieAndRedirect());
@@ -97,7 +78,7 @@ authRouter.get(
     "/logout",
     controllerHandler(async (req: Request, res: Response) => {
         const KAKAO_ACCESS_TOKEN = req.user?.accessToken || req.flash(KakaoStrategyError)[0];
-        console.log("KAKAO_ACCESS_TOKEN :", KAKAO_ACCESS_TOKEN);
+        // console.log("KAKAO_ACCESS_TOKEN :", KAKAO_ACCESS_TOKEN);
         if (KAKAO_ACCESS_TOKEN) {
             await axios({
                 method: "POST",
@@ -107,17 +88,16 @@ authRouter.get(
                 }
             });
         }
-        req.logOut((error) => {
-            if (error) {
-                throw new BadReqError(error);
-            }
-        });
 
         const id = req.id || req.user?.id;
         if(id) {
             (await RedisSingleton.getClient()).DEL(String(id));
         }
-        // (await RedisSingleton.getClient()).SET(String(id), refreshToken, { EX: REFRESH_TOKEN_EXPIRES });
+        req.logOut((error) => {
+            if (error) {
+                throw new BadReqError(error);
+            }
+        });
 
         res.cookie('x-auth-cookie', '', { expires: new Date(0) });
         res.cookie('x-auth-cookie-refresh', '', { expires: new Date(0) });
@@ -127,19 +107,4 @@ authRouter.get(
     })
 );
 
-// authRouter.get(
-//     "/test",
-//     controllerHandler(async (req: Request, res: Response) => {
-//         const user = req.user;
-//         const flash = req.flash(KakaoStrategyError)[0];
-
-//         console.log("user :", user);
-//         console.log("flash :", flash);
-
-//         // const KAKAO_ACCESS_TOKEN = req.user?.accessToken || req.flash(KakaoStrategyError)[0];
-
-//         res.status(204).send("ok");
-//     })
-// );
-// export const AUTH_ROUTERS = ["/refresh", "/kakao", "/logout"];
 export { authRouter };
