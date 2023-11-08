@@ -7,9 +7,7 @@ import { getPostsByIdsService } from "../service/get-random-posts";
 import { getRandomPostsElasticSearchSerivce } from "../service/get-random-posts-elasticsearch";
 import { client } from "../../../db/elasticsearch";
 import { POSTS_INDEX } from "../../search/constants";
-import { CachePosts } from  "../cache-posts";
-import { redisClient } from "../../../db/redis";
-import { DEFAULT_SEX, DEFAULT_SIZE, CACHE_POST_PREFIX, CACHE_POST_EXPIRE } from "../const";
+import { DEFAULT_SEX, DEFAULT_SIZE, CACHE_POST_PREFIX, DEFUALT_POSTS_DATE_RANGE } from "../const";
 
 // const DEFAULT_SIZE = 21;
 
@@ -110,7 +108,7 @@ export const getRandomPosts = async (req: Request<unknown, unknown, unknown, Req
     const weights = validateWeight(req.query.weight);
 
     const now = new Date();
-    const thirtyDaysAgoISOString = getPastDateISOString(30 * 6, now);
+    const thirtyDaysAgoISOString = getPastDateISOString(DEFUALT_POSTS_DATE_RANGE, now);
     const nowISOString = now.toISOString().slice(0, -5);
 
     const dateRange = {

@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import Prisma from "../../../db/prisma";
 import { createFavorite as createFavoriteService } from "../service/create-favorite";
 import { BadReqError } from "../../../lib/http-error";
-import { redisClient } from "../../../db/redis";
+import { RedisSingleton } from "../../../db/redis";
 import { COUNTS_POST_LIKES_PREFIX, COUNTS_POST_LIKES_STREAM } from "../../../constants";
 
 type ReqParam = {
@@ -21,7 +21,7 @@ export const createFavorite = async (req: Request<ReqParam, unknown>, res: Respo
 
     const key = `${COUNTS_POST_LIKES_PREFIX}:${postId}`;
 
-    await redisClient.multi().incrBy(key, 1).XADD(COUNTS_POST_LIKES_STREAM, "*", {post_id: req.params.id}).exec();
+    await (await RedisSingleton.getClient()).multi().incrBy(key, 1).XADD(COUNTS_POST_LIKES_STREAM, "*", {post_id: req.params.id}).exec();
 
     // redisClient.executeIsolated
     // redisClient.lock

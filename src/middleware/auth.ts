@@ -5,11 +5,13 @@ import { verify } from "../lib/jwt";
 import { UserWithRole } from "../@types/express";
 
 export const authJWT = (req: Request, res: Response, next: NextFunction) => {
-    if (!req.headers.authorization) {
+   
+    const cookie = req.cookies['x-auth-cookie'];
+    if (!req.headers.authorization && !cookie) {
         throw new UnauthorizedError("No Authorized!");
     }
 
-    const token = req.headers.authorization.split("Bearer ")[1];
+    const token = req.headers.authorization ? req.headers.authorization.split("Bearer ")[1] : cookie;
     const result = verify(token);
 
     if (!result.ok) {

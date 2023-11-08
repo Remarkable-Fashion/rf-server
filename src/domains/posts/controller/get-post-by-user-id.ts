@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { BadReqError } from "../../../lib/http-error";
 import Prisma from "../../../db/prisma";
 import { getPostsByUserIdService } from "../service/get-posts-by-user-id";
-import { redisClient } from "../../../db/redis";
+import { RedisSingleton } from "../../../db/redis";
 
 const validateParamId = (id?: string) => {
     if (!id) {
@@ -51,7 +51,7 @@ export const getPostsByUserId = async (req: Request<{ id?: string }, unknown, un
     const cursor = validateQueryCursor(req.query.cursor);
     const take = validateQueryTake(req.query.take);
 
-    const { posts, countOfPosts, lastOfPost } = await getPostsByUserIdService({ myId: req.id, userId: id, cursor, take }, Prisma, redisClient);
+    const { posts, countOfPosts, lastOfPost } = await getPostsByUserIdService({ myId: req.id, userId: id, cursor, take }, Prisma, (await RedisSingleton.getClient()));
     const last = posts[posts.length - 1];
     if (posts.length <= 0) {
         const data = {

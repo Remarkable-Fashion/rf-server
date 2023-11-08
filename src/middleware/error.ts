@@ -42,7 +42,7 @@ export const dbErrorMiddleware = (err: unknown, req: Request, res: Response, nex
 };
 
 export const errorMiddleware = (err: any, req: Request, res: Response, _next: NextFunction) => {
-
+    console.log("err :", err);
     if (err instanceof HttpError) {
         res.status(err.status);
         res.json({

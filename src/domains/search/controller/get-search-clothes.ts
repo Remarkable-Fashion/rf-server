@@ -6,7 +6,7 @@ import { CLOTHES_INDEX, RECENT_SEARCH_SIZE, SEARCH_LOG_INDEX } from "../constant
 import { getSearchClothesService } from "../service/get-search-clothes";
 import Prisma from "../../../db/prisma";
 import { getClothesByIdsService } from "../../clothes/service/get-clothes-by-ids";
-import { redisClient } from "../../../db/redis";
+import { RedisSingleton } from "../../../db/redis";
 
 const validateSize = (size?: string) => {
     if (!size) {
@@ -92,8 +92,8 @@ export const getSearchClothes = async (req: Request<unknown, unknown, unknown, {
     const clothes = await getSearchClothesService({ query, size: take, index: CLOTHES_INDEX, priceRange, colors, sex }, client);
 
     const redisSearch = `${SEARCH_LOG_INDEX}:${req.id}`;
-    await redisClient.lPush(redisSearch, query);
-    await redisClient.lTrim(redisSearch, RECENT_SEARCH_SIZE - 10, RECENT_SEARCH_SIZE - 1);
+    await (await RedisSingleton.getClient()).lPush(redisSearch, query);
+    await (await RedisSingleton.getClient()).lTrim(redisSearch, RECENT_SEARCH_SIZE - 10, RECENT_SEARCH_SIZE - 1);
 
     await createSearchLogService({ query, index: SEARCH_LOG_INDEX, userId: req.id }, client);
     const ids = clothes.map((clothe: any) => {

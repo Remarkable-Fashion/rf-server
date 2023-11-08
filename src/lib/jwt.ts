@@ -1,7 +1,7 @@
 // import { Users } from "@prisma/client";
 import jwt from "jsonwebtoken";
 import { conf } from "../config";
-import { redisClient } from "../db/redis";
+import { RedisSingleton } from "../db/redis";
 import { NotFoundError } from "./http-error";
 
 export { jwt };
@@ -57,7 +57,7 @@ export const refresh = () => {
 
 export const verifyRefresh = async (token: string, userId: string) => {
     try {
-        const data = await redisClient.get(userId);
+        const data = await (await RedisSingleton.getClient()).get(userId);
         if (!data) {
             throw new NotFoundError("No refresh token");
         }

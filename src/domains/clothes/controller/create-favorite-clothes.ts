@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { BadReqError, UnauthorizedError } from "../../../lib/http-error";
 import Prisma from "../../../db/prisma";
 import { createFavoirteClothesService } from "../service/create-favorite-clothes";
-import { redisClient } from "../../../db/redis";
+import { RedisSingleton } from "../../../db/redis";
 import { COUNTS_CLOTHES_LIKES_PREFIX, COUNTS_CLOTHE_LIKES_STREAM } from "../../../constants";
 
 const validateParamClothesId = (id?: string) => {
@@ -29,7 +29,7 @@ export const createFavoriteClothes = async (req: Request<{ id?: string }, unknow
 
     const key = `${COUNTS_CLOTHES_LIKES_PREFIX}:${clothesId}`;
 
-    await redisClient.multi().incrBy(key, 1).XADD(COUNTS_CLOTHE_LIKES_STREAM, "*", {clothe_id: String(clothesId)}).exec();
+    await (await RedisSingleton.getClient()).multi().incrBy(key, 1).XADD(COUNTS_CLOTHE_LIKES_STREAM, "*", {clothe_id: String(clothesId)}).exec();
 
     res.json({
         success: true,

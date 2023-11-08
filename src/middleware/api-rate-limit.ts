@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
+import { RedisSingleton } from "../db/redis";
 import rateLimit from "express-rate-limit";
 import RedisStore from "rate-limit-redis";
 import { conf, isProd } from "../config";
-import { redisClient } from "../db/redis";
 
 type limitOption = {
     /**
@@ -33,6 +33,9 @@ export const apiLimiterFunc = ({ time, max: _max, skip, postFix }: limitOption =
         };
     }
 
+    
+    
+
     return rateLimit({
         windowMs, // 시간당
         max, // Limit each IP to 100 requests per `window` (here, per 15 minutes) // 회수
@@ -41,7 +44,11 @@ export const apiLimiterFunc = ({ time, max: _max, skip, postFix }: limitOption =
         ...(skip && skip.length > 0 ? { skip: (req) => skip.includes(req.ip) } : {}),
         ...(postFix ? { keyGenerator: (req, _) => `${req.ip}:${postFix || req.path}` } : {}),
         store: new RedisStore({
-            sendCommand: (...args: string[]) => redisClient.sendCommand(args)
+            sendCommand: (...args: string[]) => {
+                return RedisSingleton.getClient().then( client => client.sendCommand(args));
+                // const redisClient = await RedisSingleton.getClient();
+                // return redisClient.sendCommand(args)
+            }
         }),
         message: async () => {
             return `You can only make ${max} request per ${windowMs} millisecond`;

@@ -2,7 +2,7 @@ import { Router, type Request, type Response } from "express";
 import axios from "axios";
 import type { UserWithRole } from "../@types/express";
 // import passport from "passport";
-import { redisClient } from "../db/redis";
+import { RedisSingleton } from "../db/redis";
 import { refreshJwt } from "../domains/auth/controller/refresh-jwt";
 import { controllerHandler } from "../lib/controller-handler";
 import { refresh, sign } from "../lib/jwt";
@@ -10,21 +10,23 @@ import { BadReqError, UnauthorizedError } from "../lib/http-error";
 // import { authRole } from "../middleware/auth";
 import { KakaoStrategyError } from "../passports/kakao-strategy";
 import { loginKakao } from "../domains/auth/controller/kakao-login";
+import passport from "passport";
+import { conf } from "../config";
 
 const REFRESH_TOKEN_EXPIRES = 60 * 60 * 24 * 14; // 2주
 function setCookieAndRedirect() {
     return async (req: Request, res: Response) => {
-        if (!req.id) {
-            // if (!req.user) {
+        const id = req.id || req.user?.id;
+        if (!id) {
             throw new UnauthorizedError("No User");
         }
 
-        const user = { id: req.id };
+        const user = { id: id };
 
         const accessToken = sign(user);
         // const accessToken = sign(req.user);
         const refreshToken = refresh();
-        await redisClient.SET(String(req.id), refreshToken, { EX: REFRESH_TOKEN_EXPIRES });
+        (await RedisSingleton.getClient()).SET(String(id), refreshToken, { EX: REFRESH_TOKEN_EXPIRES });
 
         res.setHeader("x-auth-cookie", accessToken);
         res.setHeader("x-auth-cookie-refresh", refreshToken);
@@ -36,29 +38,60 @@ function setCookieAndRedirect() {
     };
 }
 
+function setCookieAndRedirectWeb() {
+    return async (req: Request, res: Response) => {
+        const id = req.id || req.user?.id;
+        if (!id) {
+            throw new UnauthorizedError("No User");
+        }
+
+        const user = { id: id };
+
+        const accessToken = sign(user);
+        // const accessToken = sign(req.user);
+        const refreshToken = refresh();
+        (await RedisSingleton.getClient()).SET(String(id), refreshToken, { EX: REFRESH_TOKEN_EXPIRES });
+
+        // res.cookie("x-auth-cookie", accessToken, {httpOnly: true, sameSite: "none"});
+        // res.cookie("x-auth-cookie-refresh", refreshToken, {httpOnly: true, sameSite: "none"});
+        res.cookie("x-auth-cookie", accessToken, {httpOnly: true, sameSite: "none", secure: true});
+        res.cookie("x-auth-cookie-refresh", refreshToken, {httpOnly: true, sameSite: "none", secure: true});
+
+        res.redirect("https://chore-comment.rf-server-static.pages.dev/login/success");
+        // res.redirect("http://localhost:3000/login/success");
+    };
+}
+
 const authRouter = Router();
 
-authRouter.get(
-    "/sign-test",
-    (req, res) => {
-        req.user = { id: 1, name: "test", email: "test@gmail.com", role: "Admin", type: "Kakao" } as unknown as UserWithRole;
+// authRouter.get(
+//     "/sign-test",
+//     async (req, res) => {
+//         req.user = { id: 1, name: "test", email: "test@gmail.com", role: "Admin", type: "Kakao" } as unknown as UserWithRole;
 
-        const accessToken = sign(req.user);
-        const refreshToken = refresh();
-        redisClient.SET(String(req.user.id), refreshToken, { EX: REFRESH_TOKEN_EXPIRES });
+//         const accessToken = sign(req.user);
+//         const refreshToken = refresh();
+//         (await RedisSingleton.getClient()).SET(String(req.user.id), refreshToken, { EX: REFRESH_TOKEN_EXPIRES });
 
-        res.setHeader("x-auth-cookie", accessToken);
-        res.setHeader("x-auth-cookie-refresh", refreshToken);
+//         res.setHeader("x-auth-cookie", accessToken);
+//         res.setHeader("x-auth-cookie-refresh", refreshToken);
 
-        res.status(204).send("ok");
-        // next();
-    }
-    // setCookieAndRedirect()
-);
+//         res.status(204).send("ok");
+//         // next();
+//     }
+//     // setCookieAndRedirect()
+// );
 
 authRouter.get("/refresh", controllerHandler(refreshJwt));
 
 authRouter.get("/kakao", controllerHandler(loginKakao), setCookieAndRedirect());
+
+authRouter.get("/kakao-t", passport.authenticate("kakao"));
+authRouter.get("/kakao-t/callback", passport.authenticate("kakao", {
+    failureRedirect: ""
+    }),
+    setCookieAndRedirectWeb()
+);
 
 authRouter.get(
     "/logout",
@@ -79,24 +112,34 @@ authRouter.get(
                 throw new BadReqError(error);
             }
         });
+
+        const id = req.id || req.user?.id;
+        if(id) {
+            (await RedisSingleton.getClient()).DEL(String(id));
+        }
+        // (await RedisSingleton.getClient()).SET(String(id), refreshToken, { EX: REFRESH_TOKEN_EXPIRES });
+
+        res.cookie('x-auth-cookie', '', { expires: new Date(0) });
+        res.cookie('x-auth-cookie-refresh', '', { expires: new Date(0) });
+
         res.status(204).send("ok");
         // res.redirect(conf().CLIENT_DOMAIN);
     })
 );
 
-authRouter.get(
-    "/test",
-    controllerHandler(async (req: Request, res: Response) => {
-        const user = req.user;
-        const flash = req.flash(KakaoStrategyError)[0];
+// authRouter.get(
+//     "/test",
+//     controllerHandler(async (req: Request, res: Response) => {
+//         const user = req.user;
+//         const flash = req.flash(KakaoStrategyError)[0];
 
-        console.log("user :", user);
-        console.log("flash :", flash);
+//         console.log("user :", user);
+//         console.log("flash :", flash);
 
-        // const KAKAO_ACCESS_TOKEN = req.user?.accessToken || req.flash(KakaoStrategyError)[0];
+//         // const KAKAO_ACCESS_TOKEN = req.user?.accessToken || req.flash(KakaoStrategyError)[0];
 
-        res.status(204).send("ok");
-    })
-);
+//         res.status(204).send("ok");
+//     })
+// );
 // export const AUTH_ROUTERS = ["/refresh", "/kakao", "/logout"];
 export { authRouter };

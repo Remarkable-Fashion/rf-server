@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
-import { type RedisClient } from "../../db/redis";
+// import { type RedisClient } from "../../db/redis";
+import * as redis from "redis";
 import { CACHE_POST_PREFIX, CACHE_POST_EXPIRE } from "./const";
 
 type UnwrapPromise<T> = T extends Promise<infer U> ? U : T;
@@ -12,7 +13,7 @@ export class CachePosts<T extends Test> {
 
     private _cacheMissedIds: number[] = [];
 
-    constructor(private readonly ids: number[], private readonly redisClient: RedisClient) {
+    constructor(private readonly ids: number[], private readonly redisClient: redis.RedisClientType) {
         this.postMap = new Map<number, PostArrayElement<T> | null>();
 
         this.setPostMap();

@@ -3,7 +3,7 @@ import Prisma from "../../../db/prisma";
 import { BadReqError } from "../../../lib/http-error";
 import { deleteFavorite as deleteFavoriteService } from "../service/delete-favorite";
 import { COUNTS_POST_LIKES_PREFIX, COUNTS_POST_LIKES_STREAM } from "../../../constants";
-import { redisClient } from "../../../db/redis";
+import { RedisSingleton } from "../../../db/redis";
 
 type ReqParams = {
     id?: string;
@@ -24,7 +24,7 @@ export const deleteFavorite = async (req: Request<ReqParams, unknown>, res: Resp
     const key = `${COUNTS_POST_LIKES_PREFIX}:${postId}`;
 
     // await redisClient.decrBy(key, 1);
-    await redisClient.multi().decrBy(key, 1).XADD(COUNTS_POST_LIKES_STREAM, "*", {post_id: req.params.id}).exec();
+    await (await RedisSingleton.getClient()).multi().decrBy(key, 1).XADD(COUNTS_POST_LIKES_STREAM, "*", {post_id: req.params.id}).exec();
 
     res.json({
         success: true,

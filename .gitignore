@@ -5,6 +5,8 @@ node_modules
 
 *.log
 ./logs
+logs
+
 dbdata
 dev-logs
 dev-dbdata

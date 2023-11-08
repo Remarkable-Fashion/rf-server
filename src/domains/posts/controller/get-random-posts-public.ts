@@ -7,8 +7,8 @@ import { getRandomPostsPublicService } from "../service/get-random-posts-public"
 import { getRandomPostsElasticSearchSerivce } from "../service/get-random-posts-elasticsearch";
 import { client } from "../../../db/elasticsearch";
 import { POSTS_INDEX } from "../../search/constants";
-import { redisClient } from "../../../db/redis";
-import { DEFAULT_SEX, DEFAULT_SIZE, CACHE_POST_PREFIX, CACHE_POST_EXPIRE } from "../const";
+import { RedisSingleton } from "../../../db/redis";
+import { DEFAULT_SEX, DEFAULT_SIZE, CACHE_POST_PREFIX, DEFUALT_POSTS_DATE_RANGE } from "../const";
 import { CachePosts } from  "../cache-posts";
 
 type ReqQuery = {
@@ -70,7 +70,7 @@ export const getRandomPostsPublic = async (req: Request<unknown, unknown, unknow
     const sex = validateQuerySex(req.query.sex);
 
     const now = new Date();
-    const thirtyDaysAgoISOString = getPastDateISOString(30, now);
+    const thirtyDaysAgoISOString = getPastDateISOString(DEFUALT_POSTS_DATE_RANGE, now);
     const nowISOString = now.toISOString().slice(0, -5);
 
     const dateRange = {
@@ -96,7 +96,7 @@ export const getRandomPostsPublic = async (req: Request<unknown, unknown, unknow
         return;
     }
 
-    const cachePosts = new CachePosts<typeof getRandomPostsPublicService>(ids, redisClient);
+    const cachePosts = new CachePosts<typeof getRandomPostsPublicService>(ids, (await RedisSingleton.getClient()));
     await cachePosts.init();
     await cachePosts.setCache(getRandomPostsPublicService, Prisma);
     const posts = cachePosts.getPosts();

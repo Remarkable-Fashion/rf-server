@@ -27,7 +27,7 @@ const postRouter = Router();
 
 postRouter.get("/", authJWT, controllerHandler(getRandomPosts));
 // postRouter.get("/test-dms", authJWT, controllerHandler(getRandomPosts));
-postRouter.get("/public", apiLimiterFunc({ time: 15, max: 3, postFix: "public" }), controllerHandler(getRandomPostsPublic));
+postRouter.get("/public", apiLimiterFunc({ time: 10, max: 20, postFix: "public" }), controllerHandler(getRandomPostsPublic));
 postRouter.get("/followings", authJWT, controllerHandler(getMyFollowingPosts));
 
 postRouter.patch("/:id", authJWT, controllerHandler(updatePostById));

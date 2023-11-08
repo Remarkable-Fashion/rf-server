@@ -1,6 +1,9 @@
+import { conf, isProd } from "./config";
+import { RedisSingleton } from "./db/redis";
 import express from "express";
 import cors from "cors";
 import session from "express-session";
+import cookieParser from "cookie-parser";
 import flash from "connect-flash";
 import passport from "passport";
 import RedisStore from "connect-redis";
@@ -9,18 +12,17 @@ import passportConfig from "./passports";
 import { dbErrorMiddleware, errorMiddleware } from "./middleware/error";
 import { requestLoggerMiddleware } from "./middleware/log";
 import { router } from "./routes";
-import { conf, isProd } from "./config";
 import { apiLimiterFunc } from "./middleware/api-rate-limit";
-import { redisClient } from "./db/redis";
 
-export const startApp = () => {
-    const app = express();
+export const startApp: () => Promise<express.Application> = async () => {
+    const redisClient = await RedisSingleton.getClient();
+    const app: express.Application = express();
 
     app.use(helmet());
-
     app.use(cors(conf().CORS_CONFIG));
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
+    app.use(cookieParser());
 
     passportConfig();
     app.use(

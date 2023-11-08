@@ -1,11 +1,12 @@
 import { PrismaClient } from "@prisma/client";
-import { RedisClient } from "../../../db/redis";
+import * as redis from "redis";
+import { RedisSingleton } from "../../../db/redis";
 import { COUNTS_POST_LIKES_PREFIX } from "../../../constants";
 
 export const getPostsByUserIdService = (
     { myId, userId, cursor, take }: { myId: number; userId: number; cursor?: number; take: number },
     prisma: PrismaClient,
-    redis: RedisClient
+    redis: redis.RedisClientType
 ) => {
     return prisma.$transaction(async (tx) => {
         const countOfPosts = await tx.posts.count({
