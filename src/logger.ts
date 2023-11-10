@@ -13,7 +13,11 @@ function getRequestLogFormatter() {
             const { req, res } = info.message;
             // const ip = req.headers["X-Real-IP"] || req.connection.remoteAddress;
             const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
-            return `${info.timestamp} ${info.level}: ${ip}${req.port || ""} ${res.statusCode} ${req.method} '${req.originalUrl}'`;
+
+            const urlWithoutQuery = req.originalUrl.split('?')[0];
+
+            return `${info.timestamp} ${info.level}: ${ip}${req.port || ""} ${res.statusCode} ${req.method} '${urlWithoutQuery}'`;
+            // return `${info.timestamp} ${info.level}: ${ip}${req.port || ""} ${res.statusCode} ${req.method} '${req.originalUrl}'`;
             // return `${info.timestamp} ${info.level}: ${req.hostname}${req.port || ""} ${req.method} '${req.originalUrl}'`;
         })
     );
