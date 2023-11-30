@@ -1,5 +1,7 @@
 # RCloset 서버
 
+구글스토어 : https://play.google.com/store/apps/details?id=com.lf.fashion
+
 ## 사용 스택
 
 ExpressJS, Typescript, Prisma
